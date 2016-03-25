@@ -4,10 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Webscripting2 &mdash; Serverside Webscripting &mdash; 00.intro</title>
-
-		<meta name="description" content="Webscripting2 &mdash; Serverside Webscripting &mdash; 00.intro">
-		<meta name="author" content="Bram(us) Van Damme - ikdoeict.be">
+		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
 
 		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
 
@@ -28,6 +25,22 @@
 				display: block;
 				margin: 0 auto;
 			}
+			
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
 		</style>
 	</head>
 
@@ -42,11 +55,11 @@
 				<!-- 0 : Title -->
 				<section>
 					<section>
-						<h3 class="inverted">Serverside Webscripting <small>[JLW384]</small></h3>
+						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
 						<h1>00.intro</h1>
 
 						<footer>
-							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:bramus.vandamme@odisee.be">bramus.vandamme@odisee.be</a></em>
+							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
 						</footer>
 						<script>
 							// Delicously hacky. Look away.
@@ -236,11 +249,19 @@ alert('OK GO!');</code></pre>
 					<section>
 						<h2>Webscripting 2</h2>
 						<ul>
-							<li class="fragment">Webscripting 2 = main course (OPO)
+							<li class="fragment">Webscripting 2 = main course (OPO)</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Contains only 1 sub-course
+								Webscripting 2 = three sub-courses
 								<ul>
-									<li>OLA Serverside/Advanced Webscripting [JLW384]</li>
+									<li>OLA Webscripting 2 [JLW505] <small>no evaluation</small></li>
+									<li>OLA Lab Clientside Webscripting 2 [JLW507]</li>
+									<li>OLA Lab Serverside Webscripting 2 [JLW506]</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Webscripting 2 = 8 ECTS Credits
+								<ul>
+									<li>Equal distribution clientside/serverside</li>
 								</ul>
 							</li>
 						</ul>
@@ -250,8 +271,8 @@ alert('OK GO!');</code></pre>
 						<h2>Instructors</h2>
 						<ul class="columns">
 							<li class="fragment column column-13" style="text-align: center; line-height: 1.2;">
-								<p><img src="assets/00/lecturer_bramus.jpg" width="300" alt="" title="" /></p>
-								Bram(us) Van Damme<br /><a href="mailto:bramus.vandamme@odisee.be">bramus.vandamme@odisee.be</a>
+								<p><img src="assets/00/mjoris_routeyou.jpg" width="300" alt="" title="" /></p>
+								Joris Maervoet<br /><a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a>
 							</li>
 							<li class="fragment column column-13" style="text-align: center; line-height: 1.2;">
 								<p><img src="assets/00/lecturer_kevin.jpg" width="300" alt="" title="" /></p>
@@ -271,18 +292,14 @@ alert('OK GO!');</code></pre>
 								One semester = 12 + 1 weeks
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Lectures
-								<ul class="fragment">
-									<li>Week 1-6 = Composer, PSR-0, and Silex</li>
-									<li>Week 7-12 = Various Topics</li>
-									<li>Somewhere in between = polyweek</li>
+								Two blocks
+								<ul>
+									<li>First 6 weeks = Clientside Webscripting (CWS)</li>
+									<li>Last 6 weeks = Serverside Webscripting (SWS)</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Labs
-								<ul class="fragment">
-									<li>Week 1-6 = Labs (2 slots)</li>
-								</ul>
+								Ergo: we're started for 6 weeks of SWS
 							</li>
 						</ul>
 					</section>
@@ -404,26 +421,41 @@ alert('OK GO!');</code></pre>
 						<h2>Course Subjects</h2>
 						<div class="columns clearfix">
 							<ul class="column column-12">
-								<li class="fragment">
-									PHP
+							    <li class="fragment">
+									<b>Webdev Tools</b>
 									<ul>
-										<li>PHP Libraries (Composer)</li>
-										<li>Silex Basics</li>
-										<li>Silex Providers</li>
-										<li>Silex Services</li>
-										<li>i18n</li>
-										<li>timezone aware apps</li>
+										<li>Dependency Management (Composer)</li>
+										<li>Virtualization (Vagrant)</li>
+										<li>Version Control (Git)</li>
 									</ul>
 								</li>
+								<li class="fragment" style="margin-top: 0.5em">
+									<b>Best Practices</b>
+									<ul>
+										<li>URL Design</li>
+										<li>Pagination</li>
+										<li>Filtering</li>
+										<li>&hellip;</li>
+									</ul>
+								</li>
+
 							</ul>
 							<ul class="column column-12">
 								<li class="fragment">
-									Various Topics
+									<b>PHP Frameworks</b>
 									<ul>
-										<li>Git</li>
-										<li>URL Design</li>
-										<li>Optimization</li>
-										<li>Deployment</li>
+										<li>Silex</li>
+										<li>Laravel</li>
+									</ul>
+								</li>
+								<li class="fragment" style="margin-top: 0.5em">
+									<b>Concepts</b>
+									<ul>
+										<li>Routing</li>
+										<li>Dependency Injection</li>
+										<li>Service Providers</li>
+										<li>DB Abstraction Layer</li>
+										<li>MVC</li>
 										<li>&hellip;</li>
 									</ul>
 								</li>
@@ -437,22 +469,20 @@ alert('OK GO!');</code></pre>
 							<li class="fragment">
 								Technology
 								<ul>
-									<li>Scripting Language: PHP 5.4+</li>
-									<li>Databaseserver: MySQL and SQLite3</li>
-									<li>Webserver: Apache or <a href="http://php.net/manual/en/features.commandline.webserver.php">PHP 5.4's built-in server</a></li>
+									<li>Scripting Language: PHP 5.5+</li>
+									<li>Databaseserver: MySQL (and SQLite3)</li>
+									<li>Webserver: Apache</li>
+									<li>Dependency Management: Composer</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								<a href="http://www.wampserver.com/en/">Wampserver</a> (Win) or <a href="http://www.mamp.info/en/">MAMP (Pro)</a> (OS X) recommended
 								<ul>
-									<li class="fragment">Follow <a href="http://helpdesk.ikdoeict.be/index.php?/Knowledgebase/Article/View/11/4/howto-installatieconfiguratie-van-software-wamplamp-stack">these instructions</a> to configure your install</li>
-									<li class="fragment">Be sure to add the PHP binary to your system's <code>PATH</code>
-										<ul>
-											<li>Windows: Add <code>C:\wamp\bin\php\<em>version</em>\</code> to <code>PATH</code> via Computer Settings</li>
-											<li>OS X: Paste this on the Terminal: <code>echo 'export PATH=/Applications/MAMP/bin/php/php<em>version</em>/bin/:$PATH' &gt;&gt; ~/.bash_profile</code></li>
-										</ul>
-									</li>
+									<li>Instructions: Webscripting 1</li>
 								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								From lab 02 on, the target environment is <a href="https://box.scotch.io/">Scotch Box</a> in <a href="https://www.vagrantup.com/">Vagrant</a>
 							</li>
 						</ul>
 					</section>
@@ -463,8 +493,8 @@ alert('OK GO!');</code></pre>
 							<li class="fragment">
 								A PHP specific IDE
 								<ul>
+									<li>PhpStorm</li>
 									<li>Zend Studio</li>
-									<li>PHPStorm</li>
 									<li>Netbeans</li>
 									<li>Aptana Studio</li>
 								</ul>
@@ -493,7 +523,7 @@ alert('OK GO!');</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Course Materials
 								<ul>
-									<li>Available on <a href="http://bramus.github.io/ws2-sws-course-materials/">GitHub</a></li>
+									<li>Available on <a href="https://github.com/mjoris/ws2-sws-course-materials">GitHub</a></li>
 									<li>Feel free to fork and commit improvements/additions</li>
 								</ul>
 							</li>
@@ -519,9 +549,9 @@ alert('OK GO!');</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Clone the repository
 								<pre class="bigger"><code>cd c:\wamp\www
-git clone https://github.com/bramus/ws2-sws-course-materials.git</code></pre>
+git clone https://github.com/mjoris/ws2-sws-course-materials.git</code></pre>
 
-								<ul><li>Visit your copy at <a href="http://localhost/ws1-sws-course-materials">http://localhost/ws2-sws-course-materials</a></li></ul>
+								<ul><li>Visit your copy at <a href="http://localhost/ws2-sws-course-materials">http://localhost/ws2-sws-course-materials</a></li></ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Update the repository regularly to get the latest version
@@ -545,8 +575,9 @@ git pull</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Project (40%)
 								<ul>
-									<li>Launched after the Easter Holidays</li>
-									<li class="fragment"><strong>!! Minimum score of 10/20 required to possibly pass this OLA !!</strong></li>
+									<li>Launched by 9 May 2016</li>
+									<li>Oral Defense in EP2</li>
+									<li class="fragment"><strong>!! Minimum score of 8/20 required to possibly pass this OLA !!</strong></li>
 								</ul>
 							</li>
 						</ul>
@@ -679,7 +710,7 @@ git pull</code></pre>
 					<section>
 						<h2>Questions?</h2>
 						<footer>
-							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:bramus.vandamme@odisee.be">bramus.vandamme@odisee.be</a></em>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
 						</footer>
 					</section>
 				</section>
