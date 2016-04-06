@@ -779,7 +779,7 @@ foreach ($users as $user) {
 									<li class="fragment">example with <code>select()</code>, <code>where()</code> and<code>groupBy()</code>
 										<pre class="bigger"><code class="language-php">$users = DB::table('users')
                      ->select('name', 'email as user_email')
-                     ->where('status', '<>', 1)
+                     ->where('status', '&lt;&gt;', 1)
                      ->groupBy('status')
                      ->get();</code></pre>
 									</li>											
