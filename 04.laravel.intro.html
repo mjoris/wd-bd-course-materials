@@ -830,7 +830,7 @@ DB::table('users')
 			
 DB::table('users')->increment('votes', 5);
 		
-DB::table('users')->where('votes', '<', 100)->delete();
+DB::table('users')->where('votes', '&lt;', 100)->delete();
 </code></pre>
 									</li>
 								</ul>
