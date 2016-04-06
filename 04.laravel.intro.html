@@ -459,7 +459,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 							<li class="fragment">You can add <a href="https://laravel.com/docs/5.2/routing#parameters-regular-expression-constraints">global constraints</a> too
 							<ul>
 								<li class="fragment">For example: for each <em>id</em> parameter in a dynamic route</li>
-									<li class="fragment">Location: boot method of your RouteServiceProvider (typically <code>app/Providers/RouteServiceProvider.php</code>)</li>
+								<li class="fragment">Location: boot method of your RouteServiceProvider (typically <code>app/Providers/RouteServiceProvider.php</code>)</li>
 							</ul>
 							</li>
 						</ul>
@@ -490,6 +490,72 @@ Route::post('register', function(Request $request) {
 							</li>
 						</ul>
 					</section>
+					
+					<section>
+						<h2>The HTTP Response (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								<ul>
+									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
+									<li class="fragment">can be returned in your code
+										<ul>
+											<li class="fragment">as a string (automatic conversion): <code class="language-php">return 'Hello World';</code></li>
+											<li class="fragment">as a Response object: <pre class="bigger"><code class="language-php">return (new Response($content, $status));</code></pre></li>
+											<li class="fragment">idem, with helper (no use-statement needed):<pre class="bigger"><code class="language-php">return response($content, $status));</code></pre></li>
+											<li class="fragment">idem, with chained methods:
+									<pre class="bigger fragment"><code class="language-php">return response($content)
+                ->header('Content-Type', $type)
+                ->cookie('name', 'value');</code></pre>
+											</li>
+											
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>The HTTP Response (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								<ul>
+									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
+									<li class="fragment">can be returned in your code
+										<ul>
+											<li class="fragment">as a view: <pre class="bigger"><code class="language-php">return view('greeting', ['name' => 'James']);</code></pre> &mdash; it involves rendering the <code>resources/views/greeting.php</code> template</li>
+											<li class="fragment">idem, with chained HTTP response methods: <pre class="bigger"><code class="language-php">return response()->view('greeting', $data)->&hellip;;</code></pre></li>
+											<li class="fragment">as a JSON response: <pre class="bigger"><code class="language-php">return response()->json(['name' => 'Abigail', 'state' => 'CA']);</code></pre></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>		
+
+					<section>
+						<h2>The HTTP Response (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								<ul>
+									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
+									<li class="fragment">can be returned in your code
+										<ul>
+											<li class="fragment">as a forced file download: <pre class="bigger"><code class="language-php">return response()->download($pathToFile);</code></pre></li>
+											<li class="fragment">as a <code>RedirectResponse</code> instance: <pre class="bigger"><code class="language-php">return redirect('home/dashboard');</code></pre></li>
+											<li class="fragment">idem, after invalid form submission: <pre class="bigger"><code class="language-php">return back()->withInput();</code></pre></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>						
 
 
 				</section>
@@ -500,6 +566,127 @@ Route::post('register', function(Request $request) {
 					<section>
 						<h2>Views and templates</h2>
 					</section>
+					
+					<section>
+						<h2>Views</h2>
+
+						<ul>
+							<li class="fragment">
+								Presentation logic: "templates" stored in the <code>resources/views</code>
+								<ul>
+									<li class="fragment">A simple view contains inline PHP code e.g. <code>resources/views/subdir/greeting.php</code>
+										<pre class="bigger"><code class="language-php">&lt;html&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello, &lt;?php echo HTML::entities($name); /* XSS prevention */ ?&gt;&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre></li>
+									<li class="fragment">The <code>view</code> helper returns an instance of <code>Illuminate\View\View</code>, to which you can pass variables.
+										<pre class="bigger"><code class="language-php">return view('subdir.greeting', ['name' => 'Eddy']);</code></pre></li>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Note: the passed variables are stored in the instance, but the view is not rendered at this point.</em></footer>
+					</section>
+					
+					<section>
+						<h2>Blade templates</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.2/blade">Blade templates</a> are views compiled by the Blade template engine
+								<ul>
+									<li class="fragment">File extension: <code>.blade.php</code></li>
+									<li class="fragment">File location, view instantiation (omit <code>.blade.php</code>!) and variable passing: see previous slide (Views).</li> 
+									<li class="fragment">Compiled into plain PHP code and cached until modified</li>
+									<li class="fragment">&rarr; you will be debugging compiled views in <code>storage/framework/views</code></li>
+									<li class="fragment">Blade syntax very different from Twig, but closer to PHP</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Blade syntax (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								Displaying data
+								<pre class="bigger"><code class="language-php">Hello, {{ $name }}.</code></pre>
+								<ul>
+									<li class="fragment">{{ Statements }} automatically sent through <code>htmlentities</code> to prevent XSS-attacks.</li>
+									<li class="fragment">Mind the <code>$</code></li> 
+									<li class="fragment">Any PHP code can be included e.g. <code>{{ time() }}</code> <small>and forget about Twig filters</small></li>
+									<li class="fragment"><code>{{ $name or 'Default' }}</code> is syntactic sugar for <code>{{ isset($name) ? $name : 'Default' }}</code></li>
+									<li class="fragment">Unescaped statements:
+									<pre class="bigger"><code class="language-php">Hello, {!! $name !!}.</code></pre></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Blade syntax (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								Control structures
+								<pre class="bigger"><code class="language-html">@if (count($records) === 1)
+    I have one record!
+@elseif (count($records) > 1)
+    I have multiple records!
+@else
+    I don't have any records!
+@endif
+
+@foreach ($events as $event)
+    &lt;p&gt;This is user {{ $event->id }}&lt;/p&gt;
+@endforeach</code></pre>
+								<ul>
+									<li class="fragment">Structures don't work without <code>()</code></li> 
+									<li class="fragment">Check the <a href="https://laravel.com/docs/master/blade#control-structures">docs</a> for more syntax information</li>
+									<li class="fragment">Associative array by index: just <code>$event['id']</code></li> 
+									<li class="fragment">Object fields: just <code>$event->id</code></li> 
+									
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Blade syntax (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/master/blade#template-inheritance">Template inheritance</a>: sections
+								<pre class="bigger"><code class="language-html" style="max-height: 170px; overflow: scroll;">&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;App Name - @yield('title')&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        @section('sidebar')
+            This is the master sidebar.
+        @show
+        &lt;div class="container"&gt;
+            @yield('content')
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+								<pre class="bigger"><code class="language-html">@extends('layouts.master')
+
+@section('title', 'Page Title')
+
+@section('sidebar')
+    @parent
+    &lt;p&gt;This is appended to the master sidebar.&lt;/p&gt;
+@endsection
+
+@section('content')
+    &lt;p&gt;This is my body content.&lt;/p&gt;
+@endsection</code></pre>
+							</li>
+						</ul>
+					</section>						
 
 				</section>
 
@@ -508,6 +695,309 @@ Route::post('register', function(Request $request) {
 					<section>
 						<h2>4 Database features</h2>
 					</section>
+					
+					<section>
+						<h2>Before we start</h2>
+
+						<ul>
+							<li class="fragment">
+								Supported DBMS systems by Laravel
+								<ul>
+									<li class="fragment">MySQL</li>
+									<li class="fragment">Postgres</li>
+									<li class="fragment">SQLite</li>
+									<li class="fragment">SQL Server</li>									
+								</ul>
+							</li>
+							<li class="fragment">
+								DB configuration: see <a href="#/2">previous slides on configuration</a>
+								<ul>
+									<li class="fragment">Note: you can have <a href="https://laravel.com/docs/master/database#introduction">separate configs</a> for reading/writing</li>								
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#1 Raw SQL Queries (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								In Laravel you can run <a href="https://laravel.com/docs/master/database#running-queries">raw SQL queries</a>
+								<pre class="bigger"><code class="language-php">use DB;
+
+$users = DB::select('select * from users where active = ?', [1]);
+foreach ($users as $user) {
+    echo $user->name;
+}</code></pre>
+								<ul>
+									<li class="fragment">Parameter binding prevents against <strong>SQL injection</strong></li>
+									<li class="fragment"><code>DB::select</code> returns an array of <code>StdClass</code> objects with <a href="http://stackoverflow.com/questions/829823/can-you-create-instance-properties-dynamically-in-php">dynamic properties</a> (column name or SQL alias)</li>
+									<li class="fragment">Named bindings
+										<pre class="bigger"><code class="language-php">$results = DB::select('select * from users where id = :id', ['id' => 1]);</code></pre>
+									</li>
+												
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#1 Raw SQL Queries (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								In Laravel you can run <a href="https://laravel.com/docs/master/database#running-queries">raw SQL queries</a>
+								
+								<ul>
+								
+									<li class="fragment">Similar functions for insert/update/delete
+										<pre class="bigger"><code class="language-php">$affected = DB::update('update users set votes = 100 where name = ?', ['John']);</code></pre>
+									</li>
+									<li class="fragment">General statements
+										<pre class="bigger"><code class="language-php">DB::statement('drop table users');</code></pre>
+									</li>									
+								</ul>
+							</li>
+						</ul>
+					</section>					
+					
+					<section>
+						<h2>#2 Query Builder (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								<ul>
+									<li class="fragment">Always start with <code>DB::table()</code></li>
+									<li class="fragment">and use chained methods to filter/select/aggregate data</li>
+									<li class="fragment">Automatic prevention against <strong>SQL injection</strong></li>
+									
+									<li class="fragment" style="margin-top: 1em"><code>get()</code> returns an array of results
+										<pre class="bigger"><code class="language-php">$users = DB::table('users')->get();</code></pre>
+									</li>
+									<li class="fragment">example with <code>select()</code>, <code>where()</code> and<code>groupBy()</code>
+										<pre class="bigger"><code class="language-php">$users = DB::table('users')
+                     ->select('name', 'email as user_email')
+                     ->where('status', '<>', 1)
+                     ->groupBy('status')
+                     ->get();</code></pre>
+									</li>											
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#2 Query Builder (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								<ul>
+									<li class="fragment"><code>first()</code> returns a single row
+										<pre class="bigger"><code class="language-php">$user = DB::table('users')->where('name', 'John')->first();
+echo $user->name;</code></pre>
+									</li>
+									<li class="fragment"><code>value()</code> returns a single value
+										<pre class="bigger"><code class="language-php">$email = DB::table('users')->where('name', 'John')->value('email');</code></pre>
+									</li>
+									<li class="fragment"><code>pluck()</code> returns an array of <strong>values</strong>
+										<pre class="bigger"><code class="language-php">$titles = DB::table('roles')->pluck('title');</code></pre>
+									</li>
+									<li class="fragment">aggregate methods e.g. <code>count()</code>, <code>max()</code></li>
+									<li class="fragment">much more e.g. <code>whereIn()</code>, <code>orWhere()</code>, joins e.g. <code>leftJoin()</code>, <code>on()</code> </li>		
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>#2 Query Builder (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								<ul>
+									<li class="fragment">Examples with <code>insert()</code>, <code>update()</code> and <code>delete()</code>
+										<pre class="bigger"><code class="language-php">$id = DB::table('users')->insertGetId(
+    ['email' => 'john@example.com', 'votes' => 0]
+);
+
+DB::table('users')
+            ->where('id', 1)
+            ->update(['votes' => 1]);
+			
+DB::table('users')->increment('votes', 5);
+		
+DB::table('users')->where('votes', '<', 100)->delete();
+</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>		
+
+					<section>
+						<h2>#3 Eloquent ORM (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								ORM: each database table has a corresponding "Model" which is used to interact with it
+							</li>
+							<li class="fragment">
+								First step: generate the models with Artisan
+								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ php artisan make:model Event</code></pre>
+								<ul>
+									<li class="fragment">It generates the (pretty empty) class <code>Event</code> extending <code>Illuminate\Database\Eloquent\Model</code> in the <code>app/</code> directory</li>
+									<li class="fragment">The model assumes that there is a table <code>events</code> (plural!) in the database, unless you add
+<pre class="bigger"><code class="language-php">protected $table = 'my_other_table_name';</code></pre>
+									</li>						
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#3 Eloquent ORM (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								First step: generate the models with Artisan
+								<ul>
+									<li class="fragment">The model assumes the table has an (auto-increment) primary key called <code>id</code>, unless you add
+<pre class="bigger"><code class="language-php">protected $primaryKey = 'event_id';
+protected $incrementing = false;</code></pre>
+									</li>
+									<li class="fragment">The model assumes that the table has <code>created_at</code> and <code>updated_at</code> columns, unless you add
+<pre class="bigger"><code class="language-php">public $timestamps = false;</code></pre>
+									</li>								
+								</ul>
+							</li>
+						</ul>
+					</section>		
+
+					<section>
+						<h2>#3 Eloquent ORM (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								From now on, you can filter/select/aggregate data using the model
+								<ul>
+									<li class="fragment">Eloquent's <code>all()</code> returns all records in the table
+<pre class="bigger"><code class="language-php">use App\Event;
+
+$events = Event::all();</code></pre>
+									</li>
+									<li class="fragment">Rely on Query Builder for many other (chained) methods
+<pre class="bigger"><code class="language-php">use App\Event;
+
+$events = Event::where('active', 1)
+               ->orderBy('name', 'desc')
+               ->get();</code></pre>
+									</li>								
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#3 Eloquent ORM (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								You can insert, update and delete rows correspondingly to the <a href="https://en.wikipedia.org/wiki/Active_record_pattern">active record pattern</a>
+								<ul>
+									<li class="fragment">This means that an object instance is tied to a single row in the table
+									</li>							
+								<pre class="bigger"><code class="language-php">use App\Event;
+
+$event = new Event;
+$event->name = $request->name;
+$event->save();
+
+$event = Event::find(1);
+$event->name = 'Pukkelpop 2016';
+$event->save();
+
+$event->delete();
+</code></pre>
+									<li class="fragment">But the Query Builder examples with <code>insert()</code>, <code>update()</code> and <code>delete()</code> will work too.
+									</li>							
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>#3 Eloquent ORM (5)</h2>
+
+						<ul>
+							<li class="fragment">
+								Mass assignment
+								<ul>
+									<li class="fragment">Definition: use the create method to save a new model in a single line
+									<pre class="bigger"><code class="language-php">$user = App\User::create(['name' => 'Franky Pallemans']);</code></pre>
+									</li>
+									<li class="fragment">It enables to pass all parameter/value-pairs of the HTTP request's querystring to the create method
+									</li>
+									<li class="fragment"><strong>mass-assignment vulnerability</strong>: a malicious user adds a parameter to the HTTP request e.g. <code>role=administrator</code> which is passed to the create method
+									</li>
+									<li class="fragment">Therefore it is required to blacklist (<code>protected $guarded = ['role'];</code>) or whitelist (<code>protected $fillable = ['name'];</code>) the mass assignable attributes in the model class
+									</li>							
+								</ul>
+							</li>
+						</ul>
+					</section>		
+
+					<section>
+						<h2>#4 Migrations (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								Typical dev team situation
+								<ul>
+									<li class="fragment">All team members have a local (test) instance of the database </li>
+									<li class="fragment">From time to time the DB schema is modified</li>
+									<li class="fragment">How can we easily share these changes?
+									<ul>
+									<li class="fragment">By changing the global SQL-dump and put it to version control? Maybe, but it doesn't scale </li>		
+									<li class="fragment">By adding an SQL-update file and put it to version control? Maybe, but it is difficult to produce and it is not structured</li>
+									</ul></li>
+								</ul>
+							</li>
+							<li class="fragment">
+								Solution: Database Migrations
+								<ul>
+									<li class="fragment">Easily modify and share the application's database schema. </li>
+									<li class="fragment">It's like version control for your DB</li>
+									
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#4 Migrations (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								How does it work?
+								<ul>
+									<li class="fragment">A modification to the DB schema is described in a migration class file, named with a timestamp, located in <code>database/migrations</code> </li>
+									<li class="fragment">A migration class contains two methods: <code>up</code> (perform migration) and <code>down</code> (reverse).</li>
+									<li class="fragment">These modification are programmed with Laravel schema builder </li>
+									<li class="fragment" style="margin-top: 1em">Artisan helps you to create blueprints of migration classes </li>
+									<li class="fragment">Put successful migrations to version control </li>
+									<li class="fragment">In one Artisan command, you can execute all migrations that have not been executed before</li>
+								</ul>
+							</li>
+
+							<li class="fragment">
+								Read more about it in the <a href="https://laravel.com/docs/master/migrations">Laravel docs on Migrations</a>
+							</li>
+						</ul>
+					</section>							
 
 				</section>				
 				
@@ -530,10 +1020,20 @@ Route::post('register', function(Request $request) {
 						
 						
 						<ul> 
-							<li><a href="https://laravel.com/docs/5.2/installation">Laravel docs: installation</a></li>
+							<li><a href="https://laravel.com/docs/5.2/installation">Laravel docs: Installation</a></li>
+							<li><a href="https://laravel.com/docs/5.2/configuration">Laravel docs: Configuration</a></li>
 							<li><a href="https://scotch.io/tutorials/understanding-laravel-environment-variables">Tutorial on environment config</a></li>
-							<li><a href=""></a></li>
-							<li><a href=""></a></li>							
+							<li><a href="https://laravel.com/docs/5.2/structure">Laravel docs: Application structure</a></li>
+							<li><a href="https://laravel.com/docs/5.2/routing">Laravel docs: Routing</a></li>	
+							<li><a href="https://laravel.com/docs/5.2/responses">Laravel docs: Responses</a></li>	
+							<li><a href="https://laravel.com/docs/master/views">Laravel docs: Views</a></li>
+							<li><a href="https://laravel.com/docs/master/blade">Laravel docs: Blade Templates</a></li>
+							<li><a href="https://laravel.com/docs/master/database">Laravel docs: Databases: Getting Started</a></li>
+							<li><a href="https://laravel.com/docs/master/queries">Laravel docs: Database: Query Builder</a></li>
+							<li><a href="https://laravel.com/docs/master/eloquent">Laravel docs: Eloquent: Getting Started</a></li>		
+							<li><a href="https://laravel.com/docs/master/migrations">Laravel docs: Migrations</a></li>					
+							<li><a href="https://laravel.com/docs/5.2/quickstart">Laravel tutorial on a task list project - basic</a></li>	
+							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>	
 						</ul>
 					</section>
 				</section>
