@@ -127,7 +127,7 @@
 					</section>
 					
 					<section>
-						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/master/structure">project structure</a> (1)</h2>
+						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.2/structure">project structure</a> (1)</h2>
 						<ul>
 							<li class="fragment">
 								<code>public/</code> &mdash; Public files
@@ -159,7 +159,7 @@
 					</section>
 					
 					<section>
-						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/master/structure">project structure</a> (2)</h2>
+						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.2/structure">project structure</a> (2)</h2>
 						<ul>
 							<li class="fragment">
 								<code>resources/</code> &mdash; Raw assets (to be compiled) such as templates and localization files
@@ -210,7 +210,7 @@
 								</li>
 							</li>
 							<li class="fragment">
-								You can <a href="https://laravel.com/docs/master/artisan">extend Artisan with your own commands</a>
+								You can <a href="https://laravel.com/docs/5.2/artisan">extend Artisan with your own commands</a>
 							</li>
 							
 							
@@ -293,13 +293,13 @@
 					</section>
 					
 					<section>
-						<h2>CAUTION: the <a href="https://laravel.com/docs/master/helpers#method-env">env()</a> function</h2>
+						<h2>CAUTION: the <a href="https://laravel.com/docs/5.2/helpers#method-env">env()</a> function</h2>
 						<ul>
 							<li class="fragment">
 								Including environment variables in the <code>config/*.php</code> files
 								<ul>
 									<li class="fragment">
-										the <a href="https://laravel.com/docs/master/helpers#method-env">env()</a> function gets the value of an environment variable or returns a default value
+										the <a href="https://laravel.com/docs/5.2/helpers#method-env">env()</a> function gets the value of an environment variable or returns a default value
 										<ul>
 											<li class="fragment">
 												Example without default value from <code>config/app.php</code>: <pre class="bigger"><code class="language-php">'key' => env('APP_KEY'),</code></pre>
@@ -472,7 +472,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/master/requests">HTTP Request</a>
+								The <a href="https://laravel.com/docs/5.2/requests">HTTP Request</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Request</code></li>
 									<li class="fragment">is typically obtained in your code by type hinting:
@@ -485,7 +485,7 @@ Route::post('register', function(Request $request) {
     &hellip;
 });</code></pre>
 									</li>
-									<li class="fragment">Want more? <a href="https://laravel.com/api/master/Illuminate/Http/Request.html">Request API</a></li>
+									<li class="fragment">Want more? <a href="https://laravel.com/api/5.2/Illuminate/Http/Request.html">Request API</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -496,7 +496,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -522,7 +522,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -542,7 +542,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/master/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -644,7 +644,7 @@ Route::post('register', function(Request $request) {
 @endforeach</code></pre>
 								<ul>
 									<li class="fragment">Structures don't work without <code>()</code></li> 
-									<li class="fragment">Check the <a href="https://laravel.com/docs/master/blade#control-structures">docs</a> for more syntax information</li>
+									<li class="fragment">Check the <a href="https://laravel.com/docs/5.2/blade#control-structures">docs</a> for more syntax information</li>
 									<li class="fragment">Associative array by index: just <code>$event['id']</code></li> 
 									<li class="fragment">Object fields: just <code>$event->id</code></li> 
 									
@@ -658,7 +658,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/master/blade#template-inheritance">Template inheritance</a>: sections
+								<a href="https://laravel.com/docs/5.2/blade#template-inheritance">Template inheritance</a>: sections
 								<pre class="bigger"><code class="language-html" style="max-height: 170px; overflow: scroll;">&lt;html&gt;
     &lt;head&gt;
         &lt;title&gt;App Name - @yield('title')&lt;/title&gt;
@@ -712,7 +712,7 @@ Route::post('register', function(Request $request) {
 							<li class="fragment">
 								DB configuration: see <a href="#/2">previous slides on configuration</a>
 								<ul>
-									<li class="fragment">Note: you can have <a href="https://laravel.com/docs/master/database#introduction">separate configs</a> for reading/writing</li>								
+									<li class="fragment">Note: you can have <a href="https://laravel.com/docs/5.2/database#introduction">separate configs</a> for reading/writing</li>								
 								</ul>
 							</li>
 						</ul>
@@ -723,7 +723,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								In Laravel you can run <a href="https://laravel.com/docs/master/database#running-queries">raw SQL queries</a>
+								In Laravel you can run <a href="https://laravel.com/docs/5.2/database#running-queries">raw SQL queries</a>
 								<pre class="bigger"><code class="language-php">use DB;
 
 $users = DB::select('select * from users where active = ?', [1]);
@@ -747,7 +747,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								In Laravel you can run <a href="https://laravel.com/docs/master/database#running-queries">raw SQL queries</a>
+								In Laravel you can run <a href="https://laravel.com/docs/5.2/database#running-queries">raw SQL queries</a>
 								
 								<ul>
 								
@@ -767,7 +767,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
 								<ul>
 									<li class="fragment">Always start with <code>DB::table()</code></li>
 									<li class="fragment">and use chained methods to filter/select/aggregate data</li>
@@ -793,7 +793,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
 								<ul>
 									<li class="fragment"><code>first()</code> returns a single row
 										<pre class="bigger"><code class="language-php">$user = DB::table('users')->where('name', 'John')->first();
@@ -817,7 +817,7 @@ echo $user->name;</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/master/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
 								<ul>
 									<li class="fragment">Examples with <code>insert()</code>, <code>update()</code> and <code>delete()</code>
 										<pre class="bigger"><code class="language-php">$id = DB::table('users')->insertGetId(
@@ -994,7 +994,7 @@ $event->delete();
 							</li>
 
 							<li class="fragment">
-								Read more about it in the <a href="https://laravel.com/docs/master/migrations">Laravel docs on Migrations</a>
+								Read more about it in the <a href="https://laravel.com/docs/5.2/migrations">Laravel docs on Migrations</a>
 							</li>
 						</ul>
 					</section>							
@@ -1026,12 +1026,12 @@ $event->delete();
 							<li><a href="https://laravel.com/docs/5.2/structure">Laravel docs: Application structure</a></li>
 							<li><a href="https://laravel.com/docs/5.2/routing">Laravel docs: Routing</a></li>	
 							<li><a href="https://laravel.com/docs/5.2/responses">Laravel docs: Responses</a></li>	
-							<li><a href="https://laravel.com/docs/master/views">Laravel docs: Views</a></li>
-							<li><a href="https://laravel.com/docs/master/blade">Laravel docs: Blade Templates</a></li>
-							<li><a href="https://laravel.com/docs/master/database">Laravel docs: Databases: Getting Started</a></li>
-							<li><a href="https://laravel.com/docs/master/queries">Laravel docs: Database: Query Builder</a></li>
-							<li><a href="https://laravel.com/docs/master/eloquent">Laravel docs: Eloquent: Getting Started</a></li>		
-							<li><a href="https://laravel.com/docs/master/migrations">Laravel docs: Migrations</a></li>					
+							<li><a href="https://laravel.com/docs/5.2/views">Laravel docs: Views</a></li>
+							<li><a href="https://laravel.com/docs/5.2/blade">Laravel docs: Blade Templates</a></li>
+							<li><a href="https://laravel.com/docs/5.2/database">Laravel docs: Databases: Getting Started</a></li>
+							<li><a href="https://laravel.com/docs/5.2/queries">Laravel docs: Database: Query Builder</a></li>
+							<li><a href="https://laravel.com/docs/5.2/eloquent">Laravel docs: Eloquent: Getting Started</a></li>		
+							<li><a href="https://laravel.com/docs/5.2/migrations">Laravel docs: Migrations</a></li>					
 							<li><a href="https://laravel.com/docs/5.2/quickstart">Laravel tutorial on a task list project - basic</a></li>	
 							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>	
 						</ul>
