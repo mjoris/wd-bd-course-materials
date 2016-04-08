@@ -948,7 +948,61 @@ $event->delete();
 								</ul>
 							</li>
 						</ul>
-					</section>		
+					</section>
+					
+					<section>
+						<h2>#3 Eloquent ORM (6)</h2>
+
+						<ul>
+							<li class="fragment">
+								Eloquent relationships
+								<ul>
+									<li class="fragment">Suppose a 1:n relation between <em>users</em> and <em>tasks</em> &rarr; table <em>tasks</em> has a foreign key
+									</li>
+									<li class="fragment">Instead of working with FKs, you want to interact with the related objects directly
+										<pre class="bigger"><code class="language-php">$user = App\User::find(1);
+
+foreach ($user->tasks as $task) {
+    echo $task->name;
+}
+</code></pre>
+									</li>						
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>#3 Eloquent ORM (7)</h2>
+
+						<ul>
+							<li class="fragment">
+								Eloquent relationships
+								<ul>
+									</li>
+									<li class="fragment">Solution, part 1: add* to the <code>User</code> class:
+										<pre class="bigger"><code class="language-php">public function tasks()
+{
+        return $this->hasMany(Task::class);
+}
+</code></pre>
+									</li>
+									
+<li class="fragment">Solution, part 2: add* to the <code>Task</code> class:
+										<pre class="bigger"><code class="language-php">public function user()
+{
+        return $this->belongsTo(User::class);
+}
+</code></pre>
+									</li>
+
+									<li class="fragment">Read the <a href="https://laravel.com/docs/5.2/eloquent-relationships">docs on Eloquent relationships</a> to learn about other types of relationships
+									</li>							
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>* this code assumes a correct foreign key relation</em></footer>
+					</section>						
 
 					<section>
 						<h2>#4 Migrations (1)</h2>
@@ -997,7 +1051,34 @@ $event->delete();
 								Read more about it in the <a href="https://laravel.com/docs/5.2/migrations">Laravel docs on Migrations</a>
 							</li>
 						</ul>
-					</section>							
+					</section>
+					
+					<section>
+						<h2>Combining #3 and #4</h2>
+
+						<ul>
+							<li class="fragment">
+								Migrations and Eloquent: typical flow
+								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;"># start from an empty DB
+								
+$ php artisan make:migration create_table_products --create=products
+
+# add to your migration: $table->increments('id');
+# add to your migration: $table->timestamps();
+# add to your migration: other columns
+
+$ php artisan migrate
+
+$ php artisan make:model Product
+
+# add to your model: mass-assignable blacklist/whitelist
+
+# use App\Product wherever you want for your DB operations</code></pre>
+							</li>
+
+						</ul>
+						<footer class="fragment"><em>Note: Laravel comes with a pre-installed (extensible) migration and model for a <code>users</code> table </em></footer>
+					</section>		
 
 				</section>				
 				
