@@ -724,9 +724,8 @@ Route::post('register', function(Request $request) {
 						<ul>
 							<li class="fragment">
 								In Laravel you can run <a href="https://laravel.com/docs/5.2/database#running-queries">raw SQL queries</a>
-								<pre class="bigger"><code class="language-php">use DB;
-
-$users = DB::select('select * from users where active = ?', [1]);
+								<pre class="bigger"><code class="language-php">$users = DB::select('select * from users where active = ?', [1]);
+								
 foreach ($users as $user) {
     echo $user->name;
 }</code></pre>
