@@ -577,7 +577,7 @@ Route::post('register', function(Request $request) {
 									<li class="fragment">A simple view contains inline PHP code e.g. <code>resources/views/subdir/greeting.php</code>
 										<pre class="bigger"><code class="language-php">&lt;html&gt;
     &lt;body&gt;
-        &lt;h1&gt;Hello, &lt;?php echo HTML::entities($name); /* XSS prevention */ ?&gt;&lt;/h1&gt;
+        &lt;h1&gt;Hello, &lt;?php echo htmlentities($name); /* XSS prevention */ ?&gt;&lt;/h1&gt;
     &lt;/body&gt;
 &lt;/html&gt;</code></pre></li>
 									<li class="fragment">The <code>view</code> helper returns an instance of <code>Illuminate\View\View</code>, to which you can pass variables.
