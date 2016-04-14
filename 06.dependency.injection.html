@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
+
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
+						<h1>06.Dependency Injection</h1>
+
+						<footer>
+							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+
+
+				<!-- DI -->
+				<section>
+
+					<section>
+						<h2>Dependency Injection</h2>
+
+						<p><img src="assets/04/futurama_blernsball.jpg" alt="" title="" width="447" /></p>
+						<q style="font-size: 90%">He's good, alright. But he's no Clem Johnson. And Johnson played back in the days before steroid injections were mandatory.</q>
+					</section>
+
+					<section>
+						<h2>Dependency Injection</h2>
+						<ul>
+							<li class="fragment">
+								Design pattern in which you inject dependencies, instead of creating them in the class requiring them.
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Injection possible via
+								<ul>
+									<li>The constructor <em>(most used)</em></li>
+									<li>A (public) property or mutator function <em>(protected or private property)</em></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								DI results in better code
+								<ul>
+									<li class="fragment">Easier to test</li>
+									<li class="fragment">Inversion of Control <em>(see further)</em></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Dependency Injection Example (1/2)</h2>
+						<ul>
+							<li class="fragment">
+								Without DI:
+								<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_01.php">&lt;?php
+
+class Router {
+
+	protected $request;
+	protected $response;
+
+	public function __construct($path) {
+		$this-&gt;request = new Request();
+		$this-&gt;response = new Response();
+		$this-&gt;path = $path;
+		// &hellip;
+	}
+
+}
+
+$router = new Router('/hello');
+var_dump($router);</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Dependency Injection Example (2/2)</h2>
+						<ul>
+							<li class="fragment">
+								With DI:
+								<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_02.php">&lt;?php
+
+class Router {
+
+	protected $request;
+	protected $response;
+
+	public function __construct(Request $request, Response $response, $path) {
+		$this-&gt;request = $request;
+		$this-&gt;response = $response;
+		$this-&gt;path = $path;
+	}
+
+}
+
+$request = new Request();
+$reponse = new Response();
+$router = new Router($request, $response, '/hello');
+var_dump($router);</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment">&rarr; We have injected the dependencies via the constructor</footer>
+					</section>
+
+					<section>
+						<h2>Inversion of Control</h2>
+						<ul>
+							<li class="fragment">
+								With DI we have inverted the control of dependencies from the one being called (<code>Router</code>) to the one calling <em>(you)</em>.
+								<ul>
+									<li class="fragment">This is called <strong>Inversion of Control</strong></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">&rarr; Dependency Injection affords Inversion of Control</li>
+							<li class="fragment" style="margin-top: 1em">
+								But &hellip; why?
+								<ul>
+									<li class="fragment">
+										You have control over the dependecies: if you rather use SwiftMailer instead of PHPMailer, just inject that one onto the class requiring it
+										<ul>
+											<li class="fragment">Note: the APIs of those libraries <strong>must</strong> be the same!</li>
+											<li class="fragment">To afford this, a few PSRs exist; e.g. <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md">PSR-3</a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Dependency Injection Container</h2>
+						<ul>
+							<li class="fragment">
+								DiC = a container object &hellip;
+								<ul>
+									<li class="fragment">&hellip; on which you store all dependencies <em>(object registry)</em></li>
+									<li class="fragment">&hellip; which can create dependencies <em>(object factory)</em></li>
+								</ul>
+							</li>
+							<li style="margin-top: 1em" class="fragment">
+								Very (very) simple DiC example:
+								<div class="fragment"><pre class="bigger"><code class="language-php" style="max-height: 380px; overflow: scroll;">class Container {
+
+	protected $dependencies = [];
+
+	public function set($name, $val) {
+		$this-&gt;dependencies[$name] = $val;
+	}
+
+	public function get($name) {
+		return isset($this-&gt;dependencies[$name]) ? (is_callable($this-&gt;dependencies[$name]) ? $this-&gt;dependencies[$name]() : $this-&gt;dependencies[$name]) : null;
+	}
+
+}</code></pre></div>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>DiC Usage</h2>
+						<ul>
+							<li>
+								Using the DiC from the previous slide:
+								<div class="fragment"><pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_03.php" style="max-height: 380px; overflow: scroll;">// Router Class
+class Router {
+
+	protected $request;
+	protected $response;
+
+	public function __construct(Request $request, Response $response, $path) {
+		$this-&gt;request = $request;
+		$this-&gt;response = $response;
+		$this-&gt;path = $path;
+	}
+
+}
+
+// Create DiC
+$container = new Container();
+
+// Tell DiC how to create dependencies
+$container-&gt;set('request', function() {
+	return new Request();
+});
+$container-&gt;set('response', function() {
+	return new Response();
+});
+
+// Create a router, injecting the dependencies
+$router = new Router($container-&gt;get('request'), $container-&gt;get('response'), '/hello');</code></pre></div>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>DiC Features</h2>
+						<ul>
+							<li class="fragment">
+								<em>Object Instantiation</em>
+								<ul>
+									<li class="fragment">Act as a factory to create new objects</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								<em>Auto-Wiring</em>
+								<ul>
+									<li class="fragment">Say <code>A</code> requires <code>A</code> and <code>B</code> requires <code>C</code></li>
+									<li class="fragment">If you request an <code>A</code> from the DiC, it should create all required dependencies (<code>B</code> and <code>C</code>)</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								&rarr; Our DiC here only does <em>Object Instantiation</em>.
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Service Locator</h2>
+						<ul>
+							<li class="fragment">
+								Codewise exactly the same as DiC
+								<div class="fragment"><pre class="bigger"><code class="language-php"style="max-height: 380px; overflow: scroll;">class ServiceLocator {
+
+	protected $dependencies = [];
+
+	public function set($name, $val) {
+		$this-&gt;dependencies[$name] = $val;
+	}
+
+	public function get($name) {
+		return isset($this-&gt;dependencies[$name]) ? (is_callable($this-&gt;dependencies[$name]) ? $this-&gt;dependencies[$name]() : $this-&gt;dependencies[$name]) : null;
+	}
+
+}</code></pre></div>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Consumption/usage is different:
+								<ul>
+									<li class="fragment">
+										Don't inject dependencies one by one but injec the entire container
+									</li>
+									<li class="fragment">
+										Implementation will ask container for the dependencies it needs
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>SL Usage</h2>
+						<ul>
+							<li>
+								Using the SL from the previous slide:
+										<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_04.php" style="max-height: 360px; overflow: scroll;">// Router Class
+class Router {
+
+	protected $request;
+	protected $response;
+
+	public function __construct(ServiceLocator $sl, $path) {
+		$this-&gt;request = $sl-&gt;get('request');
+		$this-&gt;response = $sl-&gt;get('response');
+		$this-&gt;path = $path;
+	}
+
+}
+
+// Create SL
+$sl = new ServiceLocator();
+
+// Tell DiC how to create dependencies
+$sl-&gt;set('request', function() {
+	return new Request();
+});
+$sl-&gt;set('response', function() {
+	return new Response();
+});
+
+// Create a router, injecting the dependencies
+$router = new Router($sl, '/hello');</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment">&rarr; The <code>Router</code> has become <em>container aware</em></footer>
+					</section>
+
+					<section>
+						<h2>DiC vs. SL</h2>
+						<ul>
+							<li class="fragment">
+								Push vs. Pull
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Which is best?
+								<ul>
+									<li class="fragment">It Depends&trade;</li>
+									<li class="fragment">SL is a violation of the <a href="http://pragprog.com/articles/tell-dont-ask">Tell, Don't Ask</a> principle</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+				</section>
+
+
+				<!-- Pimple -->
+				<section>
+					<section>
+						<h2>Pimple Deepdive</h2>
+
+						<p><img src="assets/04/futurama_pimple.png" alt="" title="" width="447" /></p>
+						<q>I'll make you cry, buddy. You're a pimple on society's ass and you'll never amount to anything.</q>
+					</section>
+
+					<section>
+						<h2>Pimple</h2>
+						<ul>
+							<li class="fragment">
+								As said before: Silex is built on top of <a href="http://pimple.sensiolabs.org/">Pimple</a> ~1.0
+								<div class="fragment"><pre class="bigger"><code class="language-php">&lt;?php
+
+namespace Silex;
+&hellip;
+class Application extends \Pimple implements &hellip; {
+	&hellip;
+}</code></pre></div>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Pimple is a Dependency Injection Container
+								<ul>
+									<li class="fragment">
+										Supports defining:
+										<ul>
+											<li class="fragment">Parameters</li>
+											<li class="fragment">Objects</li>
+											<li class="fragment">Shared objects (cfr. Singleton)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment">Note: Silex uses Pimple ~1.0. It differs a lot from the latest Pimple version (3.x)</footer>
+					</section>
+
+					<section>
+						<h2>Creating a Pimple</h2>
+						<ul>
+							<li class="fragment">
+								Just create a new instance
+								<pre class="bigger"><code class="language-php">&lt;?php
+
+require_once '/path/to/pimple.php';
+
+$container = new Pimple();</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								As <code>Silex\Application</code> extends <code>\Pimple</code>, our <code>$app</code> also is an instance of <em>(a special type of)</em> <code>\Pimple</code>
+								<pre class="bigger"><code class="language-php">&lt;?php
+
+&hellip;
+
+$app = new Silex\Application();</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Parameters</h2>
+						<ul>
+							<li class="fragment">
+								Defining a parameter:
+								<pre class="bigger"><code class="language-php">$app['some_parameter'] = 'value';</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Retrieving a parameter:
+								<pre class="bigger"><code class="language-php">echo $app['some_parameter']; // value</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Service Definitions</h2>
+						<blockquote class="fragment" style="width: 100%">A service is an object that does something as part of a larger system. [&hellip;] Almost any global object can be a service.</blockquote>
+						<ul style="margin-top: 1em;">
+							<li class="fragment">
+								Defining a service:
+								<pre class="bigger"><code class="language-php">$app['some_service'] = function () {
+	return new Whatever();
+};</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Retrieving a service:
+								<pre class="bigger"><code class="language-php">$service = $app['some_service'];</code></pre>
+								<ul>
+									<li class="fragment">Every time you call <code>$app['some_service']</code>, a new instance of the service is created.</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Shared Services</h2>
+						<blockquote class="fragment" style="width: 100%">By default, each time you get a service, Pimple returns a new instance of it. If you want the same instance to be returned for all calls, use a shared service.</blockquote>
+						<ul>
+							<li class="fragment">
+								Defining a shared service:
+								<pre class="bigger"><code class="language-php">$app['some_service'] = $app-&gt;share(function () {
+	return new Whatever();
+});</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Retrieving a shared service:
+								<pre class="bigger"><code class="language-php">$service = $app['some_service'];</code></pre>
+								<ul>
+									<li class="fragment">On first invocation the service is created.</li>
+									<li class="fragment">Subsequent requests will get the existing instance (cfr. Singleton)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Practical Example (1)</h2>
+						<ul>
+							<li class="fragment">
+								<a href="https://github.com/facebook/facebook-php-sdk">Facebook PHP SDK</a> standalone example:
+								<pre class="bigger"><code class="language-php">require 'facebook-php-sdk/src/facebook.php';
+
+$facebook = new \Facebook(array(
+  'appId'  =&gt; 'YOUR_APP_ID',
+  'secret' =&gt; 'YOUR_APP_SECRET',
+));
+
+// Get User ID
+$user = $facebook-&gt;getUser();</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								&rarr; Let's inject the <code>Facebook</code> object as a dependency of our Silex <code>$app</code>.
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Practical Example (2)</h2>
+						<ul>
+							<li class="fragment">
+								Dependency Injection is done in <code>bootstrap.php</code></em>
+								<pre class="bigger"><code class="language-php">$app['facebook.app_id'] = 'YOUR_APP_ID';
+$app['facebook.secret'] = 'YOUR_APP_SECRET';
+
+$app['facebook'] = $app-&gt;share(function($app) {
+	return new \Facebook(array(
+		'appId' =&gt; $app['facebook.app_id'],
+		'secret' =&gt; $app['facebook.secret']
+	));
+});</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Usage:
+								<pre class="bigger"><code class="language-php">$app-&gt;get('/', function(Silex\Application $app) {
+	$user = $app['facebook']-&gt;getUser();
+	return $app-&gt;json($user);
+});</code></pre>
+							</li>
+						</ul>
+					</section>
+
+				</section>
+
+
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						<ul>
+							<li><a href="http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html">http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html</a></li>
+							<li><a href="http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux">http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux</a></li>
+							<li><a href="http://php-di.org/doc/understanding-di.html">http://php-di.org/doc/understanding-di.html</a></li>
+							<li><a href="http://pimple.sensiolabs.org/">http://pimple.sensiolabs.org/</a></li>
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
