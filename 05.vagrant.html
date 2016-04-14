@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
+
+		<meta name="description" content="Webscripting2 &mdash; Serverside Webscripting &mdash; 05.vagrant">
+		<meta name="author" content="Joris Maervoet - ikdoeict.be">
+
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
+						<h1>05.Virtualization with Vagrant</h1>
+
+						<footer>
+							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+
+
+				<!-- Introduction: virtualization -->
+				<section>
+					<section>
+						<h2>Introduction: virtualization</h2>
+					</section>
+
+					<section>
+						<h2>The problem (1)</h2>
+						<q>But it worked on my machine</q>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">When &hellip;
+								<ul>
+									<li class="fragment">developing in a team</li>
+									<li class="fragment">publishing your project on a <em>production</em> server</li>
+									<li class="fragment">handing over your project to &hellip;
+										<ul>
+											<li class="fragment">a customer</li>
+											<li class="fragment">your lecturer ;-)</li>
+											<li class="fragment">&hellip;</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>The problem (2)</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">Example causes
+								<ul>
+									<li class="fragment">PHP version &amp; config
+										<ul>
+											<li class="fragment"><a href="http://php.net/manual/en/migration70.incompatible.php">(Backward incompatible) changes</a> including default behaviour of functions</li>
+											<li class="fragment"><code>php.ini</code></li>
+											<li class="fragment">Composer: need to reinstall or requirements infeasible</li>
+											<li class="fragment">Available PHP extensions, versions and config</li>
+										</ul>
+									</li>
+									<li class="fragment">Available PHP extensions, versions &amp; config</li>
+									<li class="fragment">DBMS <em>brand</em>, version &amp; config</li>
+									<li class="fragment">Your database (schema)
+										<ul>
+											<li class="fragment">Unless it is handled by a dev tool (e.g. Laravel Database Migrations)</li>
+										</ul>
+									</li>									
+									<li class="fragment">Webserver <em>brand</em>, version &amp; config (Apache: <code>httpd.conf</code>)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>What if &hellip;</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">We would deliver a virtual machine (VM) with each project?
+								<ul>
+									<li class="fragment">It will overcome these problems, but &hellip;
+										<ul>
+											<li class="fragment">it requires time and expertise</li>
+											<li class="fragment">it requires organization when managing multiple projects</li>
+											<li class="fragment">it can cause problems (size? updates?) when put to version control (Git)</li>
+											<li class="fragment">the relation between the VM and the project files might be unclear: where to copy, where to develop, how to run? </li>											
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>The solution</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">Virtual environments (software)
+								<ul>
+									<li class="fragment"><a href="https://www.vagrantup.com/">Vagrant</a> = higher-level wrapper around virtualization software such as VirtualBox and VMware
+										<ul>
+											<li class="fragment"><em>lightweight</em> <small>low impact on system and dev process</small></li>
+											<li class="fragment"><em>reproducable</em> <small>same system everywhere</small></li>
+											<li class="fragment"><em>portable</em> <small>easy to share</small></li>									
+										</ul>
+									</li> 
+									<li class="fragment"><a href="https://www.docker.com/">Docker</a> = operating-system-level virtualization on Linux
+										<ul>
+											<li class="fragment">works with <em>isolated features</em> of Linux kernel</li>									
+										</ul>
+									</li>
+									<li class="fragment">We will continue with Vagrant
+									</li> 
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+				</section>	
+
+
+				<!-- Vagrant basics -->
+				<section>
+					<section>
+						<h2>Vagrant basics</h2>
+					</section>
+					
+					<section>
+						<h2>Overview</h2>
+						<p><img src="assets/05b/jm-vagrant.png" alt="" title="" width="700" /></p>
+						<p style="font-size: 50%; line-height: 100%;">
+							An OS user holds a <em>repository</em> of (base) boxes.
+							<strong>(Base) boxes</strong> are <em>blueprints</em> of VMs i.e. they are copied when used.
+							<!--Boxes can be downloaded from a server e.g. <a href="https://atlas.hashicorp.com/boxes/search">atlas.hashicorp.com/boxes/search</a>.-->
+							A <strong>Vagrantfile</strong> file in your project describes the virtual environment: which box is used, which TCP/IP ports are forwarded, etc.
+							As you can see, multiple projects can use the same box.
+							For each project, a seperate <strong>environment</strong> is created. This involves that the box is copied and set up as a VM, accordingly to the Vagrantfile. 
+							A VM is hosted by a <strong>provider</strong> such as VirtualBox.
+							The <strong>.vagrant/</strong> folder contains the environment references for the local machine.
+
+						</p>
+					</section>
+					
+					<section>
+						<h2>Installing Vagrant</h2>
+						<ul>
+							<li class="fragment">
+								First install your providers, easiest: <a href="https://www.vagrantup.com/docs/virtualbox/">VirtualBox</a>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								<a href="https://www.vagrantup.com/downloads.html">Download &amp; Run the installer</a>
+								<ul>
+									<li>It will install add the <code>vagrant</code> command to your PATH</li>
+									<li>It is automatically linked with some providers such as <a href="https://www.vagrantup.com/docs/virtualbox/">VirtualBox</a></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Choosing a box</h2>
+						<ul>
+							<li class="fragment">
+								Your first stop: <a href="https://atlas.hashicorp.com/boxes/search">HashiCorp's Atlas box catalog</a>
+								
+							</li>
+						</ul>
+						<p style="margin-top: -1em"><img src="assets/05b/atlas.png" alt="" title="" width="600" /></p>
+						<footer class="fragment"><em>Also available: <code>scotch/box</code> Just a dead-simple local LAMP stack for developers that just works.</em></footer>
+					</section>
+
+					<section>
+						<h2>Environment setup (1)</h2>
+						<ul style="font-size: 75%">
+							<li class="fragment">
+								Adding a box
+								<pre class="bigger"><code class="language-bash dontrun">$ vagrant box add scotch/box</code></pre>
+								<ul>
+									<li class="fragment">
+										By default, it is downloaded from <a href="https://atlas.hashicorp.com/boxes/search">HashiCorp's Atlas box catalog</a>
+									</li>
+									<li class="fragment">
+										Your boxes are stored in <code>~homedir/.vagrant.d/boxes</code> or alike
+									</li>
+								</ul>
+							</li>
+							
+							<li class="fragment">
+								Project setup
+								<ul>
+									<li class="fragment">
+										Initialize your project
+										<pre class="bigger"><code class="language-bash dontrun">$ cd my-project
+$ vagrant init</code></pre>
+										It creates a <code>Vagrantfile</code> in your folder, full of commented examples
+									</li>
+									<li class="fragment">
+										Edit the <code>Vagrantfile</code> referencing the box<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+end</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><small><em>This is the minimal configuration of a <code>Vagrantfile</code></em></small></footer>
+					</section>
+					
+							
+					<section>
+						<h2>Environment setup (2)</h2>
+						<ul style="font-size: 75%">
+							<li class="fragment">
+								Install and run the environment
+								<pre class="bigger"><code class="language-bash dontrun">$ vagrant up</code></pre>
+								<ol>
+									<li class="fragment">
+										When the referenced box in the <code>Vagrantfile</code> does not exist, it is automatically added
+									</li>
+									<li class="fragment">
+										When no VM is associated with the project, it is created (copied) and configured as described by the <code>Vagrantfile</code> 
+									</li>
+									<li class="fragment">
+										The VM is started (in background by software of the provider)
+									</li>
+								</ol>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								The previous steps all in once:<pre class="bigger"><code class="language-bash dontrun">$ cd my-project
+$ vagrant init scotch/box
+$ vagrant up</code></pre>
+							</li>
+							
+						</ul>
+						<footer class="fragment" style="line-height: 100%;"><em>Note (04/2016): if you setup scotch/box this way, starting the VM will take minutes, waiting for some network interface (retry loop with time-out)</em></footer>
+					</section>
+					
+					<section>
+						<h2>And now ...?</h2>
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								From now on, you have a VM running your project files (located on your host)
+								<ul>
+									<li class="fragment">
+										Don't believe it? Start an SSH session with your VM:<pre class="bigger"><code class="language-bash dontrun">$ vagrant ssh</code></pre>
+										<ul>
+											<li class="fragment">
+												By convention, your project folder (including the <code>Vagrantfile</code>) is shared in the VM's directory <code>/vagrant</code> (this is not <code>/home/vagrant</code>)
+											</li>
+											<li class="fragment">
+												By default, you access the VM with accountname <code>vagrant</code> and password <code>vagrant</code> 
+											</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										Most of the boxes come without graphical shell
+									</li>
+									<li class="fragment">
+										Where are the VM files?
+										<ul>
+											<li class="fragment">
+												In the folders of the provider e.g. <code>~homedir/VirtualBox VMs</code>
+											</li>
+											<li class="fragment">
+												The folder <code>projectfolder/.vagrant</code> holds the references to the VM files
+											</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										Can I browse my project now? Not yet, we need to do some extra configuration
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Play and rewind</h2>
+						<ul>
+							<li class="fragment">
+								Manage the VM
+									<ul>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ vagrant up</code> (re)starts the machine
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ vagrant suspend</code> pauses the machine
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ vagrant resume</code> restarts a suspended machine
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ vagrant halt</code> shuts down the machine (at first <em>gracefully</em>)
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ vagrant destroy</code> stops the machine and removes the machine from your system = interesting feature
+											<ul>
+												<li class="fragment">
+													<code class="language-bash dontrun">$ vagrant box remove BOXNAME</code> removes the (base) box from your system
+												</li>
+											</ul>
+										</li>
+									</ul>								
+							</li>
+						</ul>
+						<footer class="fragment"><em><strong>vagrant up</strong> is the command a developer will use on a daily basis</em></footer>
+					</section>
+					
+				</section>
+				
+				<!-- Machine configuration -->
+				<section>
+					<section>
+						<h2>Machine configuration</h2>
+					</section>
+					
+					<section>
+						<h2>The Vagrantfile</h2>
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The <code>Vagrantfile</code> of your project describes
+									<ul>
+										<li class="fragment">
+											which provider and <strong>base box</strong> should be used
+										</li>
+										<li class="fragment">
+											how an <strong>instance of the box</strong> (=VM) should further be configured
+										</li>
+										<li class="fragment">
+											how this instance should interact with the host system e.g. shared folders, networking
+										</li>
+									</ul>								
+							</li>
+							<li class="fragment">
+								Commonly, the <code>Vagrantfile</code> is the sole description of your environment you share with others
+									<ul>
+										<li class="fragment">
+											You don't share the VM, neither <code>projectfolder/.vagrant</code>
+										</li>
+										<li class="fragment" style="background-color: #AA0000;">
+											Therefore with <code class="language-bash dontrun">$ vagrant ssh</code> NEVER install packages nor change config files UNLESS you are building a <strong>base box</strong> yourself. Not <em>reproducible</em>.
+										</li>
+									</ul>								
+							</li>
+							<li class="fragment">
+								When you change the <code>Vagrantfile</code>, restart (or even rebuild) the VM such that the changes take effect
+									<ul>
+										<li class="fragment">
+											It's just a VM, it's stupid ;-)
+										</li>
+									</ul>								
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Networking config (1)</h2>
+						<ul>
+							<li class="fragment">
+								Example of a <code>Vagrantfile</code> with port forwarding<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+end</code></pre>
+									<ul>
+										<li class="fragment">
+											Browse your project on <a href="http://localhost:8080/">http://localhost:8080/</a>
+										</li>
+										<li class="fragment">
+											Check the <a href="https://www.vagrantup.com/docs/networking/forwarded_ports.html">forwarded ports docs</a> on protocols &ne; TCP and  port collision
+										</li>
+									</ul>								
+							</li>
+						</ul>
+					</section>
+					<section>
+					<h2>Networking config (2)</h2>
+						<ul>
+							<li class="fragment">
+								Example of a <code>Vagrantfile</code> hinting for private networking<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.network "private_network", ip: "192.168.50.4"
+end</code></pre>
+									<ul>
+										<li class="fragment">
+											Browse your project on <a href="http://192.168.50.4/">http://192.168.50.4/</a>
+										</li>
+										<li class="fragment">
+											Use the private IP address range
+										</li>
+										<li class="fragment">
+											Avoid collision
+										</li>
+										<li class="fragment">
+											Check the <a href="https://www.vagrantup.com/docs/networking/private_network.html">private network docs</a> on DHCP and IPv6
+										</li>
+									</ul>								
+							</li>
+						</ul>
+						<footer class="fragment" style="line-height: 100%;"><em>Note (04/2016): you don't have enough user permissions for this in the lab !</em></footer>
+					</section>
+					
+					<section>
+					<h2>Networking config (3)</h2>
+						<ul>
+							<li class="fragment">
+								Example of a <code>Vagrantfile</code> hinting for a bridged network (DHCP)<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.network "public_network"
+end</code></pre>
+									<ul>
+										<li class="fragment">
+											How to browse? Start an SSH session and run <code>ifconfig</code> to obtain the IP address
+										</li>
+										<li class="fragment" style="background-color: #AA0000;">
+											Vagrant boxes are insecure by default and by design
+										</li>
+										<li class="fragment">
+											Check the <a href="https://www.vagrantup.com/docs/networking/public_network.html">public network docs</a> for more options
+										</li>
+									</ul>								
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>Synced folders</h2>
+						<ul>
+							<li class="fragment">
+								By default, your project folder is shared in the VM's directory <code>/vagrant</code> (no config required)
+							</li>
+							<li class="fragment">
+								Example of a <code>Vagrantfile</code> hinting for a synced folder<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.synced_folder ".", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+end</code></pre>
+									<ul>
+										<li class="fragment">
+											Parameter #1: host path (relative to project dir or absolute)
+										</li>
+										<li class="fragment">
+											Parameter #2: guest path (absolute)
+										</li>
+										<li class="fragment">
+											Check the <a href="https://www.vagrantup.com/docs/synced-folders/basic_usage.html">synced folder docs</a> for more options
+										</li>
+									</ul>								
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2 style="font-size: 197%">Which folder is the root of my website?</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								It depends on
+								<ul>
+									<li class="fragment">
+										the webserver config of the VM
+									</li>
+									<li class="fragment">
+										the synced folders config
+									</li>
+								</ul>	
+							</li>
+							<li class="fragment">
+								Example with <code>scotch/box</code>
+								<ul>
+										<li class="fragment">
+											A possible configuration of the <code>Vagrantfile</code><pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "scotch/box"
+  config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.synced_folder ".", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
+end</code></pre>
+									
+										</li>
+										<li class="fragment">
+											The file <code>/etc/apache2/sites-available/000-default.conf</code> in <code>scotch/box</code><pre class="bigger"><code class="language-bash dontrun">&lt;VirtualHost *:80&gt;
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/public
+		&hellip;
+&lt;/VirtualHost&gt;</code></pre>
+										</li>
+										<li class="fragment">
+											So the root is in <code>projectfolder/public</code>
+										</li>
+									</ul>								
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>Provisioning (1)</h2>
+						<ul>
+							<li class="fragment">
+								Most boxes are not <em>perfect</em> for your use case e.g.
+								<ul>
+									<li class="fragment">
+										slightly different configuration
+									</li>
+									<li class="fragment">
+										some other software version
+									</li>
+									<li class="fragment">
+										a missing tool
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment">
+								You could build your own box with <code>$ vagrant package</code> and share it
+								<ul>
+									<li class="fragment">
+										but is this <em>lightweight</em>?
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment">
+								Solution: provisioning
+								<ul>
+									<li class="fragment">
+										install software and alter configurations as part of the <code>vagrant up</code> process
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>Provisioning (2)</h2>
+						<ul>
+							<li class="fragment">
+								A very basic provision
+								<pre class="bigger"><code class="language-ruby dontrun">$script = &lt;&lt;SCRIPT
+echo I am provisioning...
+date &gt; /etc/vagrant_provisioned_at
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  config.vm.provision "shell", inline: $script
+end</code></pre>	
+							</li>
+							<li class="fragment">
+								When is provisioning executed?
+								<ul>
+									<li class="fragment">
+										on the first <code>$ vagrant up</code> that creates the environment
+									</li>
+									<li class="fragment">
+										when <code>$ vagrant provision</code> is used on a running environmen
+									</li>
+									<li class="fragment">
+										when <code>$ vagrant reload --provision</code> or <code>$ vagrant up --provision</code> is called
+									</li>
+								</ul>		
+							</li>
+						</ul>
+						<footer style="line-height: 100%">
+							<em>Important note about testing: rerunning a corrected provision can have side-effects.<br>So it is better to destroy and rebuild your VM while testing provisioning.</em>
+						</footer>
+					</section>
+					
+					<section>
+					<h2>Provisioning (3)</h2>
+						<ul>
+							<li class="fragment">
+								It is very common to use a clean OS as base box &hellip;
+								<pre class="bigger"><code class="language-ruby dontrun">Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/trusty32"
+  config.vm.provision :shell, path: "./provision/bootstrap.sh"
+  config.vm.synced_folder "./provision", "/home/vagrant/provision"
+end</code></pre>	
+							</li>
+							<li class="fragment">
+								and to provide a provisioning script (<a href="https://github.com/schmeiserd/vagrant-silex/blob/master/provision/bootstrap.sh">example</a>) installing and configuring &hellip;
+								<ul>
+									<li class="fragment">
+										webserver / PHP / DBMS
+									</li>
+									<li class="fragment">
+										Composer (or alike)
+									</li>
+									<li class="fragment">
+										project databases using <code>*.sql</code>
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+										
+					<section>
+					<h2>Provisioning (4)</h2>
+						<ul>
+							<li class="fragment">
+								Vagrant provisioning has much more options on provisioning (<a href="https://www.vagrantup.com/docs/provisioning/">docs</a>)
+								<ul>
+									<li class="fragment">
+										Define <a href="https://www.vagrantup.com/docs/provisioning/basic_usage.html">multiple provisioners</a> and run a selection of the using <code>--provision-with</code>
+									</li>
+									<li class="fragment">
+										Run provisioners upon every VM start (run always)
+									</li>
+									<li class="fragment">
+										Pass scripts by URL (external scripts)
+									</li>
+									<li class="fragment">
+										Write automation scripts in Chef, Ansible, Puppet, &hellip;
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+					
+				</section>	
+
+				<!-- Vagrant in practice -->
+				<section>
+					<section>
+						<h2>Vagrant in practice</h2>
+					</section>
+					<section>
+					
+					<h2>Scenarios</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Vagrant environment as a <em>mimick</em> of the production server
+								<ul>
+									<li class="fragment">
+										Example: <a href="https://github.com/openminds/sneakers">Sneakers</a> by Openminds (hosting provider)
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Share the same environment for developing and testing in a team
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Just use Vagrant as a (local) development environment
+								<ul>
+									<li class="fragment">
+										Reference environment, part of or targetting a library, framework or dev environment e.g.
+										<ul>
+											<li class="fragment">
+												<a href="https://github.com/driftyco/ionic-box">Ionic Box</a>: for building mobile apps with Ionic, Cordova, and Android
+											</li>
+											<li class="fragment">
+												<a href="https://laravel.com/docs/5.2/homestead">Laravel Homestead</a>: Laravel's official box
+											</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										Get rid of WAMP and manage multiple environments on your PC
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+
+					
+					<section>
+					<h2>Rule #1: keep your environment reproducible!</h2>
+						<ul>
+							<li class="fragment">
+								Never install packages nor change config files in a running VM just to make stuff work
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Good practices
+								<ul>
+									<li class="fragment">
+										Use provisioning to (ultimately) configure your environment
+									</li>
+									<li class="fragment">
+										A clean OS box offers more flexibility
+									</li>
+									<li class="fragment">
+										Test the reproducibility by destroy/rebuild
+									</li>
+									<li class="fragment">
+										Build a box yourself in contexts where this standardization is important or can save you time
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>Using Vagrant with Git</h2>
+						<ul>
+							<li class="fragment">
+								What you share in your project with others (= reproducible environment description)
+								<ul>
+									<li class="fragment">
+										the <code>Vagrantfile</code>
+									</li>
+									<li class="fragment">
+										provisioning scripts referenced by the <code>Vagrantfile</code>
+									</li>
+									<li class="fragment">
+										share your own base box? Not over Git!
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What you don't share with others 
+								<ul>
+									<li class="fragment">
+										the <code>.vagrant</code> folder &rarr; <code>.gitignore</code>
+									</li>
+									<li class="fragment">
+										the created VM &rarr; that's what others will reproduce
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+
+					<section>
+					<h2>Vagrant vs. Composer</h2>
+						<ul>
+							<li class="fragment">
+								Where should I run <code>composer install</code>?
+								<ul>
+									<li class="fragment">
+										On the system that will run your PHP code = in the VM using <code>$ vagrant ssh</code>
+									</li>
+									<li class="fragment">
+										Even when you have a good reason not to install Composer on the VM, you can run <code>php composer.phar</code> locally
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Reminder
+								<ul>
+									<li class="fragment">
+										Add the <code>vendor</code> folder to <code>.gitignore</code>
+									</li>
+
+								</ul>		
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>Box versioning</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em;">
+								A (base) box can have multiple versions
+								<ul>
+									<li class="fragment">
+										Do <code>$ vagrant box outdated</code> to find outdated boxes on your system
+									</li>
+									<li class="fragment">
+										Do <code>$ vagrant box update</code> to download and install the new box version(s)
+									</li>
+									<li class="fragment">
+										This will not update any created VM! You will need to destroy and rebuild. It's a VM, it's stupid.
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What about reproducibility then?
+								<ul>
+									<li class="fragment">
+										Add the box version to your <code>Vagrantfile</code> with <code>config.vm.box_version</code>
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>
+
+					
+					<section>
+					<h2>More than a box alone (1)</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Usually, reference environments are shared as a project containing
+								<ul>
+									<li class="fragment">
+										a <code>Vagrantfile</code> and provisioning scripts
+									</li>
+									<li class="fragment">
+										a project folder structure (the document root is amongst the folders)
+									</li>
+									<li class="fragment">
+										sample code
+									</li>
+									<li class="fragment">
+										<code>.gitignore</code>, <code>composer.json</code>, &hellip;
+									</li>
+								</ul>
+								such that it is ready-to-use
+							</li>
+						</ul>
+					</section>
+					<section>
+					<h2>More than a box alone (2)</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Examples
+								<ul>
+									<li class="fragment">
+										<a href="https://box.scotch.io/">Scotch Box</a> comes with a preconfigured environment on <a href="https://github.com/scotch-io/scotch-box">GitHub</a>
+									</li>
+									<li class="fragment">
+										<a href="https://github.com/schmeiserd/vagrant-silex">schmeiserd/vagrant-silex</a> is an environment with Silex preconfigured. It uses a provisioned <code>ubuntu/trusty32</code> box.
+									</li>
+									<li class="fragment">
+										About the same story: <a href="https://github.com/jgrossiord/vagrant-silex-hello-world">jgrossiord/vagrant-silex-hello-world</a> 
+									</li>								
+									<li class="fragment">
+										<a href="https://laravel.com/docs/5.2/homestead">Laravel Homestead</a> is rather difficult to configure. It organizes all your projects in one single environment. Trick: a fake project folder <code>Homestead</code> and <code>~/homestead.yaml</code> links to the real project folders. You download the base code from <a href="https://github.com/laravel/homestead">GitHub</a>
+									</li>
+								</ul>		
+							</li>
+						</ul>
+					</section>						
+					
+				</section>					
+				
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						
+						<ul> 
+							<li><a href="https://www.vagrantup.com/docs/">Vagrant Documentation</a></li>
+							<li><a href="https://laravel.com/docs/5.2/homestead">Laravel Homestead</a></li>				
+							<li><a href="https://www.openminds.be/nl/blog/detail/verslag-techtalk-vagrant">Openminds Techtalk - Vagrant</a></li>	
+							<li><a href="http://www.phptherightway.com/#virtualization">PHP: The Right Way on Virtualization</a></li>	
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
