@@ -44,7 +44,7 @@
 				<section>
 					<section>
 						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
-						<h1>07.Controllers &amp; Services in Silex</h1>
+						<h1>07.Structuring the code</h1>
 
 						<footer>
 							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -54,6 +54,36 @@
 							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
 							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
 						</script>
+					</section>
+				</section>
+				
+				<!-- Presentation overview -->
+				<section>
+					<section>
+						<h2>Presentation overview</h2>
+					</section>
+
+					<section>
+						<h2>The need for structure</h2>
+						<ul>
+							<li class="fragment">
+								As per usual, we like our code clean
+								<ol>
+									<li class="fragment">Don't overload <code>app.php</code> with routing logic</li>
+									<li class="fragment">Don't overload <code>bootstrap.php</code> with dependency injections</li>
+								</ol>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Solutions
+								<ol>
+									<li class="fragment">ControllerProviders<small><a href="http://silex.sensiolabs.org/doc/providers.html#controllers-providers">&#9873;</a></small></li>
+									<li class="fragment">ServiceProviders<small><a href="http://silex.sensiolabs.org/doc/providers.html#service-providers">&#9873;</a></small></li>
+								</ol>
+							</li>
+							<li class="fragment" style="margin-top: 1em;font-size: 80%;">
+								Can we realize an MVC architecture with ControllerProviders and ServiceProviders?
+							</li>
+						</ul>
 					</section>
 				</section>
 
@@ -115,14 +145,14 @@
 									<li class="fragment">Solution: Organize our routes in a <strong>ControllerCollection</strong></li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+							<!--li class="fragment" style="margin-top: 1em;">
 								Building strings of HTML in your PHP is plain stupid
 								<ul>
 									<li class="fragment">Solution: introduce Twig or the like</li>
 								</ul>
-							</li>
+							</li-->
 						</ul>
-						<footer class="fragment"><em>Note: We won't be introducting Twig for now, we'll tackle it later on</em></footer>
+						<footer class="fragment"><em>Note: Building strings of HTML in your PHP is plain stupid - use Twig instead</em></footer>
 					</section>
 
 					<section>
@@ -267,26 +297,6 @@ $app->mount('/blog', $blog);</code></pre>
 					</section>
 
 					<section>
-						<h2>The need for structure</h2>
-						<ul>
-							<li class="fragment">
-								As per usual, we like our code clean
-								<ol>
-									<li class="fragment">Don't overload <code>app.php</code> with routing logic</li>
-									<li class="fragment">Don't overload <code>bootstrap.php</code> with dependency injections</li>
-								</ol>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Solutions
-								<ol>
-									<li class="fragment">ControllerProviders<small><a href="http://silex.sensiolabs.org/doc/providers.html#controllers-providers">&#9873;</a></small> <em style="font-size: 75%;">(@see <a href="03.silex.part1.html#/4">03.silex.part1</a>)</em></li>
-									<li class="fragment">ServiceProviders<small><a href="http://silex.sensiolabs.org/doc/providers.html#service-providers">&#9873;</a></small></li>
-								</ol>
-							</li>
-						</ul>
-					</section>
-
-					<section>
 						<h2>ServiceProvider (1)</h2>
 						<p>From the Silex Docs:</p>
 						<blockquote class="fragment">This is very straight forward, just create a new class that implements two methods. In the <code>register()</code> method, you can define services on the application which then may make use of other services and parameters. In the <code>boot()</code> method, you can configure the application, just before it handles a request.</blockquote>
@@ -394,7 +404,7 @@ class FacebookServiceProvider implements ServiceProviderInterface {
 				<!-- Built-in Service Provider: Twig -->
 				<section>
 					<section>
-						<h2>Built-in Service Provider:<br />TwigServiceProvider</h2>
+						<h2>Built-in Service Provider:<br />TwigServiceProvider (recap)</h2>
 
 						<p><img src="assets/04/splash-twig.jpg" width="580" alt="" /></p>
 					</section>
@@ -534,7 +544,7 @@ class FacebookServiceProvider implements ServiceProviderInterface {
 				<!-- Built-in Service Provider: Doctrine -->
 				<section>
 					<section>
-						<h2>Built-in Service Provider:<br />DoctrineServiceProvider</h2>
+						<h2>Built-in Service Provider:<br />DoctrineServiceProvider (recap)</h2>
 
 						<p><img src="assets/01/splash-doctrine.jpg" width="421" alt="" style="margin-top: 3em;" /></p>
 					</section>

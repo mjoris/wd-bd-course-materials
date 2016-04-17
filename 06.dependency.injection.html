@@ -249,7 +249,7 @@ $router = new Router($container-&gt;get('request'), $container-&gt;get('response
 							<li class="fragment" style="margin-top: 1em;">
 								<em>Auto-Wiring</em>
 								<ul>
-									<li class="fragment">Say <code>A</code> requires <code>A</code> and <code>B</code> requires <code>C</code></li>
+									<li class="fragment">Say <code>A</code> requires <code>B</code> and <code>B</code> requires <code>C</code></li>
 									<li class="fragment">If you request an <code>A</code> from the DiC, it should create all required dependencies (<code>B</code> and <code>C</code>)</li>
 								</ul>
 							</li>
@@ -282,7 +282,7 @@ $router = new Router($container-&gt;get('request'), $container-&gt;get('response
 								Consumption/usage is different:
 								<ul>
 									<li class="fragment">
-										Don't inject dependencies one by one but injec the entire container
+										Don't inject dependencies one by one but inject the entire container
 									</li>
 									<li class="fragment">
 										Implementation will ask container for the dependencies it needs
