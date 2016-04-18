@@ -1043,13 +1043,48 @@ foreach ($user->tasks as $task) {
 									<li class="fragment">These modification are programmed with Laravel schema builder </li>
 									<li class="fragment" style="margin-top: 1em">Artisan helps you to create blueprints of migration classes </li>
 									<li class="fragment">Put successful migrations to version control </li>
-									<li class="fragment">In one Artisan command, you can execute all migrations that have not been executed before</li>
+									<li class="fragment">In one Artisan command, you can execute all migrations that have not been executed before (logged in the DB table <code>migrations</code>)</li>
 								</ul>
 							</li>
 
 							<li class="fragment">
 								Read more about it in the <a href="https://laravel.com/docs/5.2/migrations">Laravel docs on Migrations</a>
 							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Migrations bug with MySQL utf8mb4</h2>
+
+						<ul>
+							<li class="fragment" style="font-size: 80%">
+								The <a href="http://aoverton.com/web-development/using-mysql-utf8mb4-with-laravel-5/">problem</a>
+								<ul>
+									<li class="fragment">Definition of string columns with Migrations<pre class="bigger"><code class="language-php">$table->string('name');
+$table->string('email')->unique();
+</code></pre></li>
+									<li class="fragment">Default string length in Laravel's Schema Builder: 255 chars</li>
+									<li class="fragment">With utf8mb4: 255 * 4 = 1020 bytes</li>
+									<li class="fragment">Max length: 1000 bytes for MyISAM, 767 bytes for InnoDB<pre><code class="language-bash">[Illuminate\Database\QueryException] SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key 
+was too long; max key length is 767 bytes (SQL: alter table `users` add unique users_email_unique(`email`))
+</code></pre></li>
+									
+								</ul>
+							</li>
+							<li class="fragment" style="font-size: 80%">
+								Solutions
+								<ul>
+									<li class="fragment">Best: correct string lengths<pre class="bigger"><code class="language-php">$table->string('name', 191);
+$table->string('email', 191)->unique();
+</code></pre></li>
+									<li class="fragment">Good: just use <em>utf8</em> (= 3-byte-encoding) for your DB</li>
+									<li class="fragment">
+										Bad: replace <em>utf8mb4</em> by <em>utf8</em> in <code>config/database.php</code> 
+										&rarr; you're fooling the system
+									</li>
+								</ul>
+							</li>
+
 						</ul>
 					</section>
 					
@@ -1063,8 +1098,8 @@ foreach ($user->tasks as $task) {
 								
 $ php artisan make:migration create_table_products --create=products
 
-# add to your migration: $table->increments('id');
-# add to your migration: $table->timestamps();
+# migration contains: $table->increments('id');
+# migration contains: $table->timestamps();
 # add to your migration: other columns
 
 $ php artisan migrate
