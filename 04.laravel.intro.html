@@ -687,7 +687,21 @@ Route::post('register', function(Request $request) {
 @endsection</code></pre>
 							</li>
 						</ul>
-					</section>						
+					</section>
+
+					<section>
+						<h2>Blade vs. clean URLs</h2>
+						<ul>
+							<li class="fragment">
+								Linking from <code>/route1</code> to <code>/route2</code> would generate a browser link to <code>/route1/route2</code> 
+								<ul>
+									<li class="fragment">Use <code>{{ asset('css/common.css') }}</code> to generate a path in your template to an asset in your <code>public</code> folder</li>
+									<li class="fragment">Use <code>{{ url('artists/' . $id) }}</code> to generate a path to a route</li>
+									<li class="fragment">Use <code>{!! HTML::linkRoute('artists.show', 'Artiesteninformatie', array($id)) !!}</code> to generate an <strong>HTML link</strong> to a <a href="https://laravel.com/docs/5.2/routing#named-routes">named route</a></li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
 
 				</section>
 
