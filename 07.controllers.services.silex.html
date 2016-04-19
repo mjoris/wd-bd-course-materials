@@ -316,7 +316,7 @@ class WhateverServiceProvider implements ServiceProviderInterface {
 
 	public function register(Application $app) {
 		// Store the service on Pimple
-		$app['whatever'] = &gt;share(function() {
+		$app['whatever'] = $app-&gt;share(function() {
 			return new Whatever();
 		}
 	}
