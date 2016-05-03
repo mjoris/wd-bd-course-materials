@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
+
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+			
+			.constraints li {
+				width: 25%;
+				float: left;
+			}
+		</style>
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
+						<h1>08.authentication and forms</h1>
+						<h3>a few Laravel pointers</h3>
+
+						<footer>
+							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+
+				<!-- Looking for -->
+				<section>
+					<section>
+						<h2>Looking for the Silex version of these slides?</h2>
+						<p>Click <a href="http://bramus.github.io/ws2-sws-course-materials/05.silex.part3.html#/">here</a> (slides by Bram(us) Van Damme)</p>
+						<ul>
+							<li class="fragment">UrlGeneratorServiceProvider</li>
+							<li class="fragment">MonologServiceProvider</li>
+							<li class="fragment">Middlewares</li>
+							<li class="fragment">ValidationServiceProvider</li>	
+							<li class="fragment">FormServiceProvider</li>	
+							<li class="fragment">SessionServiceProvider</li>								
+							<li class="fragment">ConfigServiceProvider</li>								
+						</ul>
+					</section>
+				</section>
+				
+				<!-- Named and grouped routes -->
+				<section>
+					<section>
+						<h2>Named and grouped routes</h2>
+
+					</section>
+					
+					
+					<section>
+						<h2>Named routes</h2>
+
+						<ul>
+							<li class="fragment">
+								Specify a route name using the <code>as</code> array key
+								<pre class="bigger"><code class="language-php dontrun">Route::get('user/profile', [
+    'as' =&gt; 'profile', 'uses' =&gt; 'UserController@showProfile'
+]);</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								The same by a chained method
+								<pre class="bigger"><code class="language-php dontrun">Route::get('user/profile', 'UserController@showProfile')-&gt;name('profile');</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Generating URLs To Named Routes</h2>
+
+								<pre class="bigger"><code class="language-php dontrun">// Generating URLs&hellip;
+$url = route('profile');
+
+// &hellip; for routes with parameters
+$url = route('profile', ['id' =&gt; 1]);
+
+// Generating Redirects&hellip;
+return redirect()-&gt;route('profile');</code></pre>
+							
+					</section>
+					
+					
+					<section>
+						<h2>Route groups (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								Specify a common route name prefix with route groups
+								<pre class="bigger"><code class="language-php dontrun">Route::group(['as' =&gt; 'admin::'], function () {
+    Route::get('dashboard', ['as' =&gt; 'dashboard', function () {
+        // Route named "admin::dashboard"
+    }]);
+});</code></pre>
+							</li>
+							<li class="fragment">
+								The previous does not specify a route (URI) prefix (cf. Silex mount). The <code>prefix</code> array key does.
+								<pre class="bigger"><code class="language-php dontrun">Route::group(['prefix' =&gt; 'admin'], function () {
+    Route::get('users', function ()    {
+        // Matches The "/admin/users" URL
+    });
+});</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment"><em>You should combine this with controllers: <code>uses</code> array key or second argument</em></footer>
+					</section>
+					
+					
+					<section>
+						<h2>Route groups (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								Specify wildcard sub-domain for a route group
+								<pre class="bigger"><code class="language-php dontrun">Route::group(['domain' =&gt; '{account}.myapp.com'], function () {
+    Route::get('user/{id}', function ($account, $id) {
+        // 
+    });
+});</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment"><em>You should combine this with controllers: <code>uses</code> array key or second argument</em></footer>
+					</section>					
+				</section>					
+
+				<!-- Middleware -->
+				<section>
+					<section>
+						<h2>Middleware</h2>
+
+					</section>
+
+					<section>
+						<h2>Middleware introduction</h2>
+
+						<ul>
+							<li class="fragment">
+								Middleware<small><a href="https://laravel.com/docs/5.2/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Middlewares can be global, or only for a specific route or controller
+								<ul>
+									<li>Application middleware</li>
+									<li>Route/controller specific middleware</li>
+								</ul>
+							</li>
+							<li class="fragment">
+								Laravel offers pre-built middlewares located in the <code>app/Http/Middleware</code> directory e.g.
+								<ul>
+									<li>authentication</li>
+									<li>CSRF protection</li>
+									<li>&hellip;</li>									
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Defining your own middleware</h2>
+
+						<ul>
+							<li class="fragment">
+								First step: generate the middelware with Artisan (location: <code>app/Http/Middleware</code>)
+								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ php artisan make:middleware AgeMiddleware</code></pre>
+							</li>
+							<li class="fragment">
+								Example of <em>Before Middleware</em>
+								<pre class="bigger"><code class="language-php dontrun">namespace App\Http\Middleware;
+use Closure;
+
+class AgeMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        if ($request-&gt;input('age') &lt;= 200) {
+            return redirect('home');
+        }
+        return $next($request);
+    }
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Before vs. After Middleware</h2>
+								<pre class="bigger"><code class="language-php dontrun">class BeforeMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        // Perform action
+
+        return $next($request);
+    }
+}</code></pre>
+<pre class="bigger"><code class="language-php dontrun">class AfterMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        $response = $next($request);
+
+        // Perform action
+
+        return $response;
+    }
+}</code></pre>
+					</section>
+
+
+					<section>
+						<h2>Registering global middleware</h2>
+
+						<ul>
+							<li class="fragment">
+								Add it to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">    protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+    ];</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Registering specific middleware (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 1:</strong> assign a short-hand key to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+    ];</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Registering specific middleware (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 1:</strong> plug the middleware to a specific route
+								<pre class="bigger"><code class="language-php dontrun">Route::get('admin/profile', 
+			['middleware' =&gt; 'auth', 'uses' =&gt; 'UserController@showProfile']);</code></pre><pre class="bigger"><code class="language-php dontrun">Route::get('/', ['middleware' => ['first', 'second'], function () {
+    //
+}]);</code></pre><pre class="bigger"><code class="language-php dontrun">Route::get('/', function () {
+    //
+})-&gt;middleware(['first', 'second']);</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Registering specific middleware (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 2:</strong> plug the middleware to a specific controller
+								<ul>
+									<li>Call the middleware from the controller's constructor</li>
+									<li>It is assigned to all actions in the controller</li>
+								</ul>
+								<pre class="bigger"><code class="language-php dontrun">class TaskController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;middleware('auth');
+    }
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Registering specific middleware (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 3:</strong> plug the middleware to a route group
+								<pre class="bigger"><code class="language-php dontrun">Route::group(['middleware' =&gt; 'auth'], function () {
+    Route::get('/', function ()    {
+        // Uses Auth Middleware
+    });
+
+    Route::get('user/profile', function () {
+        // Uses Auth Middleware
+    });
+});</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Middleware Groups</h2>
+
+						<ul>
+							<li class="fragment">
+								Build groups of middleware in the <code>$middlewareGroups</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">protected $middlewareGroups = [
+    'web' =&gt; [
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+    ],</code></pre>
+							</li>
+							<li>The web middleware group is automatically applied by the <code>RouteServiceProvider</code> !</li>
+						</ul>
+					</section>					
+
+
+				</section>
+
+
+				<!-- Authentication -->
+				<section>
+					<section>
+						<h2>Authentication</h2>
+
+					</section>
+					
+					
+					<section>
+						<h2>Authentication introduction</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.2/authentication">Authentication</a> is configured 100% out of the box
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Facilities
+								<ul>
+									<li><strong>Guards:</strong> how are users authenticated technically? e.g. session, token
+									</li>
+									<li><strong>Providers:</strong> where is the user inforamtion stored and how can it be retrieved? e.g. in the <code>users</code> table with Eloquent</li>
+									<li>Resetting passwords</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								These components can be configured in <code>config/auth.php</code>
+							</li>
+						</ul>
+					</section>
+					
+					
+					<section>
+						<h2>A default scenario (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 1:</strong> make sure you have the <code>users</code> table in your database
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Use the preconfigured migration (or extend it)
+								<pre class="bigger"><code class="language-php dontrun">        Schema::create('users', function (Blueprint $table) {
+            $table-&gt;increments('id');
+            $table-&gt;string('name');
+            $table-&gt;string('email')->unique();
+            $table-&gt;string('password');
+            $table-&gt;rememberToken(); // can store the hash of a login cookie
+            $table-&gt;timestamps();
+        });</code></pre>
+							</li>
+							<li class="fragment">
+								Use this table in your DB design (foreign keys)
+							</li>
+							<li class="fragment">
+								There is a migration for the table <code>password_resets</code> too
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>A default scenario (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2:</strong> you will use Eloquent's preconfigured <code>User</code> model (<code>app/User.php</code>)
+								<pre class="bigger"><code class="language-php dontrun">class User extends Authenticatable
+{
+    // The attributes that are mass assignable.
+    protected $fillable = [
+        'name', 'email', 'password',
+    ];
+
+    // The attributes that should be hidden for arrays.
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+}</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Extend this class if necessary (for example: Eloquent relationships)
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>A default scenario (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 3:</strong> make Artisan set up a complete configuration for you
+								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
+Created View: resources/views/auth/login.blade.php
+Created View: resources/views/auth/register.blade.php
+Created View: resources/views/auth/passwords/email.blade.php
+Created View: resources/views/auth/passwords/reset.blade.php
+Created View: resources/views/auth/emails/password.blade.php
+Created View: resources/views/layouts/app.blade.php
+Created View: resources/views/home.blade.php
+Created View: resources/views/welcome.blade.php
+Installed HomeController.
+Updated Routes File.
+Authentication scaffolding generated successfully!</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Extend this class if necessary (for example: Eloquent relationships)
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>A default scenario (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								Some facts
+								<ul>
+									<li><code>app/Http/Controllers/Auth/AuthController</code> is the (configurable) registration and login controller</li>
+									<li><code>app/Http/Controllers/Auth/AuthController</code> contains the validation and storage of a registered user</li>
+									<li>You can change the generated blade templates in <code>resources/views/auth/*</code> but their file names/locations are fixed</li>
+									<li>The generated <code>HomeController</code> illustrates how a homepage is shown after a successful login</li>
+									<li>There is even a route generated to the <code>HomeController</code> but you don't need to use it of course</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>A default scenario (5)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 4:</strong> set your redirect path (= destination after succesful authentication)
+								<ul>
+									<li class="fragment" style="margin-top: 1em;">
+										In <code>app/Http/Controllers/Auth/AuthController.php</code>
+										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks';</code></pre>
+									</li>
+									<li class="fragment"  style="margin-top: 1em;">
+										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code>
+										<pre class="bigger"><code class="language-php dontrun">return redirect('/tasks');</code></pre>
+									</li>									
+								</ul>
+							</li>
+							
+						</ul>
+					</section>
+					
+					<section>
+						<h2>A default scenario (6)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 5:</strong> plug the <code>auth</code> middleware to each action requiring authentication
+								<ul>
+									<li class="fragment">
+										How? See the slides about middleware
+									</li>
+									<li class="fragment">
+										Preferred way: in the controller(s)
+									</li>									
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Use the <code>Auth</code> facade in your code 
+								<pre class="bigger"><code class="language-php dontrun">$user = Auth::user(); // retrieves the authenticated user
+
+if (Auth::check()) {
+    // The user is logged in...
+}
+
+Auth::logout();</code></pre>
+							</li>
+							
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Further reading</h2>
+
+						<ul>
+							<li class="fragment">
+								Read the <a href="https://laravel.com/docs/5.2/authentication">Laravel docs on Authentication</a> on
+								<ul>
+									<li class="fragment">
+										Authentication Throttling
+									</li>
+									<li class="fragment">
+										Manually Authenticating Users
+									</li>
+									<li class="fragment">
+										Resetting Passwords
+									</li>
+									<li class="fragment">
+										Customizing guards and providers
+									</li>											
+								</ul>
+							</li>
+							
+						</ul>
+					</section>
+					
+				</section>
+				
+				
+				
+				<!-- Handling forms -->
+				<section>
+					<section>
+						<h2>Handling forms</h2>
+
+					</section>
+					
+					
+					<section>
+						<h2>General approach</h2>
+
+						<ul>
+							<li class="fragment">
+								Blog post routes example
+								<pre class="bigger"><code class="language-php dontrun">// Display a form to create a blog post...
+Route::get('post/create', 'PostController@create');
+
+// Store a new blog post...
+Route::post('post', 'PostController@store');</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								The first route shows a Blade template containing a form	
+							</li>
+							<li class="fragment">
+								The second route validates the HTTP request and stores the blog post
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Cross-Site Request Forgery (CSRF)</h2>
+						<ul>
+							<li class="fragment">CSRF = A serious type of attack</li>
+						</ul>
+						<blockquote style="width: 100%; margin-top: 1em;" class="fragment">A CSRF attack forces a logged-on victim’s browser to send a forged HTTP request, including the victim’s session cookie and any other automatically included authentication information, to a vulnerable web application. This allows the attacker to force the victim’s browser to generate requests the vulnerable application thinks are legitimate requests from the victim.</blockquote>
+						<ul>
+							<li class="fragment" style="margin-top: 1em;">FIX: Generate a CSRF token on each form load <em>(and limit that token to that form only)</em> and validate it too.</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>CSRF Protection</h2>
+
+						<ul>
+							<li class="fragment">
+								Include the automatically generated CSRF field/token in your form
+								<pre class="bigger"><code class="language-php dontrun">// Vanilla PHP
+&lt;?php echo csrf_field(); ?&gt;
+
+// Blade Template Syntax &hellip;
+{{ csrf_field() }}
+
+// &hellip; is the equivalent of:
+&lt;input type="hidden" name="_token" value="{{ csrf_token() }}"&gt;
+</code></pre>
+							</li>
+							<li class="fragment">
+								The <code>VerifyCsrfToken</code> middleware (part of the <code>web</code> group) is already activated and does the checking
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Read the <a href="https://laravel.com/docs/5.2/routing#csrf-protection">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Generating forms</h2>
+
+						<ul>
+							<li class="fragment">
+								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
+								<ul>
+									<li class="fragment">
+										<a href="https://laravelcollective.com/docs/5.2/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
+									</li>
+									<li class="fragment">
+										You need to install it through Composer
+									</li>									
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>This is not mandatory at all (few added value)!</em></footer>
+					</section>
+					
+					<section>
+						<h2>Validation (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								In our controller, the <code>validate</code> method
+								<ul>
+									<li class="fragment">
+										takes the HTTP request and desired validation rules
+									</li>
+									<li class="fragment">
+										redirects the user back to his previous location upon failure (+ auto-flash of errors and input values)
+									</li>									
+								</ul>
+								<pre class="bigger"><code class="language-php dontrun">public function store(Request $request)
+{
+    $this-&gt;validate($request, [
+        'title' =&gt; 'required|unique:posts|max:255',
+        'body' =&gt; 'required',
+    ]);
+
+    // The blog post is valid, store in database...
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Validation (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								Anticipating validation in your Blade templates
+								<ul>
+									<li class="fragment">
+										The <code>ShareErrorsFromSession</code> middleware (part of the <code>web</code> group) assures an <code>$errors</code> variable is available in your views
+									</li>
+									<li class="fragment">
+										The helper method <a href="https://laravel.com/docs/5.2/helpers#method-old">old</a> retrieves an old input value flashed into the session
+									</li>									
+								</ul>
+								<pre class="bigger"><code class="language-php dontrun">&lt;div class="col-md-6"&gt;
+	&lt;input type="email" class="form-control" name="email" value="{{ old('email', '') }}"&gt;
+
+		@if ($errors->has('email'))
+			&lt;span class="help-block"&gt;
+                &lt;strong&gt;{{ $errors->first('email') }}&lt;/strong&gt;
+			&lt;/span&gt;
+		@endif
+&lt;/div&gt;</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Validation (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								Read the <a href="https://laravel.com/docs/5.2/validation">Laravel docs on Validation</a> on
+								<ul>
+									<li class="fragment">
+										Stopping On First Validation Failure (bail)
+									</li>
+									<li class="fragment">
+										Validating arrays
+									</li>
+									<li class="fragment">
+										Form Request = classes containing the validation logic
+									</li>
+									<li class="fragment">
+										Working With (field related) Error Messages
+									</li>
+									<li class="fragment">
+										Customizing Error Messages
+									</li>									
+									<li class="fragment">
+										Available Validation Rules		
+									</li>	
+								</ul>
+							</li>
+							
+						</ul>
+					</section>					
+				
+				</section>
+
+			
+
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						<ul>
+							<li><a href="https://laravel.com/docs/5.2/middleware">Laravel docs: Middleware</a></li>
+							<li><a href="https://laravel.com/docs/5.2/authentication">Laravel docs: Authentication</a></li>
+							<li><a href="https://laravel.com/docs/5.2/routing#route-groups">Laravel docs: Route Groups</a></li>
+							<li><a href="https://laravelcollective.com/docs/5.2/html">Laravel Collective docs: Forms &amp; HTML</a></li>
+							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>	
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>

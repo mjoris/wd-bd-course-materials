@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
+
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<div class="slides">
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
+						<h1>09.pagination and filtering</h1>
+						<h3>a few Laravel pointers</h3>
+
+						<footer>
+							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &amp; <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+				
+				
+				<!-- Looking for -->
+				<section>
+					<section>
+						<h2>Looking for the Silex version of these slides?</h2>
+						<p>Click <a href="http://bramus.github.io/ws2-sws-course-materials/06.silex.part4.html#/">here</a> (slides by Bram(us) Van Damme)</p>
+					</section>
+				</section>
+
+
+				<!-- Pagination -->
+				<section>
+					<section>
+						<h2>Pagination</h2>
+						<p style="margin-top: 2.5em;"><img src="assets/06/pagination.jpg" alt="" title="" width="600" /></p>
+					</section>
+
+					<section>
+						<h2>Pagination?</h2>
+						<ul>
+							<li class="fragment">
+								When having too many items to show, split them into several pages
+								<ul>
+									<li class="fragment">e.g. search results, filter results</li>
+									<li class="fragment">Typically placed beneath the results</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Examples</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">
+								Bad examples:
+								<p style="text-align: center"><img src="assets/06/pagination-bad-2.jpg" alt="" title="" width="447" /><br /><img src="assets/06/pagination-bad-1.png" alt="" title="" width="447" /></p>
+							</li>
+							<li class="fragment">
+								Good example:
+								<div class="hastooltip" style="width: 550px; margin: 0 auto;">
+									<p style="text-align: center"><img src="assets/06/pagination-good-flickr.png" alt="" title="" width="447" /></p>
+									<div class="tooltip">
+										<div>
+											<ul>
+												<li>Always indicate how many results there are</li>
+												<li>Always indicate how many pages there are</li>
+												<li>
+													Show a reasonable number of pages
+													<ul>
+														<li>The number row automgically adjusts itself based on the current page</li>
+														<li>First two and last two pages always shown</li>
+														<li>All, except the current page, clickable</li>
+													</ul>
+												</li>
+												<li>
+													Always indicate current active page
+													<ul>
+														<li>Don't link it though!</li>
+													</ul>
+												</li>
+												<li>
+													Always show next/previous buttons
+													<ul>
+														<li>Only clickable when necessary</li>
+													</ul>
+												</li>
+												<li>Don't show First/Last links (no direct value)</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Manual approach: what we would need</h2>
+						<ul>
+							<li class="fragment">
+								From <u>database</u>: Total number of items
+							</li>
+							<li class="fragment">
+								Number of items to show per page
+							</li>
+							<li class="fragment">
+								Parameter in <u>url</u>: current page <em>(default = 1)</em>
+							</li>
+							<li class="fragment">
+								To <u>calculate</u>: number of pages
+								<pre class="bigger"><code class="language-php">$numPages = ceil($numItems / $numItemsPerPage);</code></pre>
+							</li>
+							<li class="fragment">
+								From <u>database</u>: a subset of items (ORDER BY, LIMIT)
+							</li>
+							<li class="fragment">
+								A pagination rendering strategy
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Pagination in Laravel (1)</h2>
+						<ul>
+							<li class="fragment">
+								Use the <code>paginate</code> method with Query Builder or Eloquent
+								<ul>
+									<li class="fragment">
+										detects <code>?page</code> query string argument on the HTTP request
+									</li>
+									<li class="fragment">
+										gets the items from the DB through proper limit and offset
+									</li>
+									<li class="fragment">
+										return a paginator object which is loopable like a result set
+									</li>
+								</ul>
+								<pre class="bigger"><code class="language-php">    public function index() // controller method
+    {
+        $users = DB::table('users')-&gt;paginate(15);
+        return view('user.index', ['users' =&gt; $users]);
+    }</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em">Don't use <code>simplePaginate</code>: it will only generate prev/next buttons</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Pagination in Laravel (2)</h2>
+						<ul>
+							<li class="fragment">
+								Simple display in Blade
+								<pre class="bigger"><code class="language-php">&lt;div class="container"&gt;
+    @foreach ($users as $user)
+        {{ $user->name }}
+    @endforeach
+&lt;/div&gt;
+
+{!! $users->links() !!}</code></pre>
+							</li>
+							<li class="fragment">
+								It's up to you to find a better strategy than rendering all the page links
+								<ul>
+									<li class="fragment">
+										Use a the pagination methods in separate pagination templates: <a href="http://stackoverflow.com/questions/28240777/custom-pagination-view-in-laravel-5#answer-30298599">example</a>
+									</li>
+									<li class="fragment">
+										Watch this <a href="https://gist.github.com/bramus/5d8f2e0269e57dff5136">clever algorithm</a>
+									</li>
+								</ul>
+							</li>
+							
+						</ul>
+					</section>
+
+
+
+				</section>
+
+
+				<!-- Filtering -->
+				<section>
+					<section>
+						<h2>Filtering</h2>
+						<p><img src="assets/06/filter.png" alt="" title="" width="600" class="noborder" /></p>
+					</section>
+
+					<section>
+						<h2>Filtering?</h2>
+						<ul>
+							<li class="fragment">
+								Allow a visitor to refine a set of results
+								<ul>
+									<li class="fragment">A form with checkboxes, dropdowns, etc. per defining property of the resultset</li>
+									<li class="fragment">Typically placed on the left hand side, next to the results</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Filtering scenarios</h2>
+						<ul>
+							<li class="fragment">
+								Filter via <code>$_GET</code> params
+								<ul>
+									<li class="fragment">Pro: links can be shared/bookmarked</li>
+									<li class="fragment">Con: links become cluttered</li>
+									<li class="fragment">Con: filter not preserved after having navigated away</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Filter via <code>$_SESSION</code> params
+								<ul>
+									<li class="fragment">Pro: links don't become cluttered</li>
+									<li class="fragment">Pro: filter preserved after having navigated away</li>
+									<li class="fragment">Con: links can't be shared/bookmarked</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Laravel implementation opportunity</h2>
+						<ul>
+							<li class="fragment">
+								use <a href="https://laravel.com/docs/5.2/session">Sessions</a>
+								<ul>
+									<li class="fragment">Store the submitted filter object as your session filter object</li>
+									<li class="fragment">If there is no submitted neither a session filter, create a default session filter
+									</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Use query builder / Eloquent
+								<ul>
+									<li class="fragment">For activated each filter field, apply a (chainable) method</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								to be continued &hellip;
+							</li>
+						</ul>
+					</section>
+
+				</section>
+
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						<ul>
+							<li><a href="https://laravel.com/docs/5.2/pagination">Laravel docs: Pagination</a></li>
+							<li><a href="https://laravel.com/docs/5.2/session">Laravel docs: Session</a></li>
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
