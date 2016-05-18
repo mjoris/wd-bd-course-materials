@@ -44,7 +44,7 @@
 				<section>
 					<section>
 						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
-						<h1>07.Structuring the code</h1>
+						<h1>06.Structuring the code</h1>
 
 						<footer>
 							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -835,126 +835,7 @@ class TweetsRepository extends \Knp\Repository {
 						</ul>
 					</section>
 
-				</section>
-				
-				
-				<section>
-					<section>
-						<h2>Structuring the code in Laravel</h2>
-
-						<p style="margin-top: 3em;">Basically the same story &hellip;</p>
-						<p>&hellip; in brief</p>
-					</section>
-
-					<section>
-						<h2>Routing with controllers</h2>
-
-						<ul style="font-size: 80%">
-							<li class="fragment">Create a <code>*Controller</code> in the folder <code>app/Http/Controllers</code> 
-								<pre class="bigger fragment"><code class="language-bash dontrun">php artisan make:controller TaskController</code></pre>
-							</li>
-							<li class="fragment">
-								Point to its <strong>methods</strong> in <code>app/Http/routes.php</code>
-								<pre class="bigger fragment"><code class="language-php">Route::get('/tasks', 'TaskController@index');
-Route::post('/task', 'TaskController@store');
-Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
-							</li>
-							<li class="fragment">
-								Write the appropriate method(s) in <code>*Controller</code>
-								<pre class="bigger fragment"><code class="language-php">class TaskController extends Controller
-{
-	public function index(Request $request)
-    {
-		$tasks = Task::where('user_id', $request-&gt;input('user_id'))
-                    -&gt;orderBy('created_at', 'asc')
-                    -&gt;get();
-        return view('tasks.index', ['tasks' =&gt; $tasks]);
-    }
-	
-	public function destroy(Request $request, Task $task) // implicit model binding (on ID)</code></pre>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Repository for data access logic (1)</h2>
-
-						<ul>
-							<li class="fragment">Create the <code>app/Repositories</code> directory and add a <code>*Repository</code> class yourself
-								<pre class="bigger fragment"><code class="language-php dontrun">&lt;?php
-namespace App\Repositories; // there is PSR-4 autoloading ...
-
-use App\Task;
-
-class TaskRepository
-{
-    public function forUserId($id)
-    {
-        return Task::where('user_id', $id)
-                    -&gt;orderBy('created_at', 'asc')
-                    -&gt;get();
-    }
-	&hellip;
-}</code></pre>
-							</li>
-						</ul>
-						<footer class="fragment" style="line-height: 100%"><em>Note: your Eloquent ORM models already form a DAL layer. Use Laravel's repositories just for complex queries you'd call from multiple locations in your code (cf. code reuse).</em></footer>
-					</section>
-					
-					<section>
-						<h2>Repository for data access logic (2)</h2>
-
-						<ul>
-							<li class="fragment">
-								Inject the repository in the corresponding <code>*Controller</code>
-								<pre class="bigger fragment"><code class="language-php">namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Repositories\TaskRepository;
-
-class TaskController extends Controller
-{
-    protected $tasks;
-
-    public function __construct(TaskRepository $tasks)
-    {
-        $this-&gt;tasks = $tasks;
-    }
-
-    public function index(Request $request)
-    {
-        return view('tasks.index', [
-            'tasks' =&gt; $this-&gt;tasks-&gt;forUserId($request-&gt;input('user_id'))
-        ]);
-    }
-	&hellip;
-}</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>The Request Lifecycle <small>how Laravel works</small></h2>
-						<ul class="fragment">
-							<li>Webserver hands over the request to <code>public/index.php</code></li>
-							<li>It loads Composer's autoloader</li>
-							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.2/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
-							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
-								<ul class="fragment">
-									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the 
-									<a href="https://laravel.com/docs/5.2/providers">service providers</a> defined in <code>config/app.php</code></li>
-									<li>Request passes the middleware e.g. session handling, CSRF token</li>
-									<li>Next, the request is dispatched to the router</li>
-								</ul>
-							
-							</li>
-						</ul>
-						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></em></footer>
-					</section>					
-					
-				</section>
-				
+				</section>	
 
 				<!-- The END -->
 				<section>
@@ -986,12 +867,7 @@ class TaskController extends Controller
 							<li><a href="https://github.com/fabpot/Silex/wiki/Third-Party-ServiceProviders">https://github.com/fabpot/Silex/wiki/Third-Party-ServiceProviders</a></li>
 							<li><a href="http://www.dubberly.com/articles/model-view-controller-pattern.html">http://www.dubberly.com/articles/model-view-controller-pattern.html</a></li>
 							
-							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel Intermediate Task List Example</a></li>
-							<li><a href="https://laravel.com/docs/5.2/controllers">Laravel Controllers</a></li>
-							<li><a href="https://laravel.com/docs/5.2/routing#route-model-binding">Laravel Route Model Binding</a></li>
-							<li><a href="https://laravel.com/docs/5.2/lifecycle">Laravel Request Lifecycle</a></li>
-							<li><a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></li>
-							<li><a href="https://laravel.com/docs/5.2/container">Laravel Service Container</a></li>
+
 						</ul>
 					</section>
 				</section>

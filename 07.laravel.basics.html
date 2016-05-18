@@ -6,7 +6,7 @@
 
 		<title>Webscripting 2 &mdash; Serverside Webscripting</title>
 
-		<meta name="description" content="Webscripting2 &mdash; Serverside Webscripting &mdash; 04.laravel.intro">
+		<meta name="description" content="Webscripting2 &mdash; Serverside Webscripting &mdash; 07.laravel.basics">
 		<meta name="author" content="Joris Maervoet - ikdoeict.be">
 
 		<link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -47,7 +47,7 @@
 				<section>
 					<section>
 						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
-						<h1>04.laravel basics</h1>
+						<h1>07.laravel basics</h1>
 
 						<footer>
 							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -65,7 +65,7 @@
 				<section>
 					<section>
 						<h2>Getting started with Laravel</h2>
-						<p><img src="assets/04b/laravel-logo-white.png" alt="" title="" width="547" /></p>
+						<p><img src="assets/07b/laravel-logo-white.png" alt="" title="" width="547" /></p>
 					</section>
 
 					<section>
@@ -244,7 +244,7 @@
 				<section>
 					<section>
 						<h2>Configuration</h2>
-						<p><img src="assets/04b/KCEX_COMICON.jpg" alt="" title="" width="547" /></p>
+						<p><img src="assets/07b/KCEX_COMICON.jpg" alt="" title="" width="547" /></p>
 					</section>					
 
 					<section>
@@ -395,7 +395,7 @@ DB_CONNECTION=sqlite</code></pre>
 				<section>
 					<section>
 						<h2>Laravel Routing</h2>
-						<p><img src="assets/04b/idees_noires.jpg" alt="" title="" width="500" /></p>
+						<p><img src="assets/07b/idees_noires.jpg" alt="" title="" width="500" /></p>
 						<p style="font-size: 75%; line-height: 100%;">Note: the next slides are illustrated in this demo: <code>assets/ws2-sws-fiddles-laravel/00.basics/</code> (<code>composer install</code> required) <a href="assets/ws2-sws-fiddles-laravel/00.basics/">&rarr;</a> <br/><span style="font-size: 50%; line-height: 100%;">It includes basic examples of routing, views, Blade templates, Raw Queries, Query Builder and Eloquent.</span></p>
 					</section>
 
@@ -1129,6 +1129,124 @@ $ php artisan make:model Product
 						<footer class="fragment"><em>Note: Laravel comes with a pre-installed (extensible) migration and model for a <code>users</code> table </em></footer>
 					</section>		
 
+				</section>
+				
+				
+				<section>
+					<section>
+						<h2>Structuring the code in Laravel</h2>
+
+						<p style="margin-top: 3em;">Basically the same story &hellip;</p>
+						<p>&hellip; in brief</p>
+					</section>
+
+					<section>
+						<h2>Routing with controllers</h2>
+
+						<ul style="font-size: 80%">
+							<li class="fragment">Create a <code>*Controller</code> in the folder <code>app/Http/Controllers</code> 
+								<pre class="bigger fragment"><code class="language-bash dontrun">php artisan make:controller TaskController</code></pre>
+							</li>
+							<li class="fragment">
+								Point to its <strong>methods</strong> in <code>app/Http/routes.php</code>
+								<pre class="bigger fragment"><code class="language-php">Route::get('/tasks', 'TaskController@index');
+Route::post('/task', 'TaskController@store');
+Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
+							</li>
+							<li class="fragment">
+								Write the appropriate method(s) in <code>*Controller</code>
+								<pre class="bigger fragment"><code class="language-php">class TaskController extends Controller
+{
+	public function index(Request $request)
+    {
+		$tasks = Task::where('user_id', $request-&gt;input('user_id'))
+                    -&gt;orderBy('created_at', 'asc')
+                    -&gt;get();
+        return view('tasks.index', ['tasks' =&gt; $tasks]);
+    }
+	
+	public function destroy(Request $request, Task $task) // implicit model binding (on ID)</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Repository for data access logic (1)</h2>
+
+						<ul>
+							<li class="fragment">Create the <code>app/Repositories</code> directory and add a <code>*Repository</code> class yourself
+								<pre class="bigger fragment"><code class="language-php dontrun">&lt;?php
+namespace App\Repositories; // there is PSR-4 autoloading ...
+
+use App\Task;
+
+class TaskRepository
+{
+    public function forUserId($id)
+    {
+        return Task::where('user_id', $id)
+                    -&gt;orderBy('created_at', 'asc')
+                    -&gt;get();
+    }
+	&hellip;
+}</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment" style="line-height: 100%"><em>Note: your Eloquent ORM models already form a DAL layer. Use Laravel's repositories just for complex queries you'd call from multiple locations in your code (cf. code reuse).</em></footer>
+					</section>
+					
+					<section>
+						<h2>Repository for data access logic (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								Inject the repository in the corresponding <code>*Controller</code>
+								<pre class="bigger fragment"><code class="language-php">namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\TaskRepository;
+
+class TaskController extends Controller
+{
+    protected $tasks;
+
+    public function __construct(TaskRepository $tasks)
+    {
+        $this-&gt;tasks = $tasks;
+    }
+
+    public function index(Request $request)
+    {
+        return view('tasks.index', [
+            'tasks' =&gt; $this-&gt;tasks-&gt;forUserId($request-&gt;input('user_id'))
+        ]);
+    }
+	&hellip;
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>The Request Lifecycle <small>how Laravel works</small></h2>
+						<ul class="fragment">
+							<li>Webserver hands over the request to <code>public/index.php</code></li>
+							<li>It loads Composer's autoloader</li>
+							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.2/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
+							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
+								<ul class="fragment">
+									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the 
+									<a href="https://laravel.com/docs/5.2/providers">service providers</a> defined in <code>config/app.php</code></li>
+									<li>Request passes the middleware e.g. session handling, CSRF token</li>
+									<li>Next, the request is dispatched to the router</li>
+								</ul>
+							
+							</li>
+						</ul>
+						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></em></footer>
+					</section>					
+					
 				</section>				
 				
 				<!-- The END -->
@@ -1163,7 +1281,13 @@ $ php artisan make:model Product
 							<li><a href="https://laravel.com/docs/5.2/eloquent">Laravel docs: Eloquent: Getting Started</a></li>		
 							<li><a href="https://laravel.com/docs/5.2/migrations">Laravel docs: Migrations</a></li>					
 							<li><a href="https://laravel.com/docs/5.2/quickstart">Laravel tutorial on a task list project - basic</a></li>	
-							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>	
+							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
+							
+							<li><a href="https://laravel.com/docs/5.2/controllers">Laravel docs: Controllers</a></li>
+							<li><a href="https://laravel.com/docs/5.2/routing#route-model-binding">Laravel docs: Route Model Binding</a></li>
+							<li><a href="https://laravel.com/docs/5.2/lifecycle">Laravel docs: Request Lifecycle</a></li>
+							<li><a href="https://laravel.com/docs/5.2/providers">Laravel docs: Service Providers</a></li>
+							<li><a href="https://laravel.com/docs/5.2/container">Laravel docs: Service Container</a></li>
 						</ul>
 					</section>
 				</section>
