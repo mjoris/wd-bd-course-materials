@@ -51,7 +51,6 @@
 					<section>
 						<h3 class="inverted">Serverside Webscripting 2 <small>[JLW506]</small></h3>
 						<h1>08.authentication and forms</h1>
-						<h3>a few Laravel pointers</h3>
 
 						<footer>
 							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -592,11 +591,53 @@ Route::post('post', 'PostController@store');</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								The first route shows a Blade template containing a form	
 							</li>
-							<li class="fragment">
-								The second route validates the HTTP request and stores the blog post
+								
+									<li class="fragment">
+										The second route
+										<ul>
+											<li class="fragment">
+												validates the HTTP request
+											</li>
+											<li class="fragment">
+												stores the blog post
+											</li>
+											<li class="fragment">
+												redirects the user
+											</li>
+										</ul>
 							</li>
 						</ul>
 					</section>
+					
+					<section>
+						<h2>About the other HTTP Verbs</h2>
+
+						<ul>
+							<li class="fragment">
+								Blog post routes example
+								<pre class="bigger"><code class="language-php dontrun">// Display a form to create a blog post...
+Route::get('post/create', 'PostController@create');
+
+// Store a new blog post...
+Route::post('post', 'PostController@store');</code></pre>
+							</li>
+
+									<li class="fragment">
+										Don't use the other HTTP verbs (delete, put, patch)
+									<ul>
+										<li class="fragment">
+											not (enough) compatible with HTML forms
+										</li>
+										<li class="fragment">
+											&hellip; unless you're faking the verbs with <a href="https://laravel.com/docs/master/routing#form-method-spoofing">form method spoofing</a>
+										</li>
+										<li class="fragment">
+											&hellip; unless you're building a RESTful web API
+										</li>
+									</ul>
+							</li>
+						</ul>
+					</section>					
 					
 					<section>
 						<h2>Cross-Site Request Forgery (CSRF)</h2>
@@ -614,7 +655,7 @@ Route::post('post', 'PostController@store');</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Include the automatically generated CSRF field/token in your form
+								Include the automatically generated CSRF field/token in your (POST) form
 								<pre class="bigger"><code class="language-php dontrun">// Vanilla PHP
 &lt;?php echo csrf_field(); ?&gt;
 
@@ -634,24 +675,7 @@ Route::post('post', 'PostController@store');</code></pre>
 						</ul>
 					</section>
 					
-					<section>
-						<h2>Generating forms</h2>
 
-						<ul>
-							<li class="fragment">
-								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
-								<ul>
-									<li class="fragment">
-										<a href="https://laravelcollective.com/docs/5.2/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
-									</li>
-									<li class="fragment">
-										You need to install it through Composer
-									</li>									
-								</ul>
-							</li>
-						</ul>
-						<footer class="fragment"><em>This is not mandatory at all (few added value)!</em></footer>
-					</section>
 					
 					<section>
 						<h2>Validation (1)</h2>
@@ -736,6 +760,25 @@ Route::post('post', 'PostController@store');</code></pre>
 							</li>
 							
 						</ul>
+					</section>
+
+					<section>
+						<h2>Generating forms</h2>
+
+						<ul>
+							<li class="fragment">
+								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
+								<ul>
+									<li class="fragment">
+										<a href="https://laravelcollective.com/docs/5.2/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
+									</li>
+									<li class="fragment">
+										You need to install it through Composer
+									</li>									
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>This is not mandatory at all (few added value)!</em></footer>
 					</section>					
 				
 				</section>
