@@ -1100,7 +1100,34 @@ foreach ($user-&gt;tasks as $task) {
 							</li>
 						</ul>
 						<footer class="fragment"><em>* this code assumes a correct foreign key relation</em></footer>
-					</section>						
+					</section>
+
+					<section>
+						<h2>Working with dates and times</h2>
+
+						<ul>
+							<li class="fragment">
+								Laravel comes with <a href="http://carbon.nesbot.com/docs/">Carbon</a><pre class="bigger"><code class="language-php">use Carbon\Carbon;</code></pre>
+								<ul>
+									<li class="fragment">The Carbon class extends the PHP <a href="http://www.php.net/manual/en/class.datetime.php">DateTime</a> class
+									</li>
+									<li class="fragment">You can use it as part of a query
+										<pre class="bigger"><code class="language-php">$events = Event::where('event_date', '<', new Carbon('yesterday 23:10'))-&gt;get();
+</code></pre>
+									</li>
+									<li class="fragment">In order to have a Carbon object auto-casted at any time in Eloquent, you need to tell Eloquent first
+										<pre class="bigger"><code class="language-php">class Event extends Model
+{
+	// keep the default date fields created_at and updated_at !
+    protected $dates = ['created_at', 'updated_at', 'event_date']; 
+}
+</code></pre>
+									</li>
+									<li class="fragment">Now you can do things like <code>$event-&gt;event_date = Carbon::now();</code></li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
 
 					<section>
 						<h2>#4 Migrations (1)</h2>
