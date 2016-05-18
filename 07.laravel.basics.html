@@ -906,8 +906,8 @@ DB::table('users')->where('votes', '&lt;', 100)->delete();
 								ORM: each database table has a corresponding "Model" which is used to interact with it
 							</li>
 							<li class="fragment">
-								First step: generate the models with Artisan
-								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ php artisan make:model Event</code></pre>
+								First step: generate the models with Artisan (! uppercase)
+								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ php artisan make:model <u>E</u>vent</code></pre>
 								<ul>
 									<li class="fragment">It generates the (pretty empty) class <code>Event</code> extending <code>Illuminate\Database\Eloquent\Model</code> in the <code>app/</code> directory</li>
 									<li class="fragment">The model assumes that there is a table <code>events</code> (plural!) in the database, unless you add
@@ -931,6 +931,10 @@ protected $incrementing = false;</code></pre>
 									</li>
 									<li class="fragment">The model assumes that the table has <code>created_at</code> and <code>updated_at</code> columns, unless you add
 <pre class="bigger"><code class="language-php">public $timestamps = false;</code></pre>
+										<ul>
+											<li class="fragment">Eloquent will automatically update these columns when creating/changing data</li>
+											<li class="fragment">Raw SQL Queries won't</li>						
+										</ul>
 									</li>								
 								</ul>
 							</li>
@@ -953,8 +957,8 @@ $events = Event::all();</code></pre>
 <pre class="bigger"><code class="language-php">use App\Event;
 
 $events = Event::where('active', 1)
-               ->orderBy('name', 'desc')
-               ->get();</code></pre>
+               -&gt;orderBy('name', 'desc')
+               -&gt;get();</code></pre>
 									</li>								
 								</ul>
 							</li>
@@ -973,14 +977,14 @@ $events = Event::where('active', 1)
 								<pre class="bigger"><code class="language-php">use App\Event;
 
 $event = new Event;
-$event->name = $request->name;
-$event->save();
+$event-&gt;name = $request->name;
+$event-&gt;save();
 
 $event = Event::find(1);
-$event->name = 'Pukkelpop 2016';
-$event->save();
+$event-&gt;name = 'Pukkelpop 2016';
+$event-&gt;save();
 
-$event->delete();
+$event-&gt;delete();
 </code></pre>
 									<li class="fragment">But the Query Builder examples with <code>insert()</code>, <code>update()</code> and <code>delete()</code> will work too.
 									</li>							
@@ -997,14 +1001,13 @@ $event->delete();
 								Mass assignment
 								<ul>
 									<li class="fragment">Definition: use the create method to save a new model in a single line
-									<pre class="bigger"><code class="language-php">$user = App\User::create(['name' => 'Franky Pallemans']);</code></pre>
+									<pre class="bigger"><code class="language-php">$user = App\User::create(['name' =&gt; 'Franky Pallemans', 'company' =&gt; 'Cynalco']);</code></pre>
 									</li>
 									<li class="fragment">It enables to pass all parameter/value-pairs of the HTTP request's querystring to the create method
+									<pre class="bigger"><code class="language-php">$user = App\User::create($request-&gt;all());</code></pre>
 									</li>
-									<li class="fragment"><strong>mass-assignment vulnerability</strong>: a malicious user adds a parameter to the HTTP request e.g. <code>role=administrator</code> which is passed to the create method
-									</li>
-									<li class="fragment">Therefore it is required to blacklist (<code>protected $guarded = ['role'];</code>) or whitelist (<code>protected $fillable = ['name'];</code>) the mass assignable attributes in the model class
-									</li>							
+									<li class="fragment"><strong>Mass-assignment vulnerability</strong>: a malicious user adds a parameter to the HTTP request e.g. <code>role=administrator</code> which is passed to the create method
+									</li>						
 								</ul>
 							</li>
 						</ul>
@@ -1015,6 +1018,41 @@ $event->delete();
 
 						<ul>
 							<li class="fragment">
+								Mass assignment vulnerability protection
+								<ul>
+									<li class="fragment">It is required to
+										<ul>
+											<li class="fragment">blacklist: <code>protected $guarded = ['role'];</code>
+											</li>
+											<li class="fragment">or whitelist: <code>protected $fillable = ['name', 'company'];</code>
+											</li>												
+										</ul>
+									  the mass assignable attributes in the model class
+									</li>
+									
+									<li class="fragment">Attention: when you pass a blacklisted/not-whitelisted parameter to the create method
+										<ul>
+											<li class="fragment">You don't get an error
+											</li>
+											<li class="fragment">Laravel just drops that parameter</code>
+											</li>												
+										</ul>
+									</li>
+									<li class="fragment">It only applies to create so you can still
+									<pre class="bigger"><code class="language-php">$user-&gt;role = 'administrator';
+$event-&gt;save();</code></pre>
+									</li>
+								
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#3 Eloquent ORM (7)</h2>
+
+						<ul>
+							<li class="fragment">
 								Eloquent relationships
 								<ul>
 									<li class="fragment">Suppose a 1:n relation between <em>users</em> and <em>tasks</em> &rarr; table <em>tasks</em> has a foreign key
@@ -1022,8 +1060,8 @@ $event->delete();
 									<li class="fragment">Instead of working with FKs, you want to interact with the related objects directly
 										<pre class="bigger"><code class="language-php">$user = App\User::find(1);
 
-foreach ($user->tasks as $task) {
-    echo $task->name;
+foreach ($user-&gt;tasks as $task) {
+    echo $task-&gt;name;
 }
 </code></pre>
 									</li>						
@@ -1033,17 +1071,17 @@ foreach ($user->tasks as $task) {
 					</section>
 
 					<section>
-						<h2>#3 Eloquent ORM (7)</h2>
+						<h2>#3 Eloquent ORM (8)</h2>
 
 						<ul>
 							<li class="fragment">
 								Eloquent relationships
 								<ul>
 									</li>
-									<li class="fragment">Solution, part 1: add* to the <code>User</code> class:
+									<li class="fragment">Solution, part 1: add* to the <code>User</code> class: (! plural)
 										<pre class="bigger"><code class="language-php">public function tasks()
 {
-        return $this->hasMany(Task::class);
+        return $this-&gt;hasMany(Task::class);
 }
 </code></pre>
 									</li>
@@ -1051,7 +1089,7 @@ foreach ($user->tasks as $task) {
 <li class="fragment">Solution, part 2: add* to the <code>Task</code> class:
 										<pre class="bigger"><code class="language-php">public function user()
 {
-        return $this->belongsTo(User::class);
+        return $this-&gt;belongsTo(User::class);
 }
 </code></pre>
 									</li>
@@ -1120,8 +1158,8 @@ foreach ($user->tasks as $task) {
 							<li class="fragment" style="font-size: 80%">
 								The <a href="http://aoverton.com/web-development/using-mysql-utf8mb4-with-laravel-5/">problem</a>
 								<ul>
-									<li class="fragment">Definition of string columns with Migrations<pre class="bigger"><code class="language-php">$table->string('name');
-$table->string('email')->unique();
+									<li class="fragment">Definition of string columns with Migrations<pre class="bigger"><code class="language-php">$table-&gt;string('name');
+$table-&gt;string('email')->unique();
 </code></pre></li>
 									<li class="fragment">Default string length in Laravel's Schema Builder: 255 chars</li>
 									<li class="fragment">With utf8mb4: 255 * 4 = 1020 bytes</li>
@@ -1134,8 +1172,8 @@ was too long; max key length is 767 bytes (SQL: alter table `users` add unique u
 							<li class="fragment" style="font-size: 80%">
 								Solutions
 								<ul>
-									<li class="fragment">Best: correct string lengths<pre class="bigger"><code class="language-php">$table->string('name', 191);
-$table->string('email', 191)->unique();
+									<li class="fragment">Best: correct string lengths<pre class="bigger"><code class="language-php">$table-&gt;string('name', 191);
+$table-&gt;string('email', 191)->unique();
 </code></pre></li>
 									<li class="fragment">Good: just use <em>utf8</em> (= 3-byte-encoding) for your DB</li>
 									<li class="fragment">
@@ -1158,8 +1196,8 @@ $table->string('email', 191)->unique();
 								
 $ php artisan make:migration create_table_products --create=products
 
-# migration contains: $table->increments('id');
-# migration contains: $table->timestamps();
+# migration contains: $table-&gt;increments('id');
+# migration contains: $table-&gt;timestamps();
 # add to your migration: other columns
 
 $ php artisan migrate
