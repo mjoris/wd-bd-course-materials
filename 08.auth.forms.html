@@ -528,7 +528,8 @@ Authentication scaffolding generated successfully!</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Use the <code>Auth</code> facade in your code 
 								<pre class="bigger"><code class="language-php dontrun">$user = Auth::user(); // retrieves the authenticated user
-
+$tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
+								
 if (Auth::check()) {
     // The user is logged in...
 }
@@ -910,7 +911,7 @@ public function store(Request $request)
 					</section>
 					
 					<section>
-						<h2>Generating forms</h2>
+						<h2>Collective's Forms &amp HTML</h2>
 
 						<ul>
 							<li class="fragment">
@@ -925,7 +926,37 @@ public function store(Request $request)
 								</ul>
 							</li>
 						</ul>
-						<footer class="fragment"><em>This is not mandatory at all (few added value)!</em></footer>
+						<footer class="fragment"><em>This is not a mandatory library!</em></footer>
+					</section>
+
+					<section style="font-size: 85%">
+						<h2>A simple form v3</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The new version of the Blade template
+							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors object --}}
+
+{!! Form::open(array('url' =&gt; 'post', 'method' =&gt; 'POST')) !!}
+
+&lt;div class="form-group"&gt;
+	{!! Form::label('title', 'Title:') !!}
+	{!! Form::text('title', '', array('class' =&gt; 'form-control')) !!}
+&lt;/div&gt;
+
+&lt;div class="form-group"&gt;
+	{!! Form::label('content', 'Content:') !!}
+	{!! Form::textarea('content', '', array('class' =&gt; 'form-control', 'rows' =&gt; '10')) !!}
+&lt;/div&gt;
+	
+{!! Form::submit('submit', array('class' =&gt; 'btn btn-primary pull-right')) !!}
+{!! Form::close() !!}
+</code></pre>
+							</li>
+							<li class="fragment">
+								Advantage: csrf_field() and old() are generated for you !!!
+							</li>	
+						</ul>
 					</section>					
 				
 				</section>
