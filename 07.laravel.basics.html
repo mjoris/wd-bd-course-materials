@@ -1179,6 +1179,68 @@ foreach ($user-&gt;tasks as $task) {
 					</section>
 					
 					<section>
+						<h2>#4 Migrations (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								Example: table creation
+								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:migration create_events_table --create=events</code></pre>
+								<ul>
+									<li class="fragment">generates <code>database/migrations/&lt;timestamp&gt;_create_events_table.php</code>
+<pre class="bigger"><code class="language-php">class CreateEventsTable extends Migration
+{
+    public function up()
+    {
+        Schema::create('events', function (Blueprint $table) {
+            $table-&gt;increments('id'); // your table has a PK auto-inc id column
+            $table-&gt;timestamps(); // your table has created_at and updated_at columns
+        });
+    }
+
+    public function down()
+    {
+        Schema::drop('events');
+    }
+}</code></pre>
+									</li>						
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>#4 Migrations (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								Example: table creation
+								<ul>
+									<li class="fragment">complete the schema creation
+<pre class="bigger"><code class="language-php">public function up()
+{
+	Schema::create('events', function (Blueprint $table) {
+		$table-&gt;increments('id'); // LEAVE IT HERE
+		$table-&gt;string('title');
+		$table-&gt;text('description');
+		$table-&gt;date('event_date');
+		
+		// foreign key: column types need to be EXACTLY the same
+		$table-&gt;integer('location_id')-&gt;unsigned(); // 
+		$table-&gt;foreign('location_id')-&gt;references('location_id')-&gt;on('locations');
+		
+		$table-&gt;timestamps(); // LEAVE IT HERE
+	});
+}</code></pre>
+									</li>
+									<li class="fragment">run all migrations
+<pre class="bigger"><code class="language-bash">$ php artisan migrate</code></pre>
+									</li>											
+								</ul>
+							</li>
+						</ul>
+					</section>					
+					
+					<section>
 						<h2>Migrations bug with MySQL utf8mb4</h2>
 
 						<ul>
@@ -1186,7 +1248,7 @@ foreach ($user-&gt;tasks as $task) {
 								The <a href="http://aoverton.com/web-development/using-mysql-utf8mb4-with-laravel-5/">problem</a>
 								<ul>
 									<li class="fragment">Definition of string columns with Migrations<pre class="bigger"><code class="language-php">$table-&gt;string('name');
-$table-&gt;string('email')->unique();
+$table-&gt;string('email')-&gt;unique();
 </code></pre></li>
 									<li class="fragment">Default string length in Laravel's Schema Builder: 255 chars</li>
 									<li class="fragment">With utf8mb4: 255 * 4 = 1020 bytes</li>
@@ -1200,7 +1262,7 @@ was too long; max key length is 767 bytes (SQL: alter table `users` add unique u
 								Solutions
 								<ul>
 									<li class="fragment">Best: correct string lengths<pre class="bigger"><code class="language-php">$table-&gt;string('name', 191);
-$table-&gt;string('email', 191)->unique();
+$table-&gt;string('email', 191)-&gt;unique();
 </code></pre></li>
 									<li class="fragment">Good: just use <em>utf8</em> (= 3-byte-encoding) for your DB</li>
 									<li class="fragment">
@@ -1316,7 +1378,7 @@ Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
 	&hellip;
 	public function destroy(Request $request, Task $task) // implicit model binding (on ID)
 	{
-		$task->delete();
+		$task-&gt;delete();
 		return redirect('/tasks');
     }</code></pre>
 							</li>
