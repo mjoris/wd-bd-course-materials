@@ -189,6 +189,25 @@
 					</section>
 					
 					<section>
+						<h2>The Request Lifecycle <small>how Laravel works</small></h2>
+						<ul class="fragment">
+							<li>Webserver hands over the request to <code>public/index.php</code></li>
+							<li>It loads Composer's autoloader</li>
+							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.2/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
+							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
+								<ul class="fragment">
+									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the 
+									<a href="https://laravel.com/docs/5.2/providers">service providers</a> defined in <code>config/app.php</code></li>
+									<li>Request passes the middleware e.g. session handling, CSRF token</li>
+									<li>Next, the request is dispatched to the router</li>
+								</ul>
+							
+							</li>
+						</ul>
+						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></em></footer>
+					</section>	
+					
+					<section>
 						<h2>Artisan Console</h2>
 						<ul>
 							<li class="fragment">
@@ -469,7 +488,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 
 
 					<section>
-						<h2>The HTTP Request</h2>
+						<h2>The HTTP Request (1)</h2>
 
 						<ul>
 							<li class="fragment">
@@ -480,11 +499,31 @@ Route::any('foo', function () { &hellip;</code></pre>
 									<pre class="bigger fragment"><code class="language-php">use Illuminate\Http\Request;
 									
 Route::post('register', function(Request $request) {
-	$email = $request->input('email', 'not provided');
-	$name = $request->cookie('name');
-	$iKnowItsTrue = $request->isMethod('post');
+	$email = $request&gt;input('email', 'not provided');
+	$name = $request-&gt;cookie('name');
+	$iKnowItsTrue = $request-&gt;isMethod('post');
+	if ($request-&gt;has('name')) {
     &hellip;
 });</code></pre>
+									</li>
+									<li class="fragment">the input method handles any type of input parameter: POST parameters, GET parameters, ... and even JSON input (if the Content-Type is set properly)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+					<h2>The HTTP Request (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								The <a href="https://laravel.com/docs/5.2/requests">HTTP Request</a>
+								<ul>
+									<li class="fragment">use a <code>.</code> to dig into arrays (whether JSON or not)</li>
+									<pre class="bigger fragment"><code class="language-php">$name = $request->input('products.0.name');</code></pre>
+									</li>
+									<li class="fragment">dynamic properties:
+									<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;name; // same as: $request&gt;input('name');</code></pre>
 									</li>
 									<li class="fragment">Want more? <a href="https://laravel.com/api/5.2/Illuminate/Http/Request.html">Request API</a></li>
 								</ul>
@@ -1134,14 +1173,28 @@ $ php artisan make:model Product
 				
 				<section>
 					<section>
-						<h2>Structuring the code in Laravel</h2>
-
-						<p style="margin-top: 3em;">Basically the same story &hellip;</p>
-						<p>&hellip; in brief</p>
+						<h2>Building MVC apps</h2>
+					</section>
+					
+					<section>
+						<h2>MVC in Laravel: overview</h2>
+						<p><img src="assets/07b/mvc_diagram_with_routes.png" alt="" title="" width="600" style="background-color:white;" />
+						<div style="font-size: 50%; line-height: 100%;margin-top: -1em;">
+							Source: <a href="https://selftaughtcoders.com/from-idea-to-launch/lesson-17/laravel-5-mvc-application-in-10-minutes/">selftaughtcoders.com</a></span>
+						</p>
 					</section>
 
 					<section>
-						<h2>Routing with controllers</h2>
+						<h2>MVC in Laravel: overview</h2>
+						<ul>
+							<li class="fragment"><strong>Models</strong>: generate Eloquent models with Artisan</li>
+							<li class="fragment" style="margin-top: 1em;"><strong>Views</strong>: store your Blade (or PHP) templates in <code>resources/views</code> </li>
+							<li class="fragment" style="margin-top: 1em;"><strong>Controllers</strong>: see next slide(s)</li>							
+						</ul>
+					</section>
+
+					<section>
+						<h2>HTTP Controllers (1)</h2>
 
 						<ul style="font-size: 80%">
 							<li class="fragment">Create a <code>*Controller</code> in the folder <code>app/Http/Controllers</code> 
@@ -1165,13 +1218,57 @@ Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
         return view('tasks.index', ['tasks' =&gt; $tasks]);
     }
 	
-	public function destroy(Request $request, Task $task) // implicit model binding (on ID)</code></pre>
+	public function destroy(Request $request, $id) </code></pre>
 							</li>
 						</ul>
-					</section>
+					</section>  
 					
 					<section>
-						<h2>Repository for data access logic (1)</h2>
+						<h2>HTTP Controllers (2)</h2>
+
+						<ul style="font-size: 80%">
+							<li class="fragment">
+								Only include the (type-hinted) $request parameter when needed
+								<pre class="bigger fragment"><code class="language-php">class TaskController extends Controller
+{
+	public function index()
+    {
+        return view('tasks.index');
+    }</code></pre>
+							</li>
+							<li class="fragment">
+								<a href="routing#route-model-binding">Implicit model binding:</a> Eloquent will use the <code>id</code> column
+								<pre class="bigger fragment"><code class="language-php">Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
+								<pre class="bigger fragment"><code class="language-php">class TaskController extends Controller
+{
+	&hellip;
+	public function destroy(Request $request, Task $task) // implicit model binding (on ID)
+	{
+		$task->delete();
+		return redirect('/tasks');
+    }</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment" style="line-height: 100%;"><em>Override the model's <code>getRouteKeyName()</code> in order to use another column for this</em></footer>
+						
+					</section> 
+
+					<section>
+						<h2>Repositories (1)</h2>
+
+						<ul>
+							<li class="fragment">Do we need repositories in Laravel?
+								<ul>
+								    <li class="fragment">Not necessarily</li>
+									<li class="fragment" style="margin-top: 1em;">Eloquent ORM models already form a DAL layer (= M of MVC)</li>
+									<li class="fragment" style="margin-top: 1em;">Use Laravel's repositories just for complex queries you'd call from multiple locations in your code (cf. code reuse)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
+					
+					<section>
+						<h2>Repositories (2)</h2>
 
 						<ul>
 							<li class="fragment">Create the <code>app/Repositories</code> directory and add a <code>*Repository</code> class yourself
@@ -1192,11 +1289,10 @@ class TaskRepository
 }</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment" style="line-height: 100%"><em>Note: your Eloquent ORM models already form a DAL layer. Use Laravel's repositories just for complex queries you'd call from multiple locations in your code (cf. code reuse).</em></footer>
 					</section>
 					
 					<section>
-						<h2>Repository for data access logic (2)</h2>
+						<h2>Repositories (3)</h2>
 
 						<ul>
 							<li class="fragment">
@@ -1228,24 +1324,7 @@ class TaskController extends Controller
 						</ul>
 					</section>
 
-					<section>
-						<h2>The Request Lifecycle <small>how Laravel works</small></h2>
-						<ul class="fragment">
-							<li>Webserver hands over the request to <code>public/index.php</code></li>
-							<li>It loads Composer's autoloader</li>
-							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.2/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
-							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
-								<ul class="fragment">
-									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the 
-									<a href="https://laravel.com/docs/5.2/providers">service providers</a> defined in <code>config/app.php</code></li>
-									<li>Request passes the middleware e.g. session handling, CSRF token</li>
-									<li>Next, the request is dispatched to the router</li>
-								</ul>
-							
-							</li>
-						</ul>
-						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></em></footer>
-					</section>					
+				
 					
 				</section>				
 				
