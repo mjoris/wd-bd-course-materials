@@ -675,6 +675,124 @@ Route::post('post', 'PostController@store');</code></pre>
 						</ul>
 					</section>
 					
+					<section>
+						<h2>Flash data in the session</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								By default the middleware <code>\Illuminate\Session\Middleware\StartSession</code> <br/>backs a permanent PHP session
+							</li>
+							<li class="fragment">
+								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.2/session">docs</a>)
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Flash a variable = store variable in the session only for the next HTTP request
+								<pre class="bigger"><code class="language-php dontrun">$request-&gt;session()->flash('status', 'Task was successful!');
+								
+$request-&gt;session()-&gt;reflash(); // flash all data once again!
+
+$request-&gt;session()-&gt;keep(['username', 'email']); // the same for a selection of vars
+</code></pre>
+							</li>
+						</ul>
+					</section>
+					
+					<section style="font-size: 85%">
+						<h2>A simple form v1 (1)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The Blade template
+							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors array --}}
+		
+&lt;form method="POST" action="<span style="background-color: #500;">{{ url('post') }}</span>" accept-charset="UTF-8"&gt;
+	<span style="background-color: #500;">{!! csrf_field() !!}</span>
+	&lt;div class="form-group"&gt;
+		&lt;label for="title"&gt;Title:&lt;/label&gt;
+		&lt;input class="form-control" name="title" type="text" 
+		       value="<span style="background-color: #500;">{{ old('title', '') }}</span>" id="title"&gt;
+	&lt;/div&gt;
+	
+	&lt;div class="form-group"&gt;
+		&lt;label for="content"&gt;Content:&lt;/label&gt;
+		&lt;textarea class="form-control" rows="10" name="content" cols="50" id="content"&gt;
+			<span style="background-color: #500;">{{ old('content', '') }}</span>&lt;/textarea&gt;
+	&lt;/div&gt;
+	
+	&lt;input class="btn btn-primary pull-right" type="submit" value="submit"&gt;
+
+&lt;/form&gt;
+</code></pre>
+							</li>
+							<li class="fragment">
+										The helper method <a href="https://laravel.com/docs/5.2/helpers#method-old">old</a> retrieves an old input value flashed into the session
+							</li>	
+						</ul>
+					</section>
+					
+					<section style="font-size: 85%">
+						<h2>A simple form v1 (2)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The controller
+							<pre class="bigger"><code class="language-php dontrun">public function add()
+{
+	return view('blogpost.add');
+}
+
+public function store(Request $request)
+{
+	// building oldskool form errors &hellip;
+	$errors = array();
+	
+	if (!(($request-&gt;has('title')) && (strlen($request-&gt;title) &gt; 0))) {
+		$errors[] = 'The title field is required.';
+	} else if (strlen($request-&gt;title) &gt; 125) {
+		$errors[] = 'The title may not be greater than 125 characters.';
+	} else if (Blogpost::where('title', $request-&gt;title)-&gt;exists()) {
+		$errors[] = 'The title has already been taken.';
+	}
+	
+	if (!(($request-&gt;has('content')) && (strlen($request-&gt;content) &gt; 0))) {
+		$errors[] = 'The content field is required.';
+	}
+	
+	&hellip;</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section style="font-size: 85%">
+						<h2>A simple form v1 (3)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The controller
+							<pre class="bigger"><code class="language-php dontrun">public function store(Request $request)
+{
+	// building oldskool form errors &hellip;
+	&hellip;
+
+	if (count($errors) &gt; 0) {
+		// flash the form errors in the session
+		$request-&gt;session()-&gt;flash('errors', $errors);
+		
+		// flash the request inputs in the session and take previous route
+		$request-&gt;flash();
+		return back();
+
+		// also possible: return back()-&gt;withInput();
+		
+	} else {		
+		Blogpost::create($request-&gt;all()); // mass assignment
+		return redirect('/post/success');
+	}
+}
+</code></pre>
+							</li>
+						</ul>
+					</section>							
 
 					
 					<section>
@@ -694,8 +812,8 @@ Route::post('post', 'PostController@store');</code></pre>
 								<pre class="bigger"><code class="language-php dontrun">public function store(Request $request)
 {
     $this-&gt;validate($request, [
-        'title' =&gt; 'required|unique:posts|max:255',
-        'body' =&gt; 'required',
+        'title' =&gt; 'required|unique:blogposts|max:125',
+        'content' =&gt; 'required',
     ]);
 
     // The blog post is valid, store in database...
@@ -715,18 +833,18 @@ Route::post('post', 'PostController@store');</code></pre>
 										The <code>ShareErrorsFromSession</code> middleware (part of the <code>web</code> group) assures an <code>$errors</code> variable is available in your views
 									</li>
 									<li class="fragment">
-										The helper method <a href="https://laravel.com/docs/5.2/helpers#method-old">old</a> retrieves an old input value flashed into the session
+										Enjoy the richness of <a href="https://laravel.com/docs/5.2/validation#available-validation-rules">the rules available</a>
 									</li>									
 								</ul>
-								<pre class="bigger"><code class="language-php dontrun">&lt;div class="col-md-6"&gt;
-	&lt;input type="email" class="form-control" name="email" value="{{ old('email', '') }}"&gt;
+								<pre class="bigger"><code class="language-php dontrun">'start_date' =&gt; 'required|date|after:tomorrow',
+'finish_date' =&gt; 'required|date|after:start_date',
 
-		@if ($errors->has('email'))
-			&lt;span class="help-block"&gt;
-                &lt;strong&gt;{{ $errors->first('email') }}&lt;/strong&gt;
-			&lt;/span&gt;
-		@endif
-&lt;/div&gt;</code></pre>
+'photo' =&gt; 'image', // is an image of any type
+'avatar' =&gt; 'dimensions:min_width=100,min_height=200', // image with specified dimensions
+						
+'state' =&gt; 'exists:states,abbreviation', // exists in column abbreviation of table states
+'email' =&gt; 'exists:staff,email,user_id,23' // exists in column email where user_id=23
+// actually we have Authorization for the last type of rules</code></pre>
 							</li>
 						</ul>
 					</section>
@@ -762,6 +880,35 @@ Route::post('post', 'PostController@store');</code></pre>
 						</ul>
 					</section>
 
+					<section style="font-size: 85%">
+						<h2>A simple form v2</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								The new version of the controller
+							<pre class="bigger"><code class="language-php dontrun">public function add()
+{
+	return view('blogpost.add');
+}
+
+public function store(Request $request)
+{
+	$this-&gt;validate($request, [
+		'title' =&gt; 'required|unique:blogposts|max:125',
+		'content' =&gt; 'required'
+	]);
+
+	Blogpost::create($request-&gt;all());
+
+	return redirect('/post/success');
+}</code></pre>
+							</li>
+							<li class="fragment">
+								Change <code>common/errors.blade.php</code> such that it visualizes an <em>$errors</em> <strong>object</strong>
+							</li>
+						</ul>
+					</section>
+					
 					<section>
 						<h2>Generating forms</h2>
 
