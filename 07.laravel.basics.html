@@ -520,11 +520,18 @@ Route::post('register', function(Request $request) {
 								The <a href="https://laravel.com/docs/5.2/requests">HTTP Request</a>
 								<ul>
 									<li class="fragment">use a <code>.</code> to dig into arrays (whether JSON or not)</li>
-									<pre class="bigger fragment"><code class="language-php">$name = $request->input('products.0.name');</code></pre>
+										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;input('products.0.name');</code></pre>
 									</li>
-									<li class="fragment">dynamic properties:
-									<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;name; // same as: $request&gt;input('name');</code></pre>
+									<li class="fragment">dynamic properties
+										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;name; // same as: $request&gt;input('name');</code></pre>
 									</li>
+									<li class="fragment">handling file uploads
+										<pre class="bigger fragment"><code class="language-php">$files = $request-&gt;file('additional_documents');
+foreach($files as $file) {
+	$fileName = $file-&gt;getClientOriginalName();
+	$success = $file-&gt;move($destinationPath, $fileName); // path relative to public/
+}</code></pre>
+									</li>									
 									<li class="fragment">Want more? <a href="https://laravel.com/api/5.2/Illuminate/Http/Request.html">Request API</a></li>
 								</ul>
 							</li>
