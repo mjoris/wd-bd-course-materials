@@ -845,7 +845,7 @@ public function store(Request $request)
 						
 'state' =&gt; 'exists:states,abbreviation', // exists in column abbreviation of table states
 'email' =&gt; 'exists:staff,email,user_id,23' // exists in column email where user_id=23
-// actually we have Authorization for the last type of rules</code></pre>
+// actually we have Authorization for the last rule example</code></pre>
 							</li>
 						</ul>
 					</section>
@@ -959,6 +959,71 @@ public function store(Request $request)
 						</ul>
 					</section>					
 				
+				</section>
+				
+				<!-- Authorization -->
+				<section>
+					<section>
+						<h2>Authorization</h2>
+
+					</section>
+					
+					
+					<section style="font-size: 90%">
+						<h2>Authorization: a few pointers (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.2/authorization">Authorization</a> is about defining which users are allowed to perform which actions
+								<ul>
+									<li class="fragment">
+										<code>$ php artisan make:policy TaskPolicy</code> generates <code>app/Policies/TaskPolicy.php</code>
+									</li>
+									<li class="fragment">
+										Complete the policy
+										<pre class="bigger"><code class="language-php dontrun">class TaskPolicy
+{
+    &hellip;
+	
+    public function destroy(User $user, Task $task)
+    {
+        return $user-&gt;id === $task-&gt;user_id;
+    }
+}</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section style="font-size: 90%">
+						<h2>Authorization: a few pointers (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.2/authorization">Authorization</a> is about defining which users are allowed to perform which actions
+								<ul>
+									<li class="fragment">
+										Link the Eloquent model to the policy in <code>app/Providers/AuthServiceProvider.php </code>
+										<pre class="bigger"><code class="language-php dontrun">protected $policies = ['App\Task' =&gt; 'App\Policies\TaskPolicy'];</code></pre>
+									</li>
+									<li class="fragment">
+										Use the policy in your controller
+										<pre class="bigger"><code class="language-php dontrun">public function destroy(Request $request, Task $task)
+{
+    $this-&gt;authorize('destroy', $task);
+	
+    $task-&gt;delete();
+    return redirect('/tasks');
+}</code></pre>
+									</li>
+									<li class="fragment">
+										Generates a 403 exception when unauthorized
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
 				</section>
 
 			
