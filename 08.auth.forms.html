@@ -384,7 +384,7 @@ class AgeMiddleware
 								<ul>
 									<li><strong>Guards:</strong> how are users authenticated technically? e.g. session, token
 									</li>
-									<li><strong>Providers:</strong> where is the user inforamtion stored and how can it be retrieved? e.g. in the <code>users</code> table with Eloquent</li>
+									<li><strong>Providers:</strong> where is the user information stored and how can it be retrieved? e.g. in the <code>users</code> table with Eloquent</li>
 									<li>Resetting passwords</li>
 								</ul>
 							</li>
@@ -452,7 +452,7 @@ class AgeMiddleware
 
 						<ul>
 							<li class="fragment">
-								<strong>Step 3:</strong> make Artisan set up a complete configuration for you
+								<strong>Step 3:</strong> make Artisan set up a complete configuration for you (a.k.a. the <em>auth scaffold</em>)
 								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
 Created View: resources/views/auth/login.blade.php
 Created View: resources/views/auth/register.blade.php
@@ -467,7 +467,7 @@ Updated Routes File.
 Authentication scaffolding generated successfully!</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Extend this class if necessary (for example: Eloquent relationships)
+								What happened exactly? We'll cover this after the last step &hellip;
 							</li>
 						</ul>
 					</section>
@@ -477,24 +477,7 @@ Authentication scaffolding generated successfully!</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Some facts
-								<ul>
-									<li><code>app/Http/Controllers/Auth/AuthController</code> is the (configurable) registration and login controller</li>
-									<li><code>app/Http/Controllers/Auth/AuthController</code> contains the validation and storage of a registered user</li>
-									<li>You can change the generated blade templates in <code>resources/views/auth/*</code> but their file names/locations are fixed</li>
-									<li>The generated <code>HomeController</code> illustrates how a homepage is shown after a successful login</li>
-									<li>There is even a route generated to the <code>HomeController</code> but you don't need to use it of course</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>A default scenario (5)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 4:</strong> set your redirect path (= destination after succesful authentication)
+								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
 								<ul>
 									<li class="fragment" style="margin-top: 1em;">
 										In <code>app/Http/Controllers/Auth/AuthController.php</code>
@@ -511,7 +494,7 @@ Authentication scaffolding generated successfully!</code></pre>
 					</section>
 					
 					<section>
-						<h2>A default scenario (6)</h2>
+						<h2>A default scenario (5)</h2>
 
 						<ul>
 							<li class="fragment">
@@ -521,7 +504,7 @@ Authentication scaffolding generated successfully!</code></pre>
 										How? See the slides about middleware
 									</li>
 									<li class="fragment">
-										Preferred way: in the controller(s)
+										Preferred way: in the controller(s) or in a route group
 									</li>									
 								</ul>
 							</li>
@@ -531,7 +514,8 @@ Authentication scaffolding generated successfully!</code></pre>
 $tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
 								
 if (Auth::check()) {
-    // The user is logged in...
+    // the user is logged in...
+	// you don't need to check this when the route is behind the auth middleware
 }
 
 Auth::logout();</code></pre>
@@ -539,6 +523,119 @@ Auth::logout();</code></pre>
 							
 						</ul>
 					</section>
+					
+					<section>
+						<h2>What the hell happened? (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								Tha auth scaffold generated a core layout (<code>resources/views/layouts/app.blade.php</code>) extended by:
+								<ul>
+									<li><strong>welcome.blade.php</strong> - the public welcome page</li>
+									<li><strong>home.blade.php</strong> - the dashboard for logged-in users</li>
+									<li><strong>auth/login.blade.php</strong> - the login page</li>
+									<li><strong>auth/register.blade.php</strong> - the register/signup page</li>
+									<li><strong>auth/passwords/email.blade.php</strong> - the password reset confirmation page</li>
+									<li><strong>auth/passwords/reset.blade.php</strong> - the password reset prompt page</li>
+									<li><strong>auth/emails/password.blade.php</strong> - the password reset email</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Change these templates in order to integrate them in your site layout</em></footer>
+					</section>
+					
+					<section>
+						<h2>What the hell happened? (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								In <code>app/Http/routes.php</code> the line <code>Route::auth();</code> was added. In fact it is a shorthand for:
+								<pre class="bigger"><code class="language-php dontrun">// Authentication Routes...
+$this-&gt;get('login', 'Auth\AuthController@showLoginForm');
+$this-&gt;post('login', 'Auth\AuthController@login');
+$this-&gt;get('logout', 'Auth\AuthController@logout');
+
+// Registration Routes...
+$this-&gt;get('register', 'Auth\AuthController@showRegistrationForm');
+$this-&gt;post('register', 'Auth\AuthController@register');
+
+// Password Reset Routes...
+$this-&gt;get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
+$this-&gt;post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
+$this-&gt;post('password/reset', 'Auth\PasswordController@reset');</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Use this full code in order to change or cut down the routes (e.g. no registration allowed)</em></footer>
+					</section>
+					
+					<section>
+						<h2>What the hell happened? (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								The HomeController
+								<ul>
+									<li>The generated <code>HomeController</code> illustrates how a homepage is shown after a successful login</li>
+									<li>There is even a route generated to the <code>HomeController</code> (behind auth middleware)</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Remove it! It is just a demo</em></footer>
+					</section>
+					
+					<section>
+						<h2>What the hell happened? (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								<code>app/Http/Controllers/Auth/AuthController</code> 
+																
+								<ul>
+									<li>&hellip; is the (configurable) registration and login controller
+										<pre class="bigger"><code class="language-php dontrun">class AuthController extends Controller
+{   &hellip; 
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' =&gt; 'required|max:255',
+            'email' =&gt; 'required|email|max:255|unique:users',
+            'password' =&gt; 'required|min:6|confirmed']);
+    }
+	
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' =&gt; $data['name'],
+            'email' =&gt; $data['email'],
+            'password' =&gt; bcrypt($data['password'])]);
+    }
+}</code></pre>	
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Change your registration process here (e.g. extra registration fields)</em></footer>
+					</section>
+					
+					<section>
+						<h2>What the hell happened? (5)</h2>
+
+						<ul>
+							<li class="fragment">
+								<code>app/Http/Controllers/Auth/AuthController</code> uses the traits
+								<ul>
+									<li><code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php</code></li>
+									<li><code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/RegistersUsers.php</code></li>			
+								
+									
+								</ul>
+							</li>
+							<li>Here you will find many interesting methods such as<ul><li>getRegister() – responsible for showing registration form,</li><li>postRegister() – responsible for processing registration request,</li><li>getLogin() – responsible for showing login form,</li><li>postLogin() – responsible for authentication user</li><li>validateLogin() – responsible for login form validation</li></ul></li>
+							<li class="fragment">
+								Override them in <code>app/Http/Controllers/Auth/AuthController</code> (! not in your vendor folder)
+							</li>
+						</ul>
+					</section>					
 					
 					<section>
 						<h2>Further reading</h2>
@@ -1047,9 +1144,11 @@ public function store(Request $request)
 						<ul>
 							<li><a href="https://laravel.com/docs/5.2/middleware">Laravel docs: Middleware</a></li>
 							<li><a href="https://laravel.com/docs/5.2/authentication">Laravel docs: Authentication</a></li>
+							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
 							<li><a href="https://laravel.com/docs/5.2/routing#route-groups">Laravel docs: Route Groups</a></li>
 							<li><a href="https://laravelcollective.com/docs/5.2/html">Laravel Collective docs: Forms &amp; HTML</a></li>
-							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>	
+							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
+							<li><a href="https://laravel.com/docs/5.2/authorization">Laravel docs: Authorization</a></li>
 						</ul>
 					</section>
 				</section>
