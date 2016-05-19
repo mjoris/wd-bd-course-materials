@@ -834,14 +834,14 @@ foreach ($users as $user) {
 									<li class="fragment">Automatic prevention against <strong>SQL injection</strong></li>
 									
 									<li class="fragment" style="margin-top: 1em"><code>get()</code> returns an array of results
-										<pre class="bigger"><code class="language-php">$users = DB::table('users')->get();</code></pre>
+										<pre class="bigger"><code class="language-php">$users = DB::table('users')-&gt;get();</code></pre>
 									</li>
 									<li class="fragment">example with <code>select()</code>, <code>where()</code> and<code>groupBy()</code>
 										<pre class="bigger"><code class="language-php">$users = DB::table('users')
-                     ->select('name', 'email as user_email')
-                     ->where('status', '&lt;&gt;', 1)
-                     ->groupBy('status')
-                     ->get();</code></pre>
+                     -&gt;select('name', 'email as user_email')
+                     -&gt;where('status', '&lt;&gt;', 1)
+                     -&gt;groupBy('status')
+                     -&gt;get();</code></pre>
 									</li>											
 								</ul>
 							</li>
@@ -856,17 +856,19 @@ foreach ($users as $user) {
 								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
 								<ul>
 									<li class="fragment"><code>first()</code> returns a single row
-										<pre class="bigger"><code class="language-php">$user = DB::table('users')->where('name', 'John')->first();
-echo $user->name;</code></pre>
+										<pre class="bigger"><code class="language-php">$user = DB::table('users')-&gt;where('name', 'John')-&gt;first();
+echo $user-&gt;name;</code></pre>
 									</li>
 									<li class="fragment"><code>value()</code> returns a single value
-										<pre class="bigger"><code class="language-php">$email = DB::table('users')->where('name', 'John')->value('email');</code></pre>
+										<pre class="bigger"><code class="language-php">$email = DB::table('users')-&gt;where('name', 'John')-&gt;value('email');</code></pre>
 									</li>
-									<li class="fragment"><code>pluck()</code> returns an array of <strong>values</strong>
-										<pre class="bigger"><code class="language-php">$titles = DB::table('roles')->pluck('title');</code></pre>
+									<li class="fragment"><code>pluck()</code> returns an <strong>array</strong> of custom keys and <strong>values</strong>
+										<pre class="bigger"><code class="language-php">$events = DB::table('event')-&gt;pluck('name', 'id');
+										
+foreach ($events as $id =&gt; $name) { 
+	&hellip;</code></pre>
 									</li>
-									<li class="fragment">aggregate methods e.g. <code>count()</code>, <code>max()</code></li>
-									<li class="fragment">much more e.g. <code>whereIn()</code>, <code>orWhere()</code>, joins e.g. <code>leftJoin()</code>, <code>on()</code> </li>		
+
 								</ul>
 							</li>
 						</ul>
@@ -879,6 +881,8 @@ echo $user->name;</code></pre>
 							<li class="fragment">
 								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
 								<ul>
+									<li class="fragment">aggregate methods e.g. <code>count()</code>, <code>max()</code></li>
+									<li class="fragment">much more e.g. <code>whereIn()</code>, <code>orWhere()</code>, joins e.g. <code>leftJoin()</code>, <code>on()</code> </li>		
 									<li class="fragment">Examples with <code>insert()</code>, <code>update()</code> and <code>delete()</code>
 										<pre class="bigger"><code class="language-php">$id = DB::table('users')->insertGetId(
     ['email' => 'john@example.com', 'votes' => 0]
