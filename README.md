@@ -1,6 +1,6 @@
 # Webscripting 2 - Serverside Webscripting - Course Materials
 
-This collection of slides comprises the course materials of the __Webscripting2 - Serverside Webscripting__ course, part of the [Professional Bachelor ICT](http://www.ikdoeict.be/) study programme, taught at [Odisee](http://www.odisee.be/), Ghent, Belgium.
+This collection of slides comprises the course materials of the __Web Development / Backend Development__ course, part of the [Professional Bachelor ICT](http://www.ikdoeict.be/) study programme, taught at [Odisee](http://www.odisee.be/), Ghent, Belgium.
 
 The materials have originally been developed by Bram(us) Van Damme who blogs over at [bram.us](http://www.bram.us/) and Twitters as [@bramus](http://twitter.com/bramus). These materials are authored by [Joris Maervoet](https://be.linkedin.com/in/jorismaervoet) in the present fork.
 
