@@ -1,4 +1,4 @@
-# Webscripting 2 - Serverside Webscripting - Course Materials
+# Backend Web Development - Course Materials
 
 This collection of slides comprises the course materials of the __Web Development / Backend Development__ course, part of the [Professional Bachelor ICT](http://www.ikdoeict.be/) study programme, taught at [Odisee](http://www.odisee.be/), Ghent, Belgium.
 
