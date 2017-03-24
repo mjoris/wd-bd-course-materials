@@ -58,7 +58,7 @@ $tweets = array (
   array (
     'id' => 297807068398768128,
     'text' => 'De fijnste platen zijn die die ge zowel sneller én trager kunt draaien. Nu mag het even sneller: http://t.co/q6KczB9c #ikdoeict #verbeteren',
-    'created_at' => 'Sat, 02 Feb 2013 20:41:52 +0000',
+    'created_at' => 'Sat, 03 Feb 2013 20:41:52 +0000',
     'author' => 'Bramus!',
   ),
   array (
@@ -70,7 +70,7 @@ $tweets = array (
   array (
     'id' => 297711479203954688,
     'text' => 'Ook al zeg je meer dan 20 keer dat ze tegen SQL injectie moeten beveiligen om te kunnen slagen, dan nog zijn er die’t laten. #ikdoeict',
-    'created_at' => 'Sat, 02 Feb 2013 14:22:02 +0000',
+    'created_at' => 'Sat, 03 Feb 2013 14:22:03 +0000',
     'author' => 'Bramus!',
   ),
   array (

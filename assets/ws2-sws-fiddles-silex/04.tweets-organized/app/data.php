@@ -70,7 +70,7 @@ $tweets = array (
   array (
     'id' => 297711479203954688,
     'text' => 'Ook al zeg je meer dan 20 keer dat ze tegen SQL injectie moeten beveiligen om te kunnen slagen, dan nog zijn er die’t laten. #ikdoeict',
-    'created_at' => 'Sat, 02 Feb 2013 14:22:02 +0000',
+    'created_at' => 'Sat, 03 Feb 2013 14:22:03 +0000',
     'author' => 'Bramus!',
   ),
   array (

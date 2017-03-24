@@ -14,7 +14,7 @@ $twig = new Twig_Environment($loader, array(
 $name = 'Bramus';
 
 // Load in the template and display it
-$template = $twig->loadTemplate('02.twig');
+$template = $twig->loadTemplate('03.twig');
 echo $template->render(array(
 	'name' => $name,
 	'myarray' => array(
