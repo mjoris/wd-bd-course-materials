@@ -11,6 +11,6 @@ $twig = new Twig_Environment($loader, array(
 ));
 
 // Load in the template and display it (shorthand)
-echo $twig->render('old.03.twig');
+echo $twig->render('03.twig');
 
 // EOF

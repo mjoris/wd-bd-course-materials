@@ -19,7 +19,7 @@ $colleagues = array(
 );
 
 // Load in the template and display it
-$template = $twig->loadTemplate('01.twig');
+$template = $twig->load('01.twig');
 echo $template->render(array( // alternative: $twig->display(...);
 	'name' => $name,
 	'colleagues' => $colleagues

@@ -250,6 +250,7 @@
 									<li>Website: <a href="http://jpgraph.net/">http://jpgraph.net/</a></li>
 									<li>Documentation: <a href="http://jpgraph.net/download/manuals/">http://jpgraph.net/download/manuals/</a></li>
 									<li>Ships with lots of examples in the <code>.zip</code></li>
+									<li>Very recently targetted towards PHP 7</li>
 								</ul>
 							</li>
 						</ul>
@@ -312,7 +313,6 @@ $graph-&gt;Stroke();</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Why is this library better?
 								<ul>
-									<li>Targetted towards PHP5</li>
 									<li>
 										Comes with an <em>autoloader</em>
 										<ul>
@@ -325,6 +325,7 @@ $graph-&gt;Stroke();</code></pre>
 								</ul>
 							</li>
 						</ul>
+						<footer class="fragment" style="line-height: 1em"><em>This example is out-of-date:<br />the current version of SwiftMailer does not come with a library-specific autoloader</em></footer>
 					</section>
 
 					<section>
@@ -359,7 +360,9 @@ if(!$mailer-&gt;send($message, $errors)) {
 }
 
 // EOF</code></pre>
+						<footer class="fragment" style="line-height: 1em"><em>This example is out-of-date:<br />the current version of SwiftMailer does not come with a library-specific autoloader</em></footer>
 					</section>
+
 				</section>
 
 				<section>
@@ -414,7 +417,7 @@ if(!$mailer-&gt;send($message, $errors)) {
 						<h2>Namespaces (1)</h2>
 
 						<ul>
-							<li class="fragment">When we talk about classes we <a href="http://bramus.github.com/ws1-sws-course-materials/04.classes.html#/3/1">didn't talk about namespaces</a></li>
+							<li class="fragment">When we talk about classes we <a href="https://ikdoeict.be/apps/leercentrum/courses/ws-bs-course-materials/04.classes.html#/3/2">didn't talk about namespaces</a></li>
 							<li class="fragment" style="margin-top: 1em;">
 								Namespaces allow you to logically group and name your classes
 								<ul>
@@ -759,7 +762,7 @@ if(!$mailer-&gt;send($message, $errors)) {
 					</section>
 
 					<section>
-						<h2>Specifying Package Versions</h2>
+						<h2>Specifying Package Versions (1)</h2>
 						<ul>
 							<li class="fragment">
 								Latest commit: <code>&quot;dev-master&quot;</code>
@@ -776,11 +779,32 @@ if(!$mailer-&gt;send($message, $errors)) {
 									<li>= equivalent of <code>&gt;=4.1.0,&lt;4.2.0</code></li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+						</ul>
+					</section>
+
+					<section>
+						<h2>Specifying Package Versions (2)</h2>
+						<ul>
+							<li class="fragment">
 								Tilde Operator: <code>&quot;~4.1&quot;</code>
 								<ul>
 									<li>= equivalent of <code>&gt;=4.1,&lt;5.0</code></li>
-									<li>&rarr; Recommended; Useful for projects respecting <a href="http://semver.org/">semantic versioning</a></li>
+									<li>
+										&rarr; Useful for projects respecting <a href="http://semver.org/">semantic versioning</a>
+										(Laravel <a href="https://medium.com/@vinkla/laravel-packages-and-semantic-versioning-f62dc5accee5">doesn't</a>,
+										Twig <a href="https://github.com/memio/twig-template-engine/blob/master/VERSIONING.md">does</a>)
+										</li>
+									<li>however <code>&quot;~4.1.1&quot;</code> means <code>&gt;=4.1.1,&lt;4.2.0</code></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Caret Operator: <code>&quot;^4.1&quot;</code> and <code>&quot;^4.1.1"</code>
+								<ul>
+									<li>= equivalent of <code>&gt;=4.1,&lt;5.0</code> and <code>&gt;=4.1.1,&lt;5.0.0</code></li>
+									<li>acts differently for <em>pre-1.0 versions</em> (security)</li>
+									<li>
+										&rarr; Recommended for projects respecting <a href="http://semver.org/">semantic versioning</a> especially to exclude insecure early releases
+									</li>
 								</ul>
 							</li>
 						</ul>
@@ -824,7 +848,7 @@ if(!$mailer-&gt;send($message, $errors)) {
 								<ul>
 									<li class="fragment">
 										New project, not yet requiring it via Composer:
-										<div class="fragment"><pre class="bigger"><code class="dontrun">composer require twig/twig ~1.24</code></pre></div>
+										<div class="fragment"><pre class="bigger"><code class="dontrun">composer require twig/twig ^1.24</code></pre></div>
 									</li>
 									<li class="fragment">
 										Existing project, already requiring it via Composer:
