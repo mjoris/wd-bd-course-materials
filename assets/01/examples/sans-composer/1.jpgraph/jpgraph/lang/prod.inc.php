@@ -3,7 +3,7 @@
 // File: 	PROD.INC.PHP
 // Description: Special localization file with the same error messages
 //              for all errors.
-// Created: 	2006-03-18
+// Created: 	2006-02-18
 // Ver:		$Id: prod.inc.php 1886 2009-10-01 23:30:16Z ljp $
 //
 // Copyright (c) Asial Corporation. All rights reserved.
