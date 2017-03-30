@@ -104,7 +104,6 @@
 							<li class="fragment" style="margin-top: 1em">Level 1 is what we'll be focussing on
 							</li>
 						</ul>
-						<footer class="fragment"><em>Note: In <a href="http://bramus.github.com/ria-course-materials/">Web &amp; Mobile Development</a> we'll further implement this model</em></footer>
 					</section>
 
 					<section>
@@ -237,7 +236,7 @@ RewriteRule ^ index.php [L]
 					</section>
 
 					<section>
-						<h2>1. Howto: Built-in PHP 5.4 server</h2>
+						<h2>1. Howto: Built-in PHP server</h2>
 						<ul>
 							<li class="fragment">
 								<strong>All</strong> requests route to <code>index.php</code> by default
@@ -304,6 +303,74 @@ $router-&gt;get('/hello/(\w+)', function($name) {
 });
 
 $router->run();</code></pre>
+					</section>
+
+					<section>
+						<h2>Linking your assets (1)</h2>
+						<ul>
+							<li class="fragment">
+								Web assets
+								<ul>
+									<li class="fragment">
+										Images, stylesheets, &hellip; of your website
+									</li>
+									<li class="fragment">
+										Files consulted <strong>directly</strong> from the web server (not passing <code>index.php</code>)
+									</li>
+								</ul>
+							</li>
+							<li class="fragment">
+								Suppose <code>https://wwww.myshop.be/brands/7/products/9</code> generates the following HTML code
+								&rarr; Problem
+								<pre class="bigger"><code class="language-html dontrun">&lt;!DOCTYPE html&gt;
+&lt;html lang="nl"&gt;
+&lt;head&gt;
+	&lt;title&gt;MyShop - Drilboor&lt;/title&gt;
+	&lt;meta charset="utf-8" /&gt;
+	&lt;link rel="stylesheet" href="css/start.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&hellip; &lt;a href="contact"&gt;Contacteer ons&lt;/a&gt;
+	&hellip; &lt;img src="img/product9.jpg" alt="Productfoto drilboor"/&gt;
+&lt;/body&gt;
+&lt;/html&gt;								</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Linking your assets (2)</h2>
+						<ul>
+							<li class="fragment">
+								Possible solutions
+								<ul>
+									<li class="fragment">
+										Best: write a PHP function that generates the correct <strong>relative</strong> (like <code>../css</code>) paths for you
+										<ul>
+											<li class="fragment">
+												In some frameworks this function is available
+											</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										Just start any relative path with <code>/</code> (like <code>/css</code>) = the home slash
+										<ul>
+											<li class="fragment">
+												Disadvantage: only works well in the root of your domain
+											</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										Add <code>&lt;base href="/"&gt;</code> to your HTML head
+										<ul>
+											<li class="fragment">
+												Disadvantage: side-effects with <code>#</code> and <code>?</code> paths
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
 					</section>
 
 				</section>
