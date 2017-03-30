@@ -320,7 +320,7 @@ $router->run();</code></pre>
 								</ul>
 							</li>
 							<li class="fragment">
-								Suppose <code>https://wwww.myshop.be/brands/7/products/9</code> generates the following HTML code
+								Suppose <code>https://myshop.be/brands/7/products/9</code> generates the following HTML code
 								&rarr; Problem
 								<pre class="bigger"><code class="language-html dontrun">&lt;!DOCTYPE html&gt;
 &lt;html lang="nl"&gt;
@@ -356,15 +356,18 @@ $router->run();</code></pre>
 										Just start any relative path with <code>/</code> (like <code>/css</code>) = the home slash
 										<ul>
 											<li class="fragment">
-												Disadvantage: only works well in the root of your domain
+												Disadvantage: your code is home path specific (e.g. <code>myshop.be/admin/</code>) on many places
 											</li>
 										</ul>
 									</li>
 									<li class="fragment">
-										Add <code>&lt;base href="/"&gt;</code> to your HTML head
+										Add <code>&lt;base href="https://myshop.be/"&gt;</code> to your HTML head
 										<ul>
 											<li class="fragment">
-												Disadvantage: side-effects with <code>#</code> and <code>?</code> paths
+												Disadvantage: your code is URL specific on a few places
+											</li>
+											<li class="fragment">
+												Disadvantage: side-effects with <code>#</code> and <code>?</code> paths and with SEO and JavaScript
 											</li>
 										</ul>
 									</li>
