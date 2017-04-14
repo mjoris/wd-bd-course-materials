@@ -100,9 +100,9 @@
 						<ul>
 							<li class="fragment">
 								Installable via Composer
-								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ composer create-project --prefer-dist laravel/laravel projectname ~5.0</code></pre>
+								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ composer create-project --prefer-dist laravel/laravel projectname 5.3.*</code></pre>
 								<ul>
-									<li class="fragment">Version is optional (default: latest)</li>
+									<li class="fragment">Version is optional - beware though: 5.x not backwards compatible</li>
 									<li class="fragment"><a href="https://getcomposer.org/doc/03-cli.md#create-project">Composer docs</a>: <code>composer create-project</code> is the equivalent of doing a <code>git clone</code> followed by a <code>composer install</code> of the vendors.</li>
 									<li class="fragment">In other words:
 										<ul>
@@ -121,13 +121,13 @@
 						<h2>Installation (2)</h2>
 						<ul>
 							<li class="fragment">
-								If you prefer <em>beautiful</em> commands such as <code>laravel new projectname</code>, you need to check <a href="https://laravel.com/docs/5.2#installing-laravel">Laravel Installer</a> (install via Composer)
+								If you prefer <em>beautiful</em> commands such as <code>laravel new projectname</code>, you need to check <a href="https://laravel.com/docs/5.3#installing-laravel">Laravel Installer</a> (install via Composer)
 							</li>
 						</ul>
 					</section>
 					
 					<section>
-						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.2/structure">project structure</a> (1)</h2>
+						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.3/structure">project structure</a> (1)</h2>
 						<ul>
 							<li class="fragment">
 								<code>public/</code> &mdash; Public files
@@ -159,7 +159,7 @@
 					</section>
 					
 					<section>
-						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.2/structure">project structure</a> (2)</h2>
+						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.3/structure">project structure</a> (2)</h2>
 						<ul>
 							<li class="fragment">
 								<code>resources/</code> &mdash; Raw assets (to be compiled) such as templates and localization files
@@ -193,18 +193,18 @@
 						<ul class="fragment">
 							<li>Webserver hands over the request to <code>public/index.php</code></li>
 							<li>It loads Composer's autoloader</li>
-							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.2/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
+							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.3/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
 							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
 								<ul class="fragment">
 									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the 
-									<a href="https://laravel.com/docs/5.2/providers">service providers</a> defined in <code>config/app.php</code></li>
+									<a href="https://laravel.com/docs/5.3/providers">service providers</a> defined in <code>config/app.php</code></li>
 									<li>Request passes the middleware e.g. session handling, CSRF token</li>
 									<li>Next, the request is dispatched to the router</li>
 								</ul>
 							
 							</li>
 						</ul>
-						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.2/providers">Laravel Service Providers</a></em></footer>
+						<footer class="fragment"><em>Read more on <a href="https://laravel.com/docs/5.3/providers">Laravel Service Providers</a></em></footer>
 					</section>	
 					
 					<section>
@@ -229,7 +229,7 @@
 								</li>
 							</li>
 							<li class="fragment">
-								You can <a href="https://laravel.com/docs/5.2/artisan">extend Artisan with your own commands</a>
+								You can <a href="https://laravel.com/docs/5.3/artisan">extend Artisan with your own commands</a>
 							</li>
 							
 							
@@ -241,10 +241,10 @@
 						<h2>Need help?!</h2>
 						<ul>
 							<li class="fragment">
-								Docs: <a href="https://laravel.com/docs/5.2/">https://laravel.com/docs/5.2/</a>
+								Docs: <a href="https://laravel.com/docs/5.3/">https://laravel.com/docs/5.3/</a>
 							</li>
 							<li class="fragment">
-								API: <a href="https://laravel.com/api/5.2/">https://laravel.com/api/5.2/</a>
+								API: <a href="https://laravel.com/api/5.3/">https://laravel.com/api/5.3/</a>
 							</li>
 							
 							<li class="fragment">
@@ -312,13 +312,13 @@
 					</section>
 					
 					<section>
-						<h2>CAUTION: the <a href="https://laravel.com/docs/5.2/helpers#method-env">env()</a> function</h2>
+						<h2>CAUTION: the <a href="https://laravel.com/docs/5.3/helpers#method-env">env()</a> function</h2>
 						<ul>
 							<li class="fragment">
 								Including environment variables in the <code>config/*.php</code> files
 								<ul>
 									<li class="fragment">
-										the <a href="https://laravel.com/docs/5.2/helpers#method-env">env()</a> function gets the value of an environment variable or returns a default value
+										the <a href="https://laravel.com/docs/5.3/helpers#method-env">env()</a> function gets the value of an environment variable or returns a default value
 										<ul>
 											<li class="fragment">
 												Example without default value from <code>config/app.php</code>: <pre class="bigger"><code class="language-php">'key' => env('APP_KEY'),</code></pre>
@@ -332,7 +332,7 @@
 										Environment variables must/can be set in the <code>.env</code> file e.g. <pre class="bigger"><code>APP_KEY=base64:DBHbcyBbq0pBarhWVn0S8bYMqt9IV9EhXhthcyeioKw=
 DB_PASSWORD=secret</code></pre>
 									</li>
-									<li class="fragment">This is the mechanism behind the <a href="https://laravel.com/docs/5.2/configuration#environment-configuration">Environment Configuration</a></li>
+									<li class="fragment">This is the mechanism behind the <a href="https://laravel.com/docs/5.3/configuration#environment-configuration">Environment Configuration</a></li>
 								</ul>
 							</li>							
 						</ul>
@@ -425,7 +425,7 @@ DB_CONNECTION=sqlite</code></pre>
 								All Laravel routes are defined in <code>app/Http/routes.php</code>
 							</li>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/routing#basic-routing">Router methods</a> very similar to Silex routing
+								<a href="https://laravel.com/docs/5.3/routing#basic-routing">Router methods</a> very similar to Silex routing
 							</li>
 							<li class="fragment" style="margin-top: 1em">
 								Router method available for any HTTP verb (get, post, put, ...)
@@ -447,7 +447,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 						<h2>Dynamic Routing</h2>
 						<ul>
 							<li class="fragment">
-								Working with <a href="https://laravel.com/docs/5.2/routing#route-parameters">Route 
+								Working with <a href="https://laravel.com/docs/5.3/routing#route-parameters">Route
 								parameters</a>
 								<ul>
 									<li class="fragment">The parameters will be passed into your route's Closure</li>
@@ -476,7 +476,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 })
 ->where(['id' => '[0-9]+', 'name' => '[a-zA-Z]+']);</code></pre>
 							</li>
-							<li class="fragment">You can add <a href="https://laravel.com/docs/5.2/routing#parameters-regular-expression-constraints">global constraints</a> too
+							<li class="fragment">You can add <a href="https://laravel.com/docs/5.3/routing#parameters-regular-expression-constraints">global constraints</a> too
 							<ul>
 								<li class="fragment">For example: for each <em>id</em> parameter in a dynamic route</li>
 								<li class="fragment">Location: boot method of your RouteServiceProvider (typically <code>app/Providers/RouteServiceProvider.php</code>)</li>
@@ -492,7 +492,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.2/requests">HTTP Request</a>
+								The <a href="https://laravel.com/docs/5.3/requests">HTTP Request</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Request</code></li>
 									<li class="fragment">is typically obtained in your code by type hinting:
@@ -517,7 +517,7 @@ Route::post('register', function(Request $request) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.2/requests">HTTP Request</a>
+								The <a href="https://laravel.com/docs/5.3/requests">HTTP Request</a>
 								<ul>
 									<li class="fragment">use a <code>.</code> to dig into arrays (whether JSON or not)</li>
 										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;input('products.0.name');</code></pre>
@@ -532,7 +532,7 @@ foreach($files as $file) {
 	$success = $file-&gt;move($destinationPath, $fileName); // path relative to public/
 }</code></pre>
 									</li>									
-									<li class="fragment">Want more? <a href="https://laravel.com/api/5.2/Illuminate/Http/Request.html">Request API</a></li>
+									<li class="fragment">Want more? <a href="https://laravel.com/api/5.3/Illuminate/Http/Request.html">Request API</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -543,7 +543,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.3/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -569,7 +569,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.3/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -589,7 +589,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.2/responses">HTTP Response</a>
+								The <a href="https://laravel.com/docs/5.3/responses">HTTP Response</a>
 								<ul>
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
@@ -641,7 +641,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/blade">Blade templates</a> are views compiled by the Blade template engine
+								<a href="https://laravel.com/docs/5.3/blade">Blade templates</a> are views compiled by the Blade template engine
 								<ul>
 									<li class="fragment">File extension: <code>.blade.php</code></li>
 									<li class="fragment">File location, view instantiation (omit <code>.blade.php</code>!) and variable passing: see previous slide (Views).</li> 
@@ -691,7 +691,7 @@ foreach($files as $file) {
 @endforeach</code></pre>
 								<ul>
 									<li class="fragment">Structures don't work without <code>()</code></li> 
-									<li class="fragment">Check the <a href="https://laravel.com/docs/5.2/blade#control-structures">docs</a> for more syntax information</li>
+									<li class="fragment">Check the <a href="https://laravel.com/docs/5.3/blade#control-structures">docs</a> for more syntax information</li>
 									<li class="fragment">Associative array by index: just <code>$event['id']</code></li> 
 									<li class="fragment">Object fields: just <code>$event->id</code></li> 
 									
@@ -705,7 +705,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/blade#template-inheritance">Template inheritance</a>: sections
+								<a href="https://laravel.com/docs/5.3/blade#template-inheritance">Template inheritance</a>: sections
 								<pre class="bigger"><code class="language-html" style="max-height: 170px; overflow: scroll;">&lt;html&gt;
     &lt;head&gt;
         &lt;title&gt;App Name - @yield('title')&lt;/title&gt;
@@ -743,7 +743,7 @@ foreach($files as $file) {
 								<ul>
 									<li class="fragment">Use <code>{{ asset('css/common.css') }}</code> to generate a path in your template to an asset in your <code>public</code> folder</li>
 									<li class="fragment">Use <code>{{ url('artists/' . $id) }}</code> to generate a path to a route</li>
-									<li class="fragment">Use <code>{{ route('admin::dashboard') }}</code> to generate a path to a <a href="https://laravel.com/docs/5.2/routing#named-routes">named route</a></li>
+									<li class="fragment">Use <code>{{ route('admin::dashboard') }}</code> to generate a path to a <a href="https://laravel.com/docs/5.3/routing#named-routes">named route</a></li>
 								</ul>
 							</li>
 						</ul>
@@ -773,7 +773,7 @@ foreach($files as $file) {
 							<li class="fragment">
 								DB configuration: see <a href="#/2">previous slides on configuration</a>
 								<ul>
-									<li class="fragment">Note: you can have <a href="https://laravel.com/docs/5.2/database#introduction">separate configs</a> for reading/writing</li>								
+									<li class="fragment">Note: you can have <a href="https://laravel.com/docs/5.3/database#introduction">separate configs</a> for reading/writing</li>
 								</ul>
 							</li>
 						</ul>
@@ -784,7 +784,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								In Laravel you can run <a href="https://laravel.com/docs/5.2/database#running-queries">raw SQL queries</a>
+								In Laravel you can run <a href="https://laravel.com/docs/5.3/database#running-queries">raw SQL queries</a>
 								<pre class="bigger"><code class="language-php">$users = DB::select('select * from users where active = ?', [1]);
 								
 foreach ($users as $user) {
@@ -807,7 +807,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								In Laravel you can run <a href="https://laravel.com/docs/5.2/database#running-queries">raw SQL queries</a>
+								In Laravel you can run <a href="https://laravel.com/docs/5.3/database#running-queries">raw SQL queries</a>
 								
 								<ul>
 								
@@ -827,7 +827,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.3/queries">docs</a>)
 								<ul>
 									<li class="fragment">Always start with <code>DB::table()</code></li>
 									<li class="fragment">and use chained methods to filter/select/aggregate data</li>
@@ -853,7 +853,7 @@ foreach ($users as $user) {
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.3/queries">docs</a>)
 								<ul>
 									<li class="fragment"><code>first()</code> returns a single row
 										<pre class="bigger"><code class="language-php">$user = DB::table('users')-&gt;where('name', 'John')-&gt;first();
@@ -879,7 +879,7 @@ foreach ($events as $id =&gt; $name) {
 
 						<ul>
 							<li class="fragment">
-								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.2/queries">docs</a>)
+								Fluent interface for building SQL queries (<a href="https://laravel.com/docs/5.3/queries">docs</a>)
 								<ul>
 									<li class="fragment">aggregate methods e.g. <code>count()</code>, <code>max()</code></li>
 									<li class="fragment">much more e.g. <code>whereIn()</code>, <code>orWhere()</code>, joins e.g. <code>leftJoin()</code>, <code>on()</code> </li>		
@@ -1098,7 +1098,7 @@ foreach ($user-&gt;tasks as $task) {
 </code></pre>
 									</li>
 
-									<li class="fragment">Read the <a href="https://laravel.com/docs/5.2/eloquent-relationships">docs on Eloquent relationships</a> to learn about other types of relationships
+									<li class="fragment">Read the <a href="https://laravel.com/docs/5.3/eloquent-relationships">docs on Eloquent relationships</a> to learn about other types of relationships
 									</li>							
 								</ul>
 							</li>
@@ -1177,7 +1177,7 @@ foreach ($user-&gt;tasks as $task) {
 							</li>
 
 							<li class="fragment">
-								Read more about it in the <a href="https://laravel.com/docs/5.2/migrations">Laravel docs on Migrations</a>
+								Read more about it in the <a href="https://laravel.com/docs/5.3/migrations">Laravel docs on Migrations</a>
 							</li>
 						</ul>
 					</section>
@@ -1485,26 +1485,26 @@ class TaskController extends Controller
 						
 						
 						<ul> 
-							<li><a href="https://laravel.com/docs/5.2/installation">Laravel docs: Installation</a></li>
-							<li><a href="https://laravel.com/docs/5.2/configuration">Laravel docs: Configuration</a></li>
+							<li><a href="https://laravel.com/docs/5.3/installation">Laravel docs: Installation</a></li>
+							<li><a href="https://laravel.com/docs/5.3/configuration">Laravel docs: Configuration</a></li>
 							<li><a href="https://scotch.io/tutorials/understanding-laravel-environment-variables">Tutorial on environment config</a></li>
-							<li><a href="https://laravel.com/docs/5.2/structure">Laravel docs: Application structure</a></li>
-							<li><a href="https://laravel.com/docs/5.2/routing">Laravel docs: Routing</a></li>	
-							<li><a href="https://laravel.com/docs/5.2/responses">Laravel docs: Responses</a></li>	
-							<li><a href="https://laravel.com/docs/5.2/views">Laravel docs: Views</a></li>
-							<li><a href="https://laravel.com/docs/5.2/blade">Laravel docs: Blade Templates</a></li>
-							<li><a href="https://laravel.com/docs/5.2/database">Laravel docs: Databases: Getting Started</a></li>
-							<li><a href="https://laravel.com/docs/5.2/queries">Laravel docs: Database: Query Builder</a></li>
-							<li><a href="https://laravel.com/docs/5.2/eloquent">Laravel docs: Eloquent: Getting Started</a></li>		
-							<li><a href="https://laravel.com/docs/5.2/migrations">Laravel docs: Migrations</a></li>					
-							<li><a href="https://laravel.com/docs/5.2/quickstart">Laravel tutorial on a task list project - basic</a></li>	
-							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
+							<li><a href="https://laravel.com/docs/5.3/structure">Laravel docs: Application structure</a></li>
+							<li><a href="https://laravel.com/docs/5.3/routing">Laravel docs: Routing</a></li>
+							<li><a href="https://laravel.com/docs/5.3/responses">Laravel docs: Responses</a></li>
+							<li><a href="https://laravel.com/docs/5.3/views">Laravel docs: Views</a></li>
+							<li><a href="https://laravel.com/docs/5.3/blade">Laravel docs: Blade Templates</a></li>
+							<li><a href="https://laravel.com/docs/5.3/database">Laravel docs: Databases: Getting Started</a></li>
+							<li><a href="https://laravel.com/docs/5.3/queries">Laravel docs: Database: Query Builder</a></li>
+							<li><a href="https://laravel.com/docs/5.3/eloquent">Laravel docs: Eloquent: Getting Started</a></li>
+							<li><a href="https://laravel.com/docs/5.3/migrations">Laravel docs: Migrations</a></li>
+							<li><a href="https://laravel.com/docs/5.3/quickstart">Laravel tutorial on a task list project - basic</a></li>
+							<li><a href="https://laravel.com/docs/5.3/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
 							
-							<li><a href="https://laravel.com/docs/5.2/controllers">Laravel docs: Controllers</a></li>
-							<li><a href="https://laravel.com/docs/5.2/routing#route-model-binding">Laravel docs: Route Model Binding</a></li>
-							<li><a href="https://laravel.com/docs/5.2/lifecycle">Laravel docs: Request Lifecycle</a></li>
-							<li><a href="https://laravel.com/docs/5.2/providers">Laravel docs: Service Providers</a></li>
-							<li><a href="https://laravel.com/docs/5.2/container">Laravel docs: Service Container</a></li>
+							<li><a href="https://laravel.com/docs/5.3/controllers">Laravel docs: Controllers</a></li>
+							<li><a href="https://laravel.com/docs/5.3/routing#route-model-binding">Laravel docs: Route Model Binding</a></li>
+							<li><a href="https://laravel.com/docs/5.3/lifecycle">Laravel docs: Request Lifecycle</a></li>
+							<li><a href="https://laravel.com/docs/5.3/providers">Laravel docs: Service Providers</a></li>
+							<li><a href="https://laravel.com/docs/5.3/container">Laravel docs: Service Container</a></li>
 						</ul>
 					</section>
 				</section>

@@ -174,7 +174,7 @@ return redirect()-&gt;route('profile');</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Middleware<small><a href="https://laravel.com/docs/5.2/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+								Middleware<small><a href="https://laravel.com/docs/5.3/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Middlewares can be global, or only for a specific route or controller
@@ -377,7 +377,7 @@ class AgeMiddleware
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/authentication">Authentication</a> is configured 100% out of the box
+								<a href="https://laravel.com/docs/5.3/authentication">Authentication</a> is configured 100% out of the box
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Facilities
@@ -642,7 +642,7 @@ $this-&gt;post('password/reset', 'Auth\PasswordController@reset');</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.2/authentication">Laravel docs on Authentication</a> on
+								Read the <a href="https://laravel.com/docs/5.3/authentication">Laravel docs on Authentication</a> on
 								<ul>
 									<li class="fragment">
 										Authentication Throttling
@@ -768,7 +768,7 @@ Route::post('post', 'PostController@store');</code></pre>
 								The <code>VerifyCsrfToken</code> middleware (part of the <code>web</code> group) is already activated and does the checking
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Read the <a href="https://laravel.com/docs/5.2/routing#csrf-protection">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
+								Read the <a href="https://laravel.com/docs/5.3/routing#csrf-protection">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
 							</li>
 						</ul>
 					</section>
@@ -781,7 +781,7 @@ Route::post('post', 'PostController@store');</code></pre>
 								By default the middleware <code>\Illuminate\Session\Middleware\StartSession</code> <br/>backs a permanent PHP session
 							</li>
 							<li class="fragment">
-								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.2/session">docs</a>)
+								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.3/session">docs</a>)
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Flash a variable = store variable in the session only for the next HTTP request
@@ -823,7 +823,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 </code></pre>
 							</li>
 							<li class="fragment">
-										The helper method <a href="https://laravel.com/docs/5.2/helpers#method-old">old</a> retrieves an old input value flashed into the session
+										The helper method <a href="https://laravel.com/docs/5.3/helpers#method-old">old</a> retrieves an old input value flashed into the session
 							</li>	
 						</ul>
 					</section>
@@ -931,7 +931,7 @@ public function store(Request $request)
 										The <code>ShareErrorsFromSession</code> middleware (part of the <code>web</code> group) assures an <code>$errors</code> variable is available in your views
 									</li>
 									<li class="fragment">
-										Enjoy the richness of <a href="https://laravel.com/docs/5.2/validation#available-validation-rules">the rules available</a>
+										Enjoy the richness of <a href="https://laravel.com/docs/5.3/validation#available-validation-rules">the rules available</a>
 									</li>									
 								</ul>
 								<pre class="bigger"><code class="language-php dontrun">'start_date' =&gt; 'required|date|after:tomorrow',
@@ -952,7 +952,7 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.2/validation">Laravel docs on Validation</a> on
+								Read the <a href="https://laravel.com/docs/5.3/validation">Laravel docs on Validation</a> on
 								<ul>
 									<li class="fragment">
 										Stopping On First Validation Failure (bail)
@@ -1015,7 +1015,7 @@ public function store(Request $request)
 								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
 								<ul>
 									<li class="fragment">
-										<a href="https://laravelcollective.com/docs/5.2/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
+										<a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
 									</li>
 									<li class="fragment">
 										You need to install it through Composer
@@ -1071,7 +1071,7 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/authorization">Authorization</a> is about defining which users are allowed to perform which actions
+								<a href="https://laravel.com/docs/5.3/authorization">Authorization</a> is about defining which users are allowed to perform which actions
 								<ul>
 									<li class="fragment">
 										<code>$ php artisan make:policy TaskPolicy</code> generates <code>app/Policies/TaskPolicy.php</code>
@@ -1098,7 +1098,7 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.2/authorization">Authorization</a> is about defining which users are allowed to perform which actions
+								<a href="https://laravel.com/docs/5.3/authorization">Authorization</a> is about defining which users are allowed to perform which actions
 								<ul>
 									<li class="fragment">
 										Link the Eloquent model to the policy in <code>app/Providers/AuthServiceProvider.php </code>
@@ -1142,13 +1142,13 @@ public function store(Request $request)
 					<section>
 						<h2>Sources</h2>
 						<ul>
-							<li><a href="https://laravel.com/docs/5.2/middleware">Laravel docs: Middleware</a></li>
-							<li><a href="https://laravel.com/docs/5.2/authentication">Laravel docs: Authentication</a></li>
+							<li><a href="https://laravel.com/docs/5.3/middleware">Laravel docs: Middleware</a></li>
+							<li><a href="https://laravel.com/docs/5.3/authentication">Laravel docs: Authentication</a></li>
 							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
-							<li><a href="https://laravel.com/docs/5.2/routing#route-groups">Laravel docs: Route Groups</a></li>
-							<li><a href="https://laravelcollective.com/docs/5.2/html">Laravel Collective docs: Forms &amp; HTML</a></li>
-							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
-							<li><a href="https://laravel.com/docs/5.2/authorization">Laravel docs: Authorization</a></li>
+							<li><a href="https://laravel.com/docs/5.3/routing#route-groups">Laravel docs: Route Groups</a></li>
+							<li><a href="https://laravelcollective.com/docs/5.3/html">Laravel Collective docs: Forms &amp; HTML</a></li>
+							<li><a href="https://laravel.com/docs/5.3/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
+							<li><a href="https://laravel.com/docs/5.3/authorization">Laravel docs: Authorization</a></li>
 						</ul>
 					</section>
 				</section>
