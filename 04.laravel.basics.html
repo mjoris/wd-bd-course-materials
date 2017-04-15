@@ -69,9 +69,30 @@
 					</section>
 
 					<section>
+						<h2>(General) PHP frameworks</h2>
+						<ul>
+							<li class="fragment">Microframework
+								<ul>
+									<li>Light-weight, extensible, fast</li>
+									<li>Typically: a <em>router</em> connected to an extensible skeleton (where you need to plug and install other services) </li>
+									<li class="fragment">Examples: <a href="https://silex.sensiolabs.org/">Silex</a>, <a
+											href="https://lumen.laravel.com/">Lumen</a>, Flight, Slim </li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">Full-featured frameworks
+								<ul>
+									<li>Typically: a full-stack (enterprise) MVC framework supporting templating, caching, ORM, security, authentication, forms, &hellip; </li>
+									<li class="fragment">Examples: <a href="https://symfony.com/">Symfony</a>, <a
+											href="https://laravel.com/">Laravel</a>, Zend, Nette, CodeIgniter, YII, PHPixie  </li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
 						<h2>Laravel</h2>
 						<ul>
-							<li class="fragment">Full-featured PHP Framework for the development of web applications 
+							<li class="fragment">Full-featured PHP Framework for the development of web applications and web APIs
 								<ul>
 									<li class="fragment">Model–View–Controller (MVC) pattern</li>
 									<li class="fragment">
@@ -128,7 +149,7 @@
 					
 					<section>
 						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.3/structure">project structure</a> (1)</h2>
-						<ul>
+						<ul style="font-size: 75%">
 							<li class="fragment">
 								<code>public/</code> &mdash; Public files
 								<ul>
@@ -138,12 +159,30 @@
 								</ul>
 							</li>
 							<li class="fragment">
-								<code>app/</code> &mdash; Core code of your application &mdash; 8 subfolders e.g.
+								<code>routes/</code> &mdash; Public files
 								<ul>
-									<li class="fragment"><code>Console/</code> &mdash; Your Artisan commands</li>
-									<li class="fragment"><code>Http/</code> &mdash; Your routes, controllers, middleware, and requests.</li>
+									<li class="fragment"><code class="special">api.php</code> &mdash; Your API routes</li>
+									<li class="fragment"><code class="special">console.php</code> &mdash; Your Artisan console routes</li>
+									<li class="fragment"><code class="special">web.php</code> &mdash; Your web routest</li>
 								</ul>
 							</li>
+							<li class="fragment">
+								<code>app/</code> &mdash; <a href="http://www.php-fig.org/psr/psr-4/">PSR-4</a> classes of your application &mdash; 4 subfolders e.g.
+								<ul>
+									<li class="fragment"><code>Console/</code> &mdash; Your Artisan commands</li>
+									<li class="fragment"><code>Http/</code> &mdash; Your controllers and middleware</li>
+								</ul>
+								You create the classes with Artisan, which might add subfolders
+							</li>
+
+							
+						</ul>
+						<footer class="fragment"><em>Note: Make sure only the contents of <code>public/</code> are accessible over HTTP(s)!</em></footer>
+					</section>
+					
+					<section>
+						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.3/structure">project structure</a> (2)</h2>
+						<ul style="font-size: 70%">
 							<li class="fragment">
 								<code>bootstrap/</code> &mdash; Bootstrap and autoloading
 							</li>
@@ -153,14 +192,6 @@
 							<li class="fragment">
 								<code>database/</code> &mdash; Database migration and seeds
 							</li>
-							
-						</ul>
-						<footer class="fragment"><em>Note: Make sure only the contents of <code>public/</code> are accessible over HTTP!</em></footer>
-					</section>
-					
-					<section>
-						<h2><small>(Already installed)</small> <a href="https://laravel.com/docs/5.3/structure">project structure</a> (2)</h2>
-						<ul>
 							<li class="fragment">
 								<code>resources/</code> &mdash; Raw assets (to be compiled) such as templates and localization files
 							</li>
@@ -251,7 +282,7 @@
 								Replace the version number by <code>master</code> in the URLs for the most recent Laravel version
 							</li>
 							<li class="fragment">
-								Don't use the docs of Laravel versions < 5.0. A lot has changed.
+								Don't use the docs of old Laravel versions (!). A lot has changed.
 							</li>
 							
 						</ul>
@@ -304,7 +335,7 @@
 										10 other config files e.g. <code>config/cache.php</code>, <code>config/session.php</code>, &hellip;
 									</li>
 									<li class="fragment">
-										format: one big (nested) array of key-value pairs of settings e.g. <pre class="bigger"><code class="language-php">'charset' => 'utf8mb4',</code></pre>
+										format: one big (nested) array of key-value pairs of settings e.g. <pre class="bigger"><code class="language-php">'charset' => 'utf8',</code></pre>
 									</li>
 								</ul>
 							</li>					
@@ -353,11 +384,11 @@ DB_PASSWORD=secret</code></pre>
 								<ul>
 									<li>Put your production configuration in <code>config/*.php</code></li>
 									<li>Override parts of it with local settings in <code>.env</code></li>
-									<li>Keep <code>.env</code> out of version control (git &rarr; <code>.gitignore</code>). It's private. <br/> </li>
+									<li>In most cases: keep <code>.env</code> out of version control (git &rarr; <code>.gitignore</code>). It's private. <br/> </li>
 								</ul>
 							</li>							
 						</ul>
-						<footer class="fragment"><em>Note: the application key is always in <code>.env</code></em><br><em>Note: alternative local configurations like <code>.env.testing</code> can be used by PHPUnit</em></footer>
+						<footer class="fragment" style="line-height: 1.5;"><em>Note: the application key is always in <code>.env</code></em><br><em>Note: alternative local configurations like <code>.env.testing</code> can be used by PHPUnit</em></footer>
 					</section>
 					
 					<section>
@@ -422,21 +453,52 @@ DB_CONNECTION=sqlite</code></pre>
 						<h2>Routing</h2>
 						<ul>
 							<li class="fragment">
-								All Laravel routes are defined in <code>app/Http/routes.php</code>
+								The routes of your web app are defined in <code>routes/web.php</code>
 							</li>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.3/routing#basic-routing">Router methods</a> very similar to Silex routing
+								What's a route?
+								<ul>
+									<li class="fragment">A route is a combination of a <strong>pattern</strong> and an <strong>HTTP method</strong></li>
+									<li class="fragment">A route is handled by a <strong>handling function</strong> which returns/does x/y</li>
+								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em">
+								<a href="https://laravel.com/docs/5.3/routing#basic-routing">Router methods</a> very similar to bramus/router
+							</li>
+							<li class="fragment">
 								Router method available for any HTTP verb (get, post, put, ...)
 								<pre class="bigger"><code class="language-php">Route::get('foo', function () {
     return 'Hello World';
 });</code></pre>
 							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Example</h2>
+						<pre class="bigger"><code class="language-php">Route::get('/', function () {
+	// show something (e.g. return a blob of HTML)
+});
+
+Route::get('/about', function () {
+	// show something else (e.g. return a blob of HTML)
+});
+
+Route::post('/', function () {
+	// do something (e.g. insert into database, send e-mail)
+});
+</code></pre>
+						<footer class="fragment" style="line-height: 1"><em>Note: POST requests are only accepted when a <a
+								href="https://laravel.com/docs/5.3/csrf">CSRF</a> token is included in the request - we'll talk about that later on </em></footer>
+					</section>
+
+					<section>
+						<h2>HTTP method combinations</h2>
+						<ul>
 							<li class="fragment" style="margin-top: 1em">
 								HTTP verb combinations
 								<pre class="bigger"><code class="language-php">Route::match(['get', 'post'], '/', function () { &hellip;
-								
+
 Route::any('foo', function () { &hellip;</code></pre>
 							</li>
 						</ul>
@@ -520,16 +582,19 @@ Route::post('register', function(Request $request) {
 								The <a href="https://laravel.com/docs/5.3/requests">HTTP Request</a>
 								<ul>
 									<li class="fragment">use a <code>.</code> to dig into arrays (whether JSON or not)</li>
-										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;input('products.0.name');</code></pre>
+										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;input('products.0.name');
+$names = $request-&gt;input('products.*.name');	</code></pre>
 									</li>
 									<li class="fragment">dynamic properties
 										<pre class="bigger fragment"><code class="language-php">$name = $request-&gt;name; // same as: $request&gt;input('name');</code></pre>
 									</li>
 									<li class="fragment">handling file uploads
-										<pre class="bigger fragment"><code class="language-php">$files = $request-&gt;file('additional_documents');
-foreach($files as $file) {
-	$fileName = $file-&gt;getClientOriginalName();
-	$success = $file-&gt;move($destinationPath, $fileName); // path relative to public/
+										<pre class="bigger fragment"><code class="language-php">if ($request->hasFile('additional_documents')) {
+    $files = $request->file('additional_documents');
+    foreach ($files as $file) {
+        $file->store('users/' . $userId . '/docs'); // folder relative to Filesystem root
+        // want to specify file name? $file->storeAs()
+    }
 }</code></pre>
 									</li>									
 									<li class="fragment">Want more? <a href="https://laravel.com/api/5.3/Illuminate/Http/Request.html">Request API</a></li>
@@ -549,6 +614,7 @@ foreach($files as $file) {
 									<li class="fragment">can be returned in your code
 										<ul>
 											<li class="fragment">as a string (automatic conversion): <code class="language-php">return 'Hello World';</code></li>
+											<li class="fragment">as a JSON response: <code class="language-php">return ['name' => 'Abigail', 'state' => 'CA'];</code></li>
 											<li class="fragment">as a Response object: <pre class="bigger"><code class="language-php">return (new Response($content, $status));</code></pre></li>
 											<li class="fragment">idem, with helper (no use-statement needed):<pre class="bigger"><code class="language-php">return response($content, $status));</code></pre></li>
 											<li class="fragment">idem, with chained methods:
@@ -574,9 +640,9 @@ foreach($files as $file) {
 									<li class="fragment">is an instance of <code>Illuminate\Http\Response</code></li>
 									<li class="fragment">can be returned in your code
 										<ul>
-											<li class="fragment">as a view: <pre class="bigger"><code class="language-php">return view('greeting', ['name' => 'James']);</code></pre> &mdash; it involves rendering the <code>resources/views/greeting.php</code> template</li>
+											<li class="fragment">as a view: <pre class="bigger"><code class="language-php">return view('greeting', ['name' => 'James']);</code></pre> &mdash; it involves rendering the <code>resources/views/greeting.blade.php</code> template</li>
 											<li class="fragment">idem, with chained HTTP response methods: <pre class="bigger"><code class="language-php">return response()->view('greeting', $data)->&hellip;;</code></pre></li>
-											<li class="fragment">as a JSON response: <pre class="bigger"><code class="language-php">return response()->json(['name' => 'Abigail', 'state' => 'CA']);</code></pre></li>
+											<li class="fragment">JSON, with chained HTTP response methods: <pre class="bigger"><code class="language-php">return response()->json(['name' => 'Abigail', 'state' => 'CA'])->&hellip;;</code></pre></li>
 										</ul>
 									</li>
 								</ul>
@@ -595,6 +661,7 @@ foreach($files as $file) {
 									<li class="fragment">can be returned in your code
 										<ul>
 											<li class="fragment">as a forced file download: <pre class="bigger"><code class="language-php">return response()->download($pathToFile);</code></pre></li>
+											<li class="fragment">as a file displayed in the browser: <pre class="bigger"><code class="language-php">return response()->file($pathToFile);</code></pre></li>
 											<li class="fragment">as a <code>RedirectResponse</code> instance: <pre class="bigger"><code class="language-php">return redirect('home/dashboard');</code></pre></li>
 											<li class="fragment">idem, after invalid form submission: <pre class="bigger"><code class="language-php">return back()->withInput();</code></pre></li>
 										</ul>
@@ -602,7 +669,27 @@ foreach($files as $file) {
 								</ul>
 							</li>
 						</ul>
-					</section>						
+					</section>
+
+					<section>
+						<h2>Custom HTTP error pages</h2>
+
+						<ul>
+							<li class="fragment">
+								Some exceptions describe HTTP error codes from the server
+								<ul>
+									<li class="fragment">e.g. page not found <code>404</code> (when there is no matching route), internal error (caused by developer) <code>500</code>, &hellip;</li>
+									<li class="fragment">raise them yourself by the <a href="https://laravel.com/docs/5.3/helpers#method-abort">abort()</a> helper</li>
+									<li class="fragment">these exceptions are rendered by the <a href="https://laravel.com/docs/5.3/errors#the-exception-handler">exception handler</a> which by default
+										<ul>
+											<li class="fragment">renders a custom error page defined by you: <code>resources/views/errors/404.blade.php</code> for error code <code>404</code> and so on </li>
+											<li class="fragment">otherwise: shows a default error page with stack trace (if your app is in debug mode)</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
 
 
 				</section>
@@ -619,16 +706,17 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								Presentation logic: "templates" stored in the <code>resources/views</code>
+								Presentation logic: "templates" stored in <code>resources/views</code>
 								<ul>
-									<li class="fragment">A simple view contains inline PHP code e.g. <code>resources/views/subdir/greeting.php</code>
+									<li class="fragment">A simple view using the Blade syntax e.g. <code>resources/views/subdir/greeting.blade.php</code>
 										<pre class="bigger"><code class="language-php">&lt;html&gt;
     &lt;body&gt;
-        &lt;h1&gt;Hello, &lt;?php echo htmlentities($name); /* XSS prevention */ ?&gt;&lt;/h1&gt;
+        &lt;h1&gt;Hello, {{ $name }}&lt;/h1&gt;
     &lt;/body&gt;
 &lt;/html&gt;</code></pre></li>
 									<li class="fragment">The <code>view</code> helper returns an instance of <code>Illuminate\View\View</code>, to which you can pass variables.
-										<pre class="bigger"><code class="language-php">return view('subdir.greeting', ['name' => 'Eddy']);</code></pre></li>
+										<pre class="bigger"><code class="language-php">return view('subdir.greeting', ['name' => 'Eddy']);
+// alt.: return view('subdir.greeting')->with('name', 'Eddy');	</code></pre></li>
 									</li>
 								</ul>
 							</li>
@@ -641,7 +729,7 @@ foreach($files as $file) {
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.3/blade">Blade templates</a> are views compiled by the Blade template engine
+								<a href="https://laravel.com/docs/5.3/blade">Blade templates</a> are compiled by the Blade template engine
 								<ul>
 									<li class="fragment">File extension: <code>.blade.php</code></li>
 									<li class="fragment">File location, view instantiation (omit <code>.blade.php</code>!) and variable passing: see previous slide (Views).</li> 
@@ -687,7 +775,7 @@ foreach($files as $file) {
 @endif
 
 @foreach ($events as $event)
-    &lt;p&gt;This is user {{ $event->id }}&lt;/p&gt;
+    &lt;p&gt;This is user {{ $event->id }} ({{ $loop->iteration }} / {{ $loop->count }})&lt;/p&gt;
 @endforeach</code></pre>
 								<ul>
 									<li class="fragment">Structures don't work without <code>()</code></li> 
@@ -739,16 +827,137 @@ foreach($files as $file) {
 						<h2>Blade vs. clean URLs</h2>
 						<ul>
 							<li class="fragment">
-								Linking from <code>/route1</code> to <code>/route2</code> would generate a browser link to <code>/route1/route2</code> 
+								Linking from <code>/route1</code> to <code>/route2</code> would generate a browser link to <code>/route1/route2</code> &rightarrow; helpers
 								<ul>
-									<li class="fragment">Use <code>{{ asset('css/common.css') }}</code> to generate a path in your template to an asset in your <code>public</code> folder</li>
-									<li class="fragment">Use <code>{{ url('artists/' . $id) }}</code> to generate a path to a route</li>
-									<li class="fragment">Use <code>{{ route('admin::dashboard') }}</code> to generate a path to a <a href="https://laravel.com/docs/5.3/routing#named-routes">named route</a></li>
+									<li class="fragment"><a href="https://laravel.com/docs/5.3/helpers#method-asset">asset()</a> - Use <code>{{ asset('css/common.css') }}</code> to generate a path in your template to an asset in your <code>public</code> folder</li>
+									<li class="fragment"><a href="https://laravel.com/docs/5.3/helpers#method-url">url()</a> - Use <code>{{ url('artists/' . $id) }}</code> to generate a path to a route</li>
+									<li class="fragment"><a href="https://laravel.com/docs/5.3/helpers#method-route">route()</a> - Use <code>{{ route('admin::dashboard') }}</code> to generate a path to a <a href="https://laravel.com/docs/5.3/routing#named-routes">named route</a></li>
 								</ul>
 							</li>
 						</ul>
-					</section>					
+					</section>
 
+				</section>
+
+
+				<!-- Coding practices -->
+				<section>
+					<section>
+						<h2>Coding practices</h2>
+					</section>
+
+					<section>
+						<h2>Coding practices</h2>
+
+						<ul>
+							<li class="fragment">
+								Laravel has many (hidden) features, libraries, syntactic sugar, recipes &hellip;
+								<ul>
+									<li class="fragment"><strong>providing elegant solutions to many common problems</strong></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								So stop thinking in plain PHP when writing code &mdash; how?
+								<ul>
+									<li class="fragment">by getting introduced to these features (next slides)</li>
+									<li class="fragment">by reading the docs and <em>good</em> code examples</li>
+									<li class="fragment">by experience</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>#1 Facades and helpers</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.3/facades">Facades</a>
+								<ul>
+									<li class="fragment">Static interfaces to basic Laravel classes available e.g. <code>Route</code>, <code>View</code></li>
+								</ul>
+							</li>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.3/helpers">Helper functions</a>
+								<ul>
+									<li class="fragment">Arrays &mdash; complement PHP's array functions e.g.
+										<a href="https://laravel.com/docs/5.3/helpers#method-array-pluck">array_pluck()</a>
+										<a href="https://laravel.com/docs/5.3/helpers#method-array-flatten">array_flatten()</a>
+										<a href="https://laravel.com/docs/5.3/helpers#method-array-set">array_set()</a>
+										<a href="https://laravel.com/docs/5.3/helpers#method-array-sort">array_sort()</a>
+									</li>
+									<li class="fragment">Paths &mdash; internal configuration paths
+									</li>
+									<li class="fragment">Strings &mdash; complement PHP's string functions e.g.
+										<a href="https://laravel.com/docs/5.3/helpers#method-str-is">str_is()</a>
+										<a href="https://laravel.com/docs/5.3/helpers#method-str-contains">str_contains()</a>
+										<a href="https://laravel.com/docs/5.3/helpers#method-str-plural">str_plural()</a>
+									</li>
+									<li class="fragment">URLs &mdash; for generating URLs
+									</li>
+									<li class="fragment">Misc &mdash; Facade function shorthans as well as other functions - check this one:
+										<a href="https://laravel.com/docs/5.3/helpers#method-dd">dd()</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+
+					<section>
+						<h2>#2 Collections</h2>
+
+						<ul>
+							<li class="fragment">
+								A <a href="https://laravel.com/docs/5.3/collections">collection</a> (<code>Illuminate\Support\Collection</code>) is a convenient wrapper for working with arrays of data
+
+								<ul>
+									<li class="fragment">Avoid complex (plain PHP) loops</li>
+									<li class="fragment">Method chaining &mdash; example <pre class="bigger"><code class="language-php">$collection = collect(['taylor', 'abigail', null])->map(function ($name) {
+    return strtoupper($name);
+})
+->reject(function ($name) {
+    return empty($name);
+});</code></pre></li>
+									<li class="fragment"><a href="https://www.youtube.com/watch?v=crSUWtRYw-M">&#128250; Watch Adam Wathan on Laracon EU 2016</a></li>
+									<li>Check it out:
+										<a href="https://laravel.com/docs/5.3/collections#method-map">map()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-filter">filter()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-reduce">reduce()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-flatten">flatten()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-flatmap">flatMap()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-pluck">pluck()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-where">where()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-all">all()</a>
+									</li>
+
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>#3 Carbon</h2>
+
+						<ul>
+							<li class="fragment">
+								Laravel comes with <a href="http://carbon.nesbot.com/docs/">Carbon</a><pre class="bigger"><code class="language-php">use Carbon\Carbon;</code></pre>
+								<ul>
+									<li class="fragment">The Carbon class extends the PHP <a href="http://www.php.net/manual/en/class.datetime.php">DateTime</a> class
+									</li>
+									<li class="fragment">Very extensive API (read the docs !)
+										<pre class="bigger"><code class="language-php">$dt = Carbon::yesterday();
+
+echo $dt->diffInMinutes($dt->copy()->addWeekDays(50));
+
+Carbon::setLocale('de');
+echo Carbon::now()->addYear()->diffForHumans();    // in 1 Jahr
+</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
 				</section>
 
 				<!-- 4 Database features -->
@@ -1313,13 +1522,41 @@ $ php artisan make:model Product
 					<section>
 						<h2>Building MVC apps</h2>
 					</section>
+
+					<section>
+						<h2>MVC</h2>
+						<ul>
+							<li class="fragment">
+								Short for <strong>Model-View-Controller</strong>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Architectural pattern describing how to build your app
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								In a web-context:
+								<ul>
+									<li class="fragment">The model represents data</li>
+									<li class="fragment">The view visually represents the model</li>
+									<li class="fragment">The controller is the app logic: decides what the input was, and orchestrates the proper models/views</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>MVC</h2>
+						<figure>
+							<img src="assets/04o/mvc.png" alt="Model View Controller" title="Model View Controller" width="800" />
+							<figcaption>MVC Schematic <em>(<a href="http://www.dubberly.com/articles/model-view-controller-pattern.html">ref</a>)</em></figcaption>
+						</figure>
+					</section>
 					
 					<section>
 						<h2>MVC in Laravel: overview</h2>
 						<p><img src="assets/04/mvc_diagram_with_routes.png" alt="" title="" width="600" style="background-color:white;" />
 						<div style="font-size: 50%; line-height: 100%;margin-top: -1em;">
 							Source: <a href="https://selftaughtcoders.com/from-idea-to-launch/lesson-17/laravel-5-mvc-application-in-10-minutes/">selftaughtcoders.com</a></span>
-						</p>
+						</div>
 					</section>
 
 					<section>
@@ -1329,6 +1566,19 @@ $ php artisan make:model Product
 							<li class="fragment" style="margin-top: 1em;"><strong>Views</strong>: store your Blade (or PHP) templates in <code>resources/views</code> </li>
 							<li class="fragment" style="margin-top: 1em;"><strong>Controllers</strong>: see next slide(s)</li>							
 						</ul>
+					</section>
+
+					<section>
+						<h2>HTTP Controllers: motivation</h2>
+
+						<ul>
+							<li class="fragment">
+								Codebase doesn't scale well
+								<ul>
+									<li class="fragment">What if we need to define more logic/routes?<br />&rarr; <code>/routes/web.php</code> will quickly become one cluttered mess</li>
+									<li class="fragment">Solution: Organize our routes in a <strong>Controller</strong></li>
+								</ul>
+							</li>
 					</section>
 
 					<section>
