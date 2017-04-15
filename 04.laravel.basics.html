@@ -827,7 +827,7 @@ $names = $request-&gt;input('products.*.name');	</code></pre>
 						<h2>Blade vs. clean URLs</h2>
 						<ul>
 							<li class="fragment">
-								Linking from <code>/route1</code> to <code>/route2</code> would generate a browser link to <code>/route1/route2</code> &rightarrow; helpers
+								Linking from <code>route/1/</code> to <code>route/2/</code> would generate a browser link to <code>route/1/route/2</code> &rightarrow; helpers
 								<ul>
 									<li class="fragment"><a href="https://laravel.com/docs/5.3/helpers#method-asset">asset()</a> - Use <code>{{ asset('css/common.css') }}</code> to generate a path in your template to an asset in your <code>public</code> folder</li>
 									<li class="fragment"><a href="https://laravel.com/docs/5.3/helpers#method-url">url()</a> - Use <code>{{ url('artists/' . $id) }}</code> to generate a path to a route</li>
@@ -926,6 +926,7 @@ $names = $request-&gt;input('products.*.name');	</code></pre>
 										<a href="https://laravel.com/docs/5.3/collections#method-reduce">reduce()</a>
 										<a href="https://laravel.com/docs/5.3/collections#method-flatten">flatten()</a>
 										<a href="https://laravel.com/docs/5.3/collections#method-flatmap">flatMap()</a>
+										<a href="https://laravel.com/docs/5.3/collections#method-prepend">prepend()</a>
 										<a href="https://laravel.com/docs/5.3/collections#method-pluck">pluck()</a>
 										<a href="https://laravel.com/docs/5.3/collections#method-where">where()</a>
 										<a href="https://laravel.com/docs/5.3/collections#method-all">all()</a>
