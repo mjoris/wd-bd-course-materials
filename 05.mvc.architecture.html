@@ -100,6 +100,163 @@
 						<h2>Introducing ORM (todo)</h2>
 					</section>
 
+					<section>
+						<h2>Plain PHP example v1 (part 1)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								Assume a DB table <code>todo</code> with columns <code>id</code> (PK), <code>what</code> and <code>priority</code>
+								<pre class="bigger fragment"><code class="language-php" style="font-size: 85%">class Todo {
+
+    private $id = 0; // 0 means: not stored in DB
+    public $what;
+    public $priority;
+
+    public function __construct($assocArray = []) {
+        $this->id = array_key_exists('id', $assocArray)? $assocArray['id'] : 0;
+        $this->what = array_key_exists('what', $assocArray)? $assocArray['what'] : '';
+        $this->priority = array_key_exists('priority', $assocArray)? $assocArray['priority'] : 'low';
+    }
+
+    &hellip;</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Plain PHP example v1 (part 2)</h2>
+						<pre class="bigger fragment"><code class="language-php" style="font-size: 85%">    public function save() {
+        if ($this->id === 0) {
+            $stmt = Database::getDatabase()->prepare('INSERT INTO todos (what, priority) VALUES (?, ?);');
+            $stmt->execute(array($this->what, $this->priority ));
+            $this->id = Database::getDatabase()->lastInsertId();
+        } else {
+            $stmt = Database::getDatabase()->prepare('UPDATE todos SET what = ?, priority = ? WHERE id = ?;');
+            $stmt->execute(array($this->what, $this->priority, $this->id ));
+        }
+    }
+
+    public static function all() {
+        $todoObjects = [];
+        $stmt = Database::getDatabase()->query('SELECT * FROM todos;');
+        while ($todo = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $todoObjects[] = new Todo($todo);
+        }
+        return $todoObjects;
+    }
+}</code></pre>
+
+					</section>
+
+					<section>
+						<h2>Plain PHP example v1 (part 3)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								Demo usage
+								<pre class="bigger fragment"><code class="language-php" data-overlay-example="assets/05/examples/simple-mvc/01.php">$todos = Todo::all();
+var_dump($todos);
+
+echo $todos[0]->what;
+
+$todo = new Todo();
+$todo->what = 'Go lunching !!';
+$todo->priority = 'high';
+$todo->save();
+
+var_dump(Todo::all());
+$todo->delete();
+var_dump(Todo::all());</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Plain PHP example v2 (part 1)</h2>
+
+						<pre class="bigger fragment"><code class="language-php" style="font-size: 85%">class Model {
+
+    private $assocArray = []; // 'id' => 0 means: not stored in DB
+
+    public function __get($key) { // magic method for inaccessible properties '->'
+        return $this->assocArray[$key];
+    }
+
+    public function __set($key, $value) { // magic method for inaccessible properties '->'
+        $this->assocArray[$key] = $value;
+    }
+
+    protected static function getTablename() {
+        return strtolower(get_called_class()) . 's'; // needs some linguistic optimization
+    }
+
+    public function __construct($assocArray = []) {
+        if (!array_key_exists('id', $assocArray)) {
+            $assocArray['id'] = 0;
+        }
+        $this->assocArray = $assocArray;
+    }
+
+	&hellip;</code></pre>
+					</section>
+
+					<section>
+						<h2>Plain PHP example v2 (part 2)</h2>
+						<pre class="bigger fragment"><code class="language-php" style="font-size: 85%">    public function save() {
+        $assocWithoutId = array_diff_key($this->assocArray, array('id' => 'dummy'));
+        if ($this->id === 0) {
+            $stmt = Database::getDatabase()->prepare('INSERT INTO ' . self::getTablename() . ' (' .
+						implode(',', array_keys($assocWithoutId)) . ') VALUES (' .
+						substr(str_repeat("?,", count($assocWithoutId)), 0, -1) . ');');
+            $stmt->execute(array_values($assocWithoutId));
+            $this->id = Database::getDatabase()->lastInsertId();
+        } else {
+            $stmt = Database::getDatabase()->prepare('UPDATE ' . self::getTablename() . ' SET ' .
+						implode(' = ?,', array_keys($assocWithoutId)) . ' = ? WHERE id = ?;');
+            $stmt->execute(array_values($this->assocArray));
+        }
+    }
+
+    public static function all() {
+        $todoObjects = [];
+        $stmt = Database::getDatabase()->query('SELECT * FROM ' . self::getTablename() . ';');
+        while ($todo = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $subclassName = get_called_class();
+            $todoObjects[] = new $subclassName($todo);
+        }
+        return $todoObjects;
+    }
+}</code></pre>
+
+					</section>
+
+					<section>
+						<h2>Plain PHP example v2 (part 3)</h2>
+
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								Demo usage
+								<pre class="bigger fragment"><code class="language-php" data-overlay-example="assets/05/examples/simple-mvc/02.php">class Todo extends Model {
+    // override getTablename() if you need to
+}
+
+$todos = Todo::all();
+var_dump($todos);
+
+echo $todos[0]->what;
+
+$todo = new Todo();
+$todo->what = 'Go lunching !!';
+$todo->priority = 'high';
+$todo->save();
+
+var_dump(Todo::all());
+$todo->delete();
+var_dump(Todo::all());</code></pre>
+							</li>
+						</ul>
+					</section>
+
 				</section>
 
 				<section>
@@ -645,6 +802,7 @@ $ php artisan make:model Product
 									<li class="fragment">Solution: Organize our routes in a <strong>Controller</strong></li>
 								</ul>
 							</li>
+						</ul>
 					</section>
 
 					<section>
