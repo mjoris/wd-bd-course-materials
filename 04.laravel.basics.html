@@ -561,7 +561,7 @@ Route::any('foo', function () { &hellip;</code></pre>
 									<pre class="bigger fragment"><code class="language-php">use Illuminate\Http\Request;
 									
 Route::post('register', function(Request $request) {
-	$email = $request&gt;input('email', 'not provided');
+	$email = $request-&gt;input('email', 'not provided');
 	$name = $request-&gt;cookie('name');
 	$iKnowItsTrue = $request-&gt;isMethod('post');
 	if ($request-&gt;has('name')) {
