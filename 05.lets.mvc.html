@@ -980,7 +980,7 @@ Route::delete('/task/{task}', 'TaskController@destroy');</code></pre>
 								<pre class="bigger fragment"><code class="language-php">class TaskController extends Controller
 {
 	&hellip;
-	public function destroy(Task $task) // implicit model binding (on ID)
+	public function destroy(Task $task) // implicit model binding (on ID) + 404 on fail
 	{
 		$task-&gt;delete();
 		return redirect('/tasks');
