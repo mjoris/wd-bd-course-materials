@@ -44,10 +44,10 @@
 				<section>
 					<section>
 						<h3 class="inverted">Backend Development <small>[JLW506]</small></h3>
-						<h1>05.Dependency Injection</h1>
+						<h1>06.Dependency Injection</h1>
 
 						<footer>
-							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &amp; <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
 						</footer>
 						<script>
 							// Delicously hacky. Look away.
@@ -64,7 +64,7 @@
 					<section>
 						<h2>Dependency Injection</h2>
 
-						<p><img src="assets/old.04/futurama_blernsball.jpg" alt="" title="" width="447" /></p>
+						<p><img src="assets/06/futurama_blernsball.jpg" alt="" title="" width="447" /></p>
 						<q style="font-size: 90%">He's good, alright. But he's no Clem Johnson. And Johnson played back in the days before steroid injections were mandatory.</q>
 					</section>
 
@@ -96,7 +96,7 @@
 						<ul>
 							<li class="fragment">
 								Without DI:
-								<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_01.php">&lt;?php
+								<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_01.php">&lt;?php
 
 class Router {
 
@@ -123,7 +123,7 @@ var_dump($router);</code></pre>
 						<ul>
 							<li class="fragment">
 								With DI:
-								<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_02.php">&lt;?php
+								<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_02.php">&lt;?php
 
 class Router {
 
@@ -206,7 +206,7 @@ var_dump($router);</code></pre>
 						<ul>
 							<li>
 								Using the DiC from the previous slide:
-								<div class="fragment"><pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_03.php" style="max-height: 380px; overflow: scroll;">// Router Class
+								<div class="fragment"><pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_03.php" style="max-height: 380px; overflow: scroll;">// Router Class
 class Router {
 
 	protected $request;
@@ -297,7 +297,7 @@ $router = new Router($container-&gt;get('request'), $container-&gt;get('response
 						<ul>
 							<li>
 								Using the SL from the previous slide:
-										<pre class="bigger"><code class="language-php" data-overlay-example="assets/04/examples/di_04.php" style="max-height: 360px; overflow: scroll;">// Router Class
+										<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_04.php" style="max-height: 360px; overflow: scroll;">// Router Class
 class Router {
 
 	protected $request;
@@ -355,7 +355,7 @@ $router = new Router($sl, '/hello');</code></pre>
 					<section>
 						<h2>Pimple Deepdive</h2>
 
-						<p><img src="assets/old.04/futurama_pimple.png" alt="" title="" width="447" /></p>
+						<p><img src="assets/06/futurama_pimple.png" alt="" title="" width="447" /></p>
 						<q>I'll make you cry, buddy. You're a pimple on society's ass and you'll never amount to anything.</q>
 					</section>
 
