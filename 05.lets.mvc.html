@@ -473,7 +473,7 @@ DB::table('users')->where('votes', '&lt;', 100)->delete();
 								<ul>
 									<li class="fragment">The model assumes the table has an (auto-increment) primary key called <code>id</code>, unless you add
 <pre class="bigger"><code class="language-php">protected $primaryKey = 'event_id';
-protected $incrementing = false;</code></pre>
+public $incrementing = false;</code></pre>
 									</li>
 									<li class="fragment">The model assumes that the table has <code>created_at</code> and <code>updated_at</code> columns, unless you add
 <pre class="bigger"><code class="language-php">public $timestamps = false;</code></pre>
@@ -780,7 +780,7 @@ foreach ($user-&gt;tasks as $task) {
 					<section>
 						<h2>Migrations (3)</h2>
 
-						<ul>
+						<ul style="font-size: 85%">
 							<li class="fragment">
 								Example: table creation
 								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:migration create_events_table --create=events</code></pre>
@@ -805,6 +805,8 @@ foreach ($user-&gt;tasks as $task) {
 								</ul>
 							</li>
 						</ul>
+						<footer class="fragment"><em>Note: if you create the classes without Artisan you need to call <strong>composer dump-autoload</strong> <small><sup>why? <a
+								href="http://developed.be/2014/08/29/composer-dump-autoload-laravel/">1</a>, <a href="http://stackoverflow.com/questions/33973967/why-do-i-have-to-run-composer-dump-autoload-command-to-make-migration-work-in">2</a></sup></small></em></footer>
 					</section>
 					
 					<section>
