@@ -84,7 +84,7 @@
 							<li class="fragment" style="margin-top: 1em;">
 								DI results in better code
 								<ul>
-									<li class="fragment">Easier to test</li>
+									<li class="fragment">Easier to test <em>(mock implementation)</em></li>
 									<li class="fragment">Inversion of Control <em>(see further)</em></li>
 								</ul>
 							</li>
@@ -96,24 +96,19 @@
 						<ul>
 							<li class="fragment">
 								Without DI:
-								<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_01.php">&lt;?php
-
-class Router {
-
-	protected $request;
-	protected $response;
-
-	public function __construct($path) {
-		$this-&gt;request = new Request();
-		$this-&gt;response = new Response();
-		$this-&gt;path = $path;
-		// &hellip;
-	}
-
+								<pre class="bigger"><code class="language-php dontrun">class UserController extends Controller
+{
+    public function show($id)
+    {
+		$users = new UserRepository();
+        $user = $users-&gt;find($id);
+        return view('user.profile', ['user' =&gt; $user]);
+    }
 }
 
-$router = new Router('/hello');
-var_dump($router);</code></pre>
+// What Laravel's route dispatcher actually does (simplified):
+$controller = new UserController();
+$response = $controller-&gt;show($id);</code></pre>
 							</li>
 						</ul>
 					</section>
@@ -123,25 +118,25 @@ var_dump($router);</code></pre>
 						<ul>
 							<li class="fragment">
 								With DI:
-								<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_02.php">&lt;?php
+								<pre class="bigger"><code class="language-php dontrun">class UserController extends Controller
+{
+    protected $users;
 
-class Router {
+    public function __construct(UserRepository $users)
+    {
+        $this-&gt;users = $users;
+    }
 
-	protected $request;
-	protected $response;
-
-	public function __construct(Request $request, Response $response, $path) {
-		$this-&gt;request = $request;
-		$this-&gt;response = $response;
-		$this-&gt;path = $path;
-	}
-
+    public function show($id)
+    {
+        $user = $this-&gt;users-&gt;find($id);
+        return view('user.profile', ['user' =&gt; $user]);
+    }
 }
 
-$request = new Request();
-$reponse = new Response();
-$router = new Router($request, $response, '/hello');
-var_dump($router);</code></pre>
+// What Laravel's route dispatcher actually does (simplified):
+$controller = new UserController(new UserRepository());
+$response = $controller-&gt;show($id);</code></pre>
 							</li>
 						</ul>
 						<footer class="fragment">&rarr; We have injected the dependencies via the constructor</footer>
@@ -151,7 +146,7 @@ var_dump($router);</code></pre>
 						<h2>Inversion of Control</h2>
 						<ul>
 							<li class="fragment">
-								With DI we have inverted the control of dependencies from the one being called (<code>Router</code>) to the one calling <em>(you)</em>.
+								With DI we have inverted the control of dependencies from the one being called (<code>UserController</code>) to the one calling <em>(you)</em>.
 								<ul>
 									<li class="fragment">This is called <strong>Inversion of Control</strong></li>
 								</ul>
@@ -161,7 +156,7 @@ var_dump($router);</code></pre>
 								But &hellip; why?
 								<ul>
 									<li class="fragment">
-										You have control over the dependecies: if you rather use SwiftMailer instead of PHPMailer, just inject that one onto the class requiring it
+										You have control over the dependencies: if you rather use SwiftMailer instead of PHPMailer, just inject that one onto the class requiring it
 										<ul>
 											<li class="fragment">Note: the APIs of those libraries <strong>must</strong> be the same!</li>
 											<li class="fragment">To afford this, a few PSRs exist; e.g. <a href="https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-3-logger-interface.md">PSR-3</a></li>
@@ -184,7 +179,7 @@ var_dump($router);</code></pre>
 							</li>
 							<li style="margin-top: 1em" class="fragment">
 								Very (very) simple DiC example:
-								<div class="fragment"><pre class="bigger"><code class="language-php" style="max-height: 380px; overflow: scroll;">class Container {
+								<div class="fragment"><pre class="bigger"><code class="language-php" style="overflow-x: scroll ;">class Container {
 
 	protected $dependencies = [];
 
@@ -206,33 +201,19 @@ var_dump($router);</code></pre>
 						<ul>
 							<li>
 								Using the DiC from the previous slide:
-								<div class="fragment"><pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_03.php" style="max-height: 380px; overflow: scroll;">// Router Class
-class Router {
-
-	protected $request;
-	protected $response;
-
-	public function __construct(Request $request, Response $response, $path) {
-		$this-&gt;request = $request;
-		$this-&gt;response = $response;
-		$this-&gt;path = $path;
-	}
-
-}
+								<div class="fragment"><pre class="bigger"><code class="language-php dontrun">// UserController Class with DI
 
 // Create DiC
 $container = new Container();
 
 // Tell DiC how to create dependencies
-$container-&gt;set('request', function() {
-	return new Request();
-});
-$container-&gt;set('response', function() {
-	return new Response();
+$container-&gt;set('userRepo', function() {
+	return new UserRepository();
 });
 
-// Create a router, injecting the dependencies
-$router = new Router($container-&gt;get('request'), $container-&gt;get('response'), '/hello');</code></pre></div>
+// Create a controller, injecting the dependencies
+$controller = new UserController($container-&gt;get('userRepo'));
+$response = $controller-&gt;show($id);								</code></pre></div>
 							</li>
 						</ul>
 					</section>
@@ -264,7 +245,7 @@ $router = new Router($container-&gt;get('request'), $container-&gt;get('response
 						<ul>
 							<li class="fragment">
 								Codewise exactly the same as DiC
-								<div class="fragment"><pre class="bigger"><code class="language-php"style="max-height: 380px; overflow: scroll;">class ServiceLocator {
+								<div class="fragment"><pre class="bigger"><code class="language-php"style="overflow-x: scroll;">class ServiceLocator {
 
 	protected $dependencies = [];
 
@@ -297,38 +278,38 @@ $router = new Router($container-&gt;get('request'), $container-&gt;get('response
 						<ul>
 							<li>
 								Using the SL from the previous slide:
-										<pre class="bigger"><code class="language-php" data-overlay-example="assets/06/examples/di_04.php" style="max-height: 360px; overflow: scroll;">// Router Class
-class Router {
+										<pre class="bigger"><code class="language-php" style="max-height: 360px; overflow-y: scroll;">class UserController extends Controller
+{
+    protected $locator;
 
-	protected $request;
-	protected $response;
+    public function __construct(ServiceLocator $sl)
+    {
+        $this-&gt;locator = $sl;
+    }
 
-	public function __construct(ServiceLocator $sl, $path) {
-		$this-&gt;request = $sl-&gt;get('request');
-		$this-&gt;response = $sl-&gt;get('response');
-		$this-&gt;path = $path;
-	}
-
+    public function show($id)
+    {
+        $user = $this-&gt;locator-&gt;get('userRepo')-&gt;find($id);
+        return view('user.profile', ['user' =&gt; $user]);
+    }
 }
 
 // Create SL
 $sl = new ServiceLocator();
 
-// Tell DiC how to create dependencies
-$sl-&gt;set('request', function() {
-	return new Request();
-});
-$sl-&gt;set('response', function() {
-	return new Response();
+// Tell SL how to create dependencies
+$sl-&gt;set('userRepo', function() {
+	return new UserRepository();
 });
 
-// Create a router, injecting the dependencies
-$router = new Router($sl, '/hello');</code></pre>
+// Create a controller, injecting the dependencies
+$controller = new UserController($sl);
+$response = $controller-&gt;show($id);</code></pre>
 									</li>
 								</ul>
 							</li>
 						</ul>
-						<footer class="fragment">&rarr; The <code>Router</code> has become <em>container aware</em></footer>
+						<footer class="fragment">&rarr; The <code>UserController</code> has become <em>container aware</em></footer>
 					</section>
 
 					<section>
@@ -350,168 +331,97 @@ $router = new Router($sl, '/hello');</code></pre>
 				</section>
 
 
-				<!-- Pimple -->
+				<!-- Laravel's Service Container -->
 				<section>
 					<section>
-						<h2>Pimple Deepdive</h2>
-
-						<p><img src="assets/06/futurama_pimple.png" alt="" title="" width="447" /></p>
-						<q>I'll make you cry, buddy. You're a pimple on society's ass and you'll never amount to anything.</q>
+						<h2>Laravel's Service Container</h2>
 					</section>
 
 					<section>
-						<h2>Pimple</h2>
+						<h2>The <a href="https://laravel.com/docs/5.3/container">Service Container</a></h2>
 						<ul>
 							<li class="fragment">
-								As said before: Silex is built on top of <a href="http://pimple.sensiolabs.org/">Pimple</a> ~1.0
-								<div class="fragment"><pre class="bigger"><code class="language-php">&lt;?php
-
-namespace Silex;
-&hellip;
-class Application extends \Pimple implements &hellip; {
-	&hellip;
-}</code></pre></div>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Pimple is a Dependency Injection Container
+								Central container for managing class dependencies and performing dependency injection
 								<ul>
 									<li class="fragment">
-										Supports defining:
-										<ul>
-											<li class="fragment">Parameters</li>
-											<li class="fragment">Objects</li>
-											<li class="fragment">Shared objects (cfr. Singleton)</li>
-										</ul>
+										Container is created in <code>bootstrap/app.php</code>
 									</li>
+									<li>Is an instance of <code>Illuminate\Foundation\Application</code></li>
+									<li>In Laravel available through <code>$this-&gt;app</code> </li>
 								</ul>
 							</li>
+							<li class="fragment">
+								Example usage
+								<pre class="bigger"><code class="language-php" style="max-height: 360px; overflow-x: scroll;font-size: 90%">// Simple binding
+$this-&gt;app-&gt;bind('HelpSpot\API', function ($app) { return new HelpSpot\API($app-&gt;make('HttpClient')); });
+
+// Binding a singleton (will return always the same object)
+$this-&gt;app-&gt;singleton('HelpSpot\API', function ($app) { return new HelpSpot\API($app-&gt;make('HttpClient')); });
+
+// Resolving
+$api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
+							</li>
 						</ul>
-						<footer class="fragment">Note: Silex uses Pimple ~1.0. It differs a lot from the latest Pimple version (3.x)</footer>
+						<footer class="fragment"><a href="https://laravel.com/docs/5.3/container">More features</a> available like contextual bindings</footer>
+
 					</section>
 
+
+
+
 					<section>
-						<h2>Creating a Pimple</h2>
+						<h2>Important: automatic injection</h2>
 						<ul>
 							<li class="fragment">
-								Just create a new instance
-								<pre class="bigger"><code class="language-php">&lt;?php
-
-require_once '/path/to/pimple.php';
-
-$container = new Pimple();</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								As <code>Silex\Application</code> extends <code>\Pimple</code>, our <code>$app</code> also is an instance of <em>(a special type of)</em> <code>\Pimple</code>
-								<pre class="bigger"><code class="language-php">&lt;?php
-
-&hellip;
-
-$app = new Silex\Application();</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Parameters</h2>
-						<ul>
-							<li class="fragment">
-								Defining a parameter:
-								<pre class="bigger"><code class="language-php">$app['some_parameter'] = 'value';</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Retrieving a parameter:
-								<pre class="bigger"><code class="language-php">echo $app['some_parameter']; // value</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Service Definitions</h2>
-						<blockquote class="fragment" style="width: 100%">A service is an object that does something as part of a larger system. [&hellip;] Almost any global object can be a service.</blockquote>
-						<ul style="margin-top: 1em;">
-							<li class="fragment">
-								Defining a service:
-								<pre class="bigger"><code class="language-php">$app['some_service'] = function () {
-	return new Whatever();
-};</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Retrieving a service:
-								<pre class="bigger"><code class="language-php">$service = $app['some_service'];</code></pre>
+								As you will have noticed &hellip;
 								<ul>
-									<li class="fragment">Every time you call <code>$app['some_service']</code>, a new instance of the service is created.</li>
+									<li class="fragment">
+										you don't have to bind the <code>UserRepository</code> to <code>$this-&gt;app</code>
+									</li>
+									<li>That's because the Service Container <strong>injects the right instance</strong> when you <strong>type hint</strong></li>
+									<li>This is smart and won't work in plain PHP</li>
+									<li style="margin-top: 1em">It works for Eloquent models, controllers, event listeners, middleware, &hellip;</li>
 								</ul>
 							</li>
 						</ul>
+						<footer class="fragment">You can even bind <a href="https://laravel.com/docs/5.3/container#binding-interfaces-to-implementations">interface type hints to specific implementations</a></footer>
 					</section>
 
+
 					<section>
-						<h2>Shared Services</h2>
-						<blockquote class="fragment" style="width: 100%">By default, each time you get a service, Pimple returns a new instance of it. If you want the same instance to be returned for all calls, use a shared service.</blockquote>
-						<ul>
-							<li class="fragment">
-								Defining a shared service:
-								<pre class="bigger"><code class="language-php">$app['some_service'] = $app-&gt;share(function () {
-	return new Whatever();
-});</code></pre>
+						<h2>Recap: The Request Lifecycle</h2>
+						<ul class="fragment">
+							<li>Webserver hands over the request to <code>public/index.php</code></li>
+							<li>It loads Composer's autoloader</li>
+							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.3/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
+							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
+								<ul class="fragment">
+									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the
+										<a href="https://laravel.com/docs/5.3/providers">service providers</a> defined in <code>config/app.php</code></li>
+									<li>Request passes the middleware e.g. session handling, CSRF token</li>
+									<li>Next, the request is dispatched to the router</li>
+								</ul>
+
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Retrieving a shared service:
-								<pre class="bigger"><code class="language-php">$service = $app['some_service'];</code></pre>
-								<ul>
-									<li class="fragment">On first invocation the service is created.</li>
-									<li class="fragment">Subsequent requests will get the existing instance (cfr. Singleton)</li>
+						</ul>
+					</section>
+
+
+					<section>
+						<h2><a href="https://laravel.com/docs/5.3/providers">Service providers</a></h2>
+						<ul class="fragment">
+							<li>Loaded during bootstrapping when defined in <code>config/app.php</code> (<code>providers</code> array)</li>
+							<li style="margin-top: 1em">Consists of:
+								<ul class="fragment">
+									<li>a <code>register</code> method: only for binding things to the service container</li>
+									<li>a <code>boot</code> method: called after all other service providers have been registered</li>
 								</ul>
 							</li>
+							<li style="margin-top: 1em"><em>Deferred</em> provider: postpone registration until one of the bindings ia actually needed (&rarr; performance)</li>
 						</ul>
 					</section>
 
-					<section>
-						<h2>Practical Example (1)</h2>
-						<ul>
-							<li class="fragment">
-								<a href="https://github.com/facebook/facebook-php-sdk">Facebook PHP SDK</a> standalone example:
-								<pre class="bigger"><code class="language-php">require 'facebook-php-sdk/src/facebook.php';
-
-$facebook = new \Facebook(array(
-  'appId'  =&gt; 'YOUR_APP_ID',
-  'secret' =&gt; 'YOUR_APP_SECRET',
-));
-
-// Get User ID
-$user = $facebook-&gt;getUser();</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								&rarr; Let's inject the <code>Facebook</code> object as a dependency of our Silex <code>$app</code>.
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Practical Example (2)</h2>
-						<ul>
-							<li class="fragment">
-								Dependency Injection is done in <code>bootstrap.php</code></em>
-								<pre class="bigger"><code class="language-php">$app['facebook.app_id'] = 'YOUR_APP_ID';
-$app['facebook.secret'] = 'YOUR_APP_SECRET';
-
-$app['facebook'] = $app-&gt;share(function($app) {
-	return new \Facebook(array(
-		'appId' =&gt; $app['facebook.app_id'],
-		'secret' =&gt; $app['facebook.secret']
-	));
-});</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Usage:
-								<pre class="bigger"><code class="language-php">$app-&gt;get('/', function(Silex\Application $app) {
-	$user = $app['facebook']-&gt;getUser();
-	return $app-&gt;json($user);
-});</code></pre>
-							</li>
-						</ul>
-					</section>
-
+				
 				</section>
 
 
@@ -535,7 +445,8 @@ $app['facebook'] = $app-&gt;share(function($app) {
 							<li><a href="http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html">http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html</a></li>
 							<li><a href="http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux">http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux</a></li>
 							<li><a href="http://php-di.org/doc/understanding-di.html">http://php-di.org/doc/understanding-di.html</a></li>
-							<li><a href="http://pimple.sensiolabs.org/">http://pimple.sensiolabs.org/</a></li>
+							<li><a href="https://laravel.com/docs/5.3/container">https://laravel.com/docs/5.3/container</a></li>
+							<li><a href="https://laravel.com/docs/5.3/providers">https://laravel.com/docs/5.3/providers</a></li>
 						</ul>
 					</section>
 				</section>
