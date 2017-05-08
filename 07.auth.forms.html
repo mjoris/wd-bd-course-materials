@@ -63,23 +63,6 @@
 					</section>
 				</section>
 
-				<!-- Looking for -->
-				<section>
-					<section>
-						<h2>Looking for the Silex version of these slides?</h2>
-						<p>Click <a href="http://bramus.github.io/ws2-sws-course-materials/05.silex.part3.html#/">here</a> (slides by Bram(us) Van Damme)</p>
-						<ul>
-							<li class="fragment">UrlGeneratorServiceProvider</li>
-							<li class="fragment">MonologServiceProvider</li>
-							<li class="fragment">Middlewares</li>
-							<li class="fragment">ValidationServiceProvider</li>	
-							<li class="fragment">FormServiceProvider</li>	
-							<li class="fragment">SessionServiceProvider</li>								
-							<li class="fragment">ConfigServiceProvider</li>								
-						</ul>
-					</section>
-				</section>
-				
 				<!-- Named and grouped routes -->
 				<section>
 					<section>
@@ -93,13 +76,13 @@
 
 						<ul>
 							<li class="fragment">
-								Specify a route name using the <code>as</code> array key
-								<pre class="bigger"><code class="language-php dontrun">Route::get('user/profile', [
-    'as' =&gt; 'profile', 'uses' =&gt; 'UserController@showProfile'
-]);</code></pre>
+								Specify a route name using the chained method <code>name</code>
+								<pre class="bigger"><code class="language-php dontrun">Route::get('user/profile', function () {
+    //
+})-&gt;name('profile');</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								The same by a chained method
+								The same with controller actions
 								<pre class="bigger"><code class="language-php dontrun">Route::get('user/profile', 'UserController@showProfile')-&gt;name('profile');</code></pre>
 							</li>
 						</ul>
@@ -121,34 +104,20 @@ return redirect()-&gt;route('profile');</code></pre>
 					
 					
 					<section>
-						<h2>Route groups (1)</h2>
+						<h2>Route groups</h2>
 
 						<ul>
 							<li class="fragment">
-								Specify a common route name prefix with route groups
-								<pre class="bigger"><code class="language-php dontrun">Route::group(['as' =&gt; 'admin::'], function () {
-    Route::get('dashboard', ['as' =&gt; 'dashboard', function () {
-        // Route named "admin::dashboard"
-    }]);
-});</code></pre>
-							</li>
-							<li class="fragment">
-								The previous does not specify a route (URI) prefix (cf. Silex mount). The <code>prefix</code> array key does.
+								Specify a route (URI) prefix
 								<pre class="bigger"><code class="language-php dontrun">Route::group(['prefix' =&gt; 'admin'], function () {
-    Route::get('users', function ()    {
-        // Matches The "/admin/users" URL
+    Route::get('users', function () {
+        // Matches the "/admin/users" URL
+    });
+    Route::get('dashboard', function () {
+        // Matches the "/admin/dashboard" URL
     });
 });</code></pre>
 							</li>
-						</ul>
-						<footer class="fragment"><em>You should combine this with controllers: <code>uses</code> array key or second argument</em></footer>
-					</section>
-					
-					
-					<section>
-						<h2>Route groups (2)</h2>
-
-						<ul>
 							<li class="fragment">
 								Specify wildcard sub-domain for a route group
 								<pre class="bigger"><code class="language-php dontrun">Route::group(['domain' =&gt; '{account}.myapp.com'], function () {
@@ -158,7 +127,7 @@ return redirect()-&gt;route('profile');</code></pre>
 });</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><em>You should combine this with controllers: <code>uses</code> array key or second argument</em></footer>
+						<footer class="fragment"><em>You should combine this with controllers (second argument of router method)</em></footer>
 					</section>					
 				</section>					
 
@@ -200,18 +169,18 @@ return redirect()-&gt;route('profile');</code></pre>
 						<ul>
 							<li class="fragment">
 								First step: generate the middelware with Artisan (location: <code>app/Http/Middleware</code>)
-								<pre class="bigger"><code class="language-bash dontrun" style="max-height: 380px; overflow: scroll;">$ php artisan make:middleware AgeMiddleware</code></pre>
+								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:middleware CheckAge</code></pre>
 							</li>
 							<li class="fragment">
 								Example of <em>Before Middleware</em>
 								<pre class="bigger"><code class="language-php dontrun">namespace App\Http\Middleware;
 use Closure;
 
-class AgeMiddleware
+class CheckAge
 {
     public function handle($request, Closure $next)
     {
-        if ($request-&gt;input('age') &lt;= 200) {
+        if ($request-&gt;age &lt;= 200) {
             return redirect('home');
         }
         return $next($request);
@@ -274,6 +243,7 @@ class AgeMiddleware
 								<pre class="bigger"><code class="language-php dontrun">    protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
@@ -288,12 +258,10 @@ class AgeMiddleware
 						<ul>
 							<li class="fragment">
 								<strong>Step 2 option 1:</strong> plug the middleware to a specific route
-								<pre class="bigger"><code class="language-php dontrun">Route::get('admin/profile', 
-			['middleware' =&gt; 'auth', 'uses' =&gt; 'UserController@showProfile']);</code></pre><pre class="bigger"><code class="language-php dontrun">Route::get('/', ['middleware' => ['first', 'second'], function () {
+								<pre class="bigger"><code class="language-php dontrun">Route::get('admin/profile', 'UserController@showProfile')-&gt;middleware('auth');</code></pre>
+								<pre class="bigger"><code class="language-php dontrun">Route::get('/', function () {
     //
-}]);</code></pre><pre class="bigger"><code class="language-php dontrun">Route::get('/', function () {
-    //
-})-&gt;middleware(['first', 'second']);</code></pre>
+})-&gt;middleware('first', 'second');</code></pre>
 							</li>
 						</ul>
 					</section>
@@ -313,6 +281,10 @@ class AgeMiddleware
     public function __construct()
     {
         $this-&gt;middleware('auth');
+
+        $this-&gt;middleware('log')-&gt;only('index');
+
+        $this-&gt;middleware('subscribed')-&gt;except('store');
     }
 }</code></pre>
 							</li>
@@ -348,15 +320,16 @@ class AgeMiddleware
 							<li class="fragment" style="margin-top: 1em;">
 								What's already in there?
 								<pre class="bigger"><code class="language-php dontrun">protected $middlewareGroups = [
-    'web' =&gt; [
+    'web' =&gt; [ // can be assigned to a route, a route group or a controller
         \App\Http\Middleware\EncryptCookies::class,
         \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
         \Illuminate\Session\Middleware\StartSession::class,
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \App\Http\Middleware\VerifyCsrfToken::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
     ],</code></pre>
 							</li>
-							<li>The web middleware group is automatically applied by the <code>RouteServiceProvider</code> !</li>
+							<li>The web middleware group is automatically applied to your <code>routes/web.php</code> file by the <code>RouteServiceProvider</code> !</li>
 						</ul>
 					</section>					
 
@@ -420,6 +393,7 @@ class AgeMiddleware
 								There is a migration for the table <code>password_resets</code> too
 							</li>
 						</ul>
+						<footer class="fragment"><em>Want to change the table names? Start with <code>config/auth.php</code></em></footer>
 					</section>
 					
 					<section>
@@ -435,7 +409,7 @@ class AgeMiddleware
         'name', 'email', 'password',
     ];
 
-    // The attributes that should be hidden for arrays.
+    // The attributes that should be hidden for arrays. (think of JSON serialization)
     protected $hidden = [
         'password', 'remember_token',
     ];
@@ -454,17 +428,8 @@ class AgeMiddleware
 							<li class="fragment">
 								<strong>Step 3:</strong> make Artisan set up a complete configuration for you (a.k.a. the <em>auth scaffold</em>)
 								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
-Created View: resources/views/auth/login.blade.php
-Created View: resources/views/auth/register.blade.php
-Created View: resources/views/auth/passwords/email.blade.php
-Created View: resources/views/auth/passwords/reset.blade.php
-Created View: resources/views/auth/emails/password.blade.php
-Created View: resources/views/layouts/app.blade.php
-Created View: resources/views/home.blade.php
-Created View: resources/views/welcome.blade.php
-Installed HomeController.
-Updated Routes File.
-Authentication scaffolding generated successfully!</code></pre>
+Authentication scaffolding generated successfully.
+								</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								What happened exactly? We'll cover this after the last step &hellip;
@@ -480,11 +445,14 @@ Authentication scaffolding generated successfully!</code></pre>
 								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
 								<ul>
 									<li class="fragment" style="margin-top: 1em;">
-										In <code>app/Http/Controllers/Auth/AuthController.php</code>
-										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks';</code></pre>
+										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code> and <code>ResetPasswordController.php</code>
+										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks'; // '/home' by default
+
+// alternatively, if you need to generate the path from code, define:
+// protected function redirectTo()	</code></pre>
 									</li>
 									<li class="fragment"  style="margin-top: 1em;">
-										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code>
+										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code> if you use the <code>guest</code> middleware
 										<pre class="bigger"><code class="language-php dontrun">return redirect('/tasks');</code></pre>
 									</li>									
 								</ul>
@@ -512,7 +480,8 @@ Authentication scaffolding generated successfully!</code></pre>
 								Use the <code>Auth</code> facade in your code 
 								<pre class="bigger"><code class="language-php dontrun">$user = Auth::user(); // retrieves the authenticated user
 $tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
-								
+$id = Auth::id(); // retrieves the currently authenticated user's ID
+
 if (Auth::check()) {
     // the user is logged in...
 	// you don't need to check this when the route is behind the auth middleware
@@ -529,7 +498,7 @@ Auth::logout();</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Tha auth scaffold generated a core layout (<code>resources/views/layouts/app.blade.php</code>) extended by:
+								The auth scaffold generated a core layout (<code>resources/views/layouts/app.blade.php</code>) extended by:
 								<ul>
 									<li><strong>welcome.blade.php</strong> - the public welcome page</li>
 									<li><strong>home.blade.php</strong> - the dashboard for logged-in users</li>
@@ -537,7 +506,6 @@ Auth::logout();</code></pre>
 									<li><strong>auth/register.blade.php</strong> - the register/signup page</li>
 									<li><strong>auth/passwords/email.blade.php</strong> - the password reset confirmation page</li>
 									<li><strong>auth/passwords/reset.blade.php</strong> - the password reset prompt page</li>
-									<li><strong>auth/emails/password.blade.php</strong> - the password reset email</li>
 								</ul>
 							</li>
 						</ul>
@@ -549,23 +517,24 @@ Auth::logout();</code></pre>
 
 						<ul>
 							<li class="fragment">
-								In <code>app/Http/routes.php</code> the line <code>Route::auth();</code> was added. In fact it is a shorthand for:
+								In <code>routes/web.php</code> the line <code>Route::auth();</code> was added. In fact it is a shorthand for:
 								<pre class="bigger"><code class="language-php dontrun">// Authentication Routes...
-$this-&gt;get('login', 'Auth\AuthController@showLoginForm');
-$this-&gt;post('login', 'Auth\AuthController@login');
-$this-&gt;get('logout', 'Auth\AuthController@logout');
+$this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
+$this-&gt;post('login', 'Auth\LoginController@login');
+$this-&gt;post('logout', 'Auth\LoginController@logout')-&gt;name('logout');
 
 // Registration Routes...
-$this-&gt;get('register', 'Auth\AuthController@showRegistrationForm');
-$this-&gt;post('register', 'Auth\AuthController@register');
+$this-&gt;get('register', 'Auth\RegisterController@showRegistrationForm')-&gt;name('register');
+$this-&gt;post('register', 'Auth\RegisterController@register');
 
 // Password Reset Routes...
-$this-&gt;get('password/reset/{token?}', 'Auth\PasswordController@showResetForm');
-$this-&gt;post('password/email', 'Auth\PasswordController@sendResetLinkEmail');
-$this-&gt;post('password/reset', 'Auth\PasswordController@reset');</code></pre>
+$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
+$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
+$this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><em>Use this full code in order to change or cut down the routes (e.g. no registration allowed)</em></footer>
+						<footer class="fragment"><em>Replace the shorthand by the full code to change or cut down the routes (e.g. no registration allowed)</em></footer>
 					</section>
 					
 					<section>
@@ -582,17 +551,35 @@ $this-&gt;post('password/reset', 'Auth\PasswordController@reset');</code></pre>
 						</ul>
 						<footer class="fragment"><em>Remove it! It is just a demo</em></footer>
 					</section>
-					
+
 					<section>
-						<h2>What the hell happened? (4)</h2>
+						<h2>Further customization (1)</h2>
 
 						<ul>
 							<li class="fragment">
-								<code>app/Http/Controllers/Auth/AuthController</code> 
-																
+								<code>app/Http/Controllers/Auth/LoginController</code>
+
 								<ul>
-									<li>&hellip; is the (configurable) registration and login controller
-										<pre class="bigger"><code class="language-php dontrun">class AuthController extends Controller
+									<li>Here, you can change the field for authentication
+										<pre class="bigger"><code class="language-php dontrun">public function username()
+{
+    return 'username'; // default: 'email'
+}</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Further customization (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<code>app/Http/Controllers/Auth/RegisterController</code>
+																
+
+								<pre class="bigger"><code class="language-php dontrun">class RegisterController extends Controller
 {   &hellip; 
     protected function validator(array $data)
     {
@@ -609,30 +596,32 @@ $this-&gt;post('password/reset', 'Auth\PasswordController@reset');</code></pre>
             'email' =&gt; $data['email'],
             'password' =&gt; bcrypt($data['password'])]);
     }
-}</code></pre>	
-									</li>
-								</ul>
+}</code></pre>
 							</li>
 						</ul>
 						<footer class="fragment"><em>Change your registration process here (e.g. extra registration fields)</em></footer>
 					</section>
 					
 					<section>
-						<h2>What the hell happened? (5)</h2>
+						<h2>Further customization (3)</h2>
 
-						<ul>
+						<ul style="font-size: 80%">
 							<li class="fragment">
-								<code>app/Http/Controllers/Auth/AuthController</code> uses the traits
+								Digging deeper &hellip;
 								<ul>
-									<li><code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php</code></li>
-									<li><code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/RegistersUsers.php</code></li>			
-								
-									
+									<li><code>LoginController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php</code></li>
+									<li><code>RegisterController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/RegistersUsers.php</code></li>
 								</ul>
 							</li>
-							<li>Here you will find many interesting methods such as<ul><li>getRegister() – responsible for showing registration form,</li><li>postRegister() – responsible for processing registration request,</li><li>getLogin() – responsible for showing login form,</li><li>postLogin() – responsible for authentication user</li><li>validateLogin() – responsible for login form validation</li></ul></li>
+							<li>Here you will find many interesting methods such as
+								<ul>
+									<li>showRegistrationForm() – responsible for showing the registration form,</li>
+									<li>register() – responsible for processing the registration request,</li>
+									<li>showLoginForm() – responsible for showing the login form,</li>
+									<li>login() – responsible forhandling the login request</li>
+									<li>validateLogin() – responsible for login form validation</li></ul></li>
 							<li class="fragment">
-								Override them in <code>app/Http/Controllers/Auth/AuthController</code> (! not in your vendor folder)
+								Override them in <code>app/Http/Controllers/Auth/*</code> (! not in your vendor folder)
 							</li>
 						</ul>
 					</section>					
