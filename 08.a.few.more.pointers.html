@@ -71,7 +71,7 @@
 								When having too many items to show, split them into several pages
 								<ul>
 									<li class="fragment">e.g. search results, filter results</li>
-									<li class="fragment">Typically placed beneath the results</li>
+									<li class="fragment">Paginator typically placed beneath the results</li>
 								</ul>
 							</li>
 						</ul>
@@ -160,12 +160,14 @@
 										gets the items from the DB through proper limit and offset
 									</li>
 									<li class="fragment">
-										return a paginator object which is loopable like a result set
+										returns a paginator object which is loopable like a result set
 									</li>
 								</ul>
 								<pre class="bigger"><code class="language-php">    public function index() // controller method
     {
-        $users = DB::table('users')-&gt;paginate(15);
+        $users = User::where('votes', '&gt;', 100)-&gt;paginate(15);
+		// uncomment next line to change the paginator's target URL
+		// $users-&gt;setPath('custom/url');
         return view('user.index', ['users' =&gt; $users]);
     }</code></pre>
 							</li>
@@ -177,20 +179,21 @@
 						<h2>Pagination in Laravel (2)</h2>
 						<ul>
 							<li class="fragment">
-								Simple display in Blade
+								Simple (bootstrap compatible) display in Blade
 								<pre class="bigger"><code class="language-php">&lt;div class="container"&gt;
     @foreach ($users as $user)
         {{ $user->name }}
     @endforeach
 &lt;/div&gt;
 
-{!! $users->links() !!}</code></pre>
+{{ $users->links() }}
+Or with appended GET parameters: {{ $users->appends(['sort' => 'votes'])->links() }}</code></pre>
 							</li>
 							<li class="fragment">
 								It's up to you to find a better strategy than rendering all the page links
 								<ul>
 									<li class="fragment">
-										Use a the pagination methods in separate pagination templates: <a href="http://stackoverflow.com/questions/28240777/custom-pagination-view-in-laravel-5#answer-30298599">example</a>
+										Use the pagination methods in separate pagination templates: <a href="https://laravel.com/docs/5.3/pagination#customizing-the-pagination-view">howto</a>
 									</li>
 									<li class="fragment">
 										Watch this <a href="https://gist.github.com/bramus/5d8f2e0269e57dff5136">clever algorithm</a>
@@ -219,8 +222,16 @@
 							<li class="fragment">
 								Allow a visitor to refine a set of results
 								<ul>
-									<li class="fragment">A form with checkboxes, dropdowns, etc. per defining property of the resultset</li>
+									<li class="fragment">A form with checkboxes, dropdowns, etc. per defining property of the result set</li>
 									<li class="fragment">Typically placed on the left hand side, next to the results</li>
+									<li class="fragment">It is necessary to persist the form values (!)</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.5em;">
+								Typically in combination with
+								<ul>
+									<li class="fragment">Pagination</li>
+									<li class="fragment">Sorting on specific properties of the result set (asc/desc)</li>
 								</ul>
 							</li>
 						</ul>
@@ -230,7 +241,7 @@
 						<h2>Filtering scenarios</h2>
 						<ul>
 							<li class="fragment">
-								Filter via <code>$_GET</code> params
+								Filter via <code>GET</code> params
 								<ul>
 									<li class="fragment">Pro: links can be shared/bookmarked</li>
 									<li class="fragment">Con: links become cluttered</li>
@@ -238,7 +249,7 @@
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Filter via <code>$_SESSION</code> params
+								Filter via <code>Session</code> params
 								<ul>
 									<li class="fragment">Pro: links don't become cluttered</li>
 									<li class="fragment">Pro: filter preserved after having navigated away</li>
@@ -249,28 +260,128 @@
 					</section>
 
 					<section>
-						<h2>Laravel implementation opportunity</h2>
-						<ul>
+						<h2>Some Laravel filtering hints</h2>
+						<ul style="font-size: 80%">
 							<li class="fragment">
-								use <a href="https://laravel.com/docs/5.2/session">Sessions</a>
+								In the Views
 								<ul>
-									<li class="fragment">Store the submitted filter object as your session filter object</li>
-									<li class="fragment">If there is no submitted neither a session filter, create a default session filter
+									<li class="fragment">Collective's <a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> already supports persistence (via flashed data) for many types of form elements</li>
+									<li class="fragment"><code>GET</code> scenario: append your params to your pagination URLs e.g. <br/><code>$products->appends(['brand_id' => old('brand_id') ])->links()</code>
 									</li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Use query builder / Eloquent
+							<li class="fragment" style="margin-top: 0.3em;">
+								In the controller
 								<ul>
-									<li class="fragment">For activated each filter field, apply a (chainable) method</li>
+									<li class="fragment">Validate your input data</li>
+									<li class="fragment"><code>GET</code>/<code>Session</code> scenario: flash/add your inputs to the session</li>
+									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>$products = $products-&gt;where('brand_id', $request-&gt;brand_id);</code> </li>
+									<li class="fragment"><strong>Pitfall: in SQL, AND has precedence over OR.</strong> This happens when you chain <code>where()</code> and <code>orWhere()</code> serially. Use
+										<a href="https://laravel.com/docs/5.3/queries#parameter-grouping">(or)where grouping</a> instead.</li>
 								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								to be continued &hellip;
 							</li>
 						</ul>
 					</section>
 
+				</section>
+
+				<!-- Advanced code generation hints -->
+				<section>
+					<section>
+						<h2>Advanced code generation hints</h2>
+					</section>
+
+					<section>
+						<h2>Resource controllers</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Assign all your <em>CRUD</em> routes to a controller in a single line of code
+								<ul>
+									<li class="fragment">Generate the controller:
+										<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:controller PhotoController --resource</code></pre>
+									</li>
+									<li class="fragment">Register the routes:
+										<pre class="bigger"><code class="language-php dontrun">Route::resource('photos', 'PhotoController'); // available options: 'only', 'except'</code></pre>
+									</li>
+									<li>Result:
+										<table style="font-size: 50%; line-height: 1; margin-left: 4.3em; background-color: #2aabd2;">
+											<thead>
+											<tr style="font-weight: bold;background-color: #1b6d85;">
+												<th style="padding: 1px;">Verb</th>
+												<th style="padding: 1px;">URI</th>
+												<th style="padding: 1px;">Action</th>
+												<th style="padding: 1px;">Route Name</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos</code></td>
+												<td>index</td>
+												<td>photos.index</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span>create</code></td>
+												<td>create</td>
+												<td>photos.create</td>
+											</tr>
+											<tr>
+												<td>POST</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos</code></td>
+												<td>store</td>
+												<td>photos.store</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>show</td>
+												<td>photos.show</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span><span class="token operator">/</span>edit</code></td>
+												<td>edit</td>
+												<td>photos.edit</td>
+											</tr>
+											<tr>
+												<td>PUT/PATCH</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>update</td>
+												<td>photos.update</td>
+											</tr>
+											<tr>
+												<td>DELETE</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>destroy</td>
+												<td>photos.destroy</td>
+											</tr>
+											</tbody>
+										</table>
+									</li>
+									<li class="fragment">In a web app, you will need to spoof the methods DELETE, PUT and PATCH</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Collective's Form Model Binding</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Populate an HTML form based on the contents of a model
+								<ul>
+									<li class="fragment">Start the form by
+										<pre class="bigger"><code class="language-php dontrun">{!! Form::model($user, ['route' => ['user.update', $user->id]]) !!}</code></pre>
+									</li>
+									<li>Flash data has precedence over the contents !
+
+									</li>
+									<li class="fragment">Don't forget to <code>Form::close</code></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
 				</section>
 
 				<!-- The END -->
@@ -290,8 +401,8 @@
 					<section>
 						<h2>Sources</h2>
 						<ul>
-							<li><a href="https://laravel.com/docs/5.2/pagination">Laravel docs: Pagination</a></li>
-							<li><a href="https://laravel.com/docs/5.2/session">Laravel docs: Session</a></li>
+							<li><a href="https://laravel.com/docs/5.3/pagination">Laravel docs: Pagination</a></li>
+							<li><a href="https://laravel.com/docs/5.3/session">Laravel docs: Session</a></li>
 						</ul>
 					</section>
 				</section>
