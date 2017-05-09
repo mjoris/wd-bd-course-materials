@@ -757,7 +757,7 @@ Route::post('post', 'PostController@store');</code></pre>
 								The <code>VerifyCsrfToken</code> middleware (part of the <code>web</code> group) is already activated and does the checking
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Read the <a href="https://laravel.com/docs/5.3/routing#csrf-protection">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
+								Read the <a href="https://laravel.com/docs/5.3/csrf">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
 							</li>
 						</ul>
 					</section>
@@ -1023,19 +1023,19 @@ public function store(Request $request)
 								The new version of the Blade template
 							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors object --}}
 
-{!! Form::open(array('url' =&gt; 'post', 'method' =&gt; 'POST')) !!}
+{!! Form::open(['url' =&gt; 'post', 'method' =&gt; 'POST']) !!}
 
 &lt;div class="form-group"&gt;
 	{!! Form::label('title', 'Title:') !!}
-	{!! Form::text('title', '', array('class' =&gt; 'form-control')) !!}
+	{!! Form::text('title', '', ['class' =&gt; 'form-control']) !!}
 &lt;/div&gt;
 
 &lt;div class="form-group"&gt;
 	{!! Form::label('content', 'Content:') !!}
-	{!! Form::textarea('content', '', array('class' =&gt; 'form-control', 'rows' =&gt; '10')) !!}
+	{!! Form::textarea('content', '', ['class' =&gt; 'form-control', 'rows' =&gt; '10']) !!}
 &lt;/div&gt;
 	
-{!! Form::submit('submit', array('class' =&gt; 'btn btn-primary pull-right')) !!}
+{!! Form::submit('submit', ['class' =&gt; 'btn btn-primary pull-right']) !!}
 {!! Form::close() !!}
 </code></pre>
 							</li>
@@ -1047,35 +1047,40 @@ public function store(Request $request)
 				
 				</section>
 				
-				<!-- Authorization -->
+				<!-- Working with files -->
 				<section>
 					<section>
-						<h2>Authorization</h2>
+						<h2>Working with files</h2>
 
 					</section>
 					
 					
-					<section style="font-size: 90%">
-						<h2>Authorization: a few pointers (1)</h2>
+					<section style="font-size: 85%">
+						<h2>Filesystem &ne; public folder</h2>
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.3/authorization">Authorization</a> is about defining which users are allowed to perform which actions
+								The <a href="https://laravel.com/docs/5.3/structure#the-public-directory">public folder</a> contains the assets (img, css, js, &hellip;)
+								<ul>
+									<li class="fragment">Assets directly accessible from the web server (link it with <code>asset()</code>)</li>
+									<li class="fragment"><em>By default,</em> you cannot handle (= store, edit, list, &hellip;) files there</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.5em;">
+								<a href="https://laravel.com/docs/5.3/filesystem">Filesystem</a> is an abstraction layer which allows you to handle files on local and remote (cloud) systems in a uniform way
 								<ul>
 									<li class="fragment">
-										<code>$ php artisan make:policy TaskPolicy</code> generates <code>app/Policies/TaskPolicy.php</code>
+										To be configured in <code>config/filesystems.php</code>
+									</li>
+									<li class="fragment"><em>By default,</em> <code>public</code> disk is selected, using the <code>local</code> driver and stores these files in <code>storage/app/public</code> (not publicly accessible)</li>
+									<li class="fragment">
+										Luckily, you can create a symbolic link from <code>public/storage</code> to <code>storage/app/public</code>  &#9786;
+										<pre class="bigger"><code class="language-bash dontrun">$ php artisan storage:link
+The [public/storage] directory has been linked.</code></pre>
 									</li>
 									<li class="fragment">
-										Complete the policy
-										<pre class="bigger"><code class="language-php dontrun">class TaskPolicy
-{
-    &hellip;
-	
-    public function destroy(User $user, Task $task)
-    {
-        return $user-&gt;id === $task-&gt;user_id;
-    }
-}</code></pre>
+										Keep on using the <code>asset()</code> helper:
+										<code class="language-php dontrun">{{ asset('storage/file.txt') }}</code>
 									</li>
 								</ul>
 							</li>
@@ -1083,30 +1088,39 @@ public function store(Request $request)
 					</section>
 					
 					<section style="font-size: 90%">
-						<h2>Authorization: a few pointers (2)</h2>
-
+						<h2>File uploads</h2>
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.3/authorization">Authorization</a> is about defining which users are allowed to perform which actions
-								<ul>
-									<li class="fragment">
-										Link the Eloquent model to the policy in <code>app/Providers/AuthServiceProvider.php </code>
-										<pre class="bigger"><code class="language-php dontrun">protected $policies = ['App\Task' =&gt; 'App\Policies\TaskPolicy'];</code></pre>
+								Checklist
+								<ol>
+									<li class="fragment" style="margin-top: 0.3em;">Create a symbolic link to <code>storage/app/public</code> or configure Filesystem</li>
+									<li class="fragment" style="margin-top: 0.3em;">In your form (Views): check your <code>enctype</code> attribute (see
+										<a href="https://ikdoeict.be/apps/leercentrum/courses/ws-bs-course-materials/03.forms.html#/">this course</a>)  </li>
+									<li class="fragment" style="margin-top: 0.3em;">Access the uploaded file through the HTTP request object (<a href="04.laravel.basics.html#/3/7">code example</a>)</li>
+									<li class="fragment" style="margin-top: 0.3em;">Validation: check on file (MIME) type and eventually file size, dimension, &hellip;
+										<ul>
+											<li class="fragment">
+												Use a <code>*</code> with multiple file uploads e.g. <code>documents.*</code>
+											</li>
+											<li class="fragment">
+												Hint: <code>image</code> is a rule too
+											</li>
+											<li class="fragment">
+												<strong>Check the type. Don't let *.php (and many others) pass!</strong>
+											</li>
+										</ul>
 									</li>
-									<li class="fragment">
-										Use the policy in your controller
-										<pre class="bigger"><code class="language-php dontrun">public function destroy(Request $request, Task $task)
-{
-    $this-&gt;authorize('destroy', $task);
-	
-    $task-&gt;delete();
-    return redirect('/tasks');
-}</code></pre>
+									<li class="fragment" style="margin-top: 0.3em;">Of course you need to <a href="https://laravel.com/docs/5.3/filesystem#file-uploads">store the file upload</a>
+										<ul>
+											<li class="fragment">
+												Most of the time, it's a good practice to rename the original file (think of duplicates and of a clean directory structure)
+											</li>
+											<li class="fragment">
+												If the path (relative to Filesystem root) does not exist, the folders are created
+											</li>
+										</ul>
 									</li>
-									<li class="fragment">
-										Generates a 403 exception when unauthorized
-									</li>
-								</ul>
+								</ol>
 							</li>
 						</ul>
 					</section>					
@@ -1136,8 +1150,8 @@ public function store(Request $request)
 							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
 							<li><a href="https://laravel.com/docs/5.3/routing#route-groups">Laravel docs: Route Groups</a></li>
 							<li><a href="https://laravelcollective.com/docs/5.3/html">Laravel Collective docs: Forms &amp; HTML</a></li>
-							<li><a href="https://laravel.com/docs/5.3/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a></li>
-							<li><a href="https://laravel.com/docs/5.3/authorization">Laravel docs: Authorization</a></li>
+							<li><a href="https://laravel.com/docs/5.2/quickstart-intermediate">Laravel tutorial on a task list project - intermediate</a> (version 5.2)</li>
+							<li><a href="https://laravel.com/docs/5.3/filesystem">Laravel docs: Filesystem</a> </li>
 						</ul>
 					</section>
 				</section>
