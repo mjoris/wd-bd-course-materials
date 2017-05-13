@@ -476,9 +476,11 @@ Authentication scaffolding generated successfully.
 									</li>									
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+							<li class="fragment" style="margin-top: 0.3em;">
 								Use the <code>Auth</code> facade in your code 
-								<pre class="bigger"><code class="language-php dontrun">$user = Auth::user(); // retrieves the authenticated user
+								<pre class="bigger"><code class="language-php dontrun">use Illuminate\Support\Facades\Auth;
+
+$user = Auth::user(); // retrieves the authenticated user
 $tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
 $id = Auth::id(); // retrieves the currently authenticated user's ID
 
@@ -517,7 +519,7 @@ Auth::logout();</code></pre>
 
 						<ul>
 							<li class="fragment">
-								In <code>routes/web.php</code> the line <code>Route::auth();</code> was added. In fact it is a shorthand for:
+								In <code>routes/web.php</code> the line <code>Auth::routes();</code> was added. In fact it is a shorthand for:
 								<pre class="bigger"><code class="language-php dontrun">// Authentication Routes...
 $this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
 $this-&gt;post('login', 'Auth\LoginController@login');
@@ -968,7 +970,7 @@ public function store(Request $request)
 					</section>
 
 					<section style="font-size: 85%">
-						<h2>A simple form v2</h2>
+						<h2>A simple form v2 (1)</h2>
 
 						<ul style="font-size: 85%">
 							<li class="fragment">
@@ -990,8 +992,29 @@ public function store(Request $request)
 	return redirect('/post/success');
 }</code></pre>
 							</li>
+						</ul>
+					</section>
+
+					<section style="font-size: 85%">
+						<h2>A simple form v2 (2)</h2>
+
+						<ul style="font-size: 85%">
 							<li class="fragment">
-								Change <code>common/errors.blade.php</code> such that it visualizes an <em>$errors</em> <strong>object</strong>
+								Change <code>common/errors.blade.php</code> such that it visualizes an <em>$errors</em> <strong>collection</strong>
+								<pre class="bigger"><code class="language-php dontrun">@if (count($errors) &gt; 0)
+    &lt;!-- Form Error List --&gt;
+    &lt;div class="alert alert-danger"&gt;
+        &lt;strong&gt;Whoops! Something went wrong!&lt;/strong&gt;
+
+        &lt;br&gt;&lt;br&gt;
+
+        &lt;ul&gt;
+            @foreach ($errors-&gt;all() as $error)
+                &lt;li&gt;{{ $error }}&lt;/li&gt;
+            @endforeach
+        &lt;/ul&gt;
+    &lt;/div&gt;
+@endif</code></pre>
 							</li>
 						</ul>
 					</section>
