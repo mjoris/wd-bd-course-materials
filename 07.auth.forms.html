@@ -870,6 +870,7 @@ public function store(Request $request)
 		// flash the request inputs in the session and take previous route
 		$request-&gt;flash();
 		return back();
+		// NOTE: flashing the request inputs was necessary since the user is REDIRECTED
 
 		// also possible: return back()-&gt;withInput();
 		
