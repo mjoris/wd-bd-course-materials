@@ -261,26 +261,34 @@ Or with appended GET parameters: {{ $users->appends(['sort' => 'votes'])->links(
 
 					<section>
 						<h2>Some Laravel filtering hints</h2>
-						<ul style="font-size: 80%">
+						<ul style="font-size: 75%">
+
 							<li class="fragment">
-								In the Views
+								In the controller
 								<ul>
-									<li class="fragment">Collective's <a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> already supports persistence (via flashed data) for many types of form elements</li>
-									<li class="fragment"><code>GET</code> scenario: append your params to your pagination URLs e.g. <br/><code>$products->appends(['brand_id' => old('brand_id') ])->links()</code>
+									<li class="fragment">Validate your input data e.g. <code>'brand_id' =&gt; 'exists:brands'</code></li>
+									<li class="fragment"><code>Session</code> scenario: add your inputs to the session</li>
+									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>if (&hellip;) $products = $products-&gt;where('brand_id', $request-&gt;brand_id);</code> (or use
+										<a href="https://laravel.com/docs/5.3/queries#conditional-clauses">when</a>)
+										<ul>
+											<li class="fragment"><strong>Pitfall: in SQL, AND has precedence over OR.</strong> This happens when you chain <code>where()</code> and <code>orWhere()</code> serially. Use
+											<a href="https://laravel.com/docs/5.3/queries#parameter-grouping">(or)where grouping</a> instead.</li>
+										</ul>
 									</li>
+									<li class="fragment">Pass your search results, existing categories and persisted values to the View e.g. <code>return view('webshop.search', ['products' =&gt; $products, 'brands' =&gt; $brands, 'brand_id' =&gt; $brand_id]);</code></li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 0.3em;">
-								In the controller
+								In the Views
 								<ul>
-									<li class="fragment">Validate your input data</li>
-									<li class="fragment"><code>GET</code>/<code>Session</code> scenario: flash/add your inputs to the session</li>
-									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>$products = $products-&gt;where('brand_id', $request-&gt;brand_id);</code> </li>
-									<li class="fragment"><strong>Pitfall: in SQL, AND has precedence over OR.</strong> This happens when you chain <code>where()</code> and <code>orWhere()</code> serially. Use
-										<a href="https://laravel.com/docs/5.3/queries#parameter-grouping">(or)where grouping</a> instead.</li>
+									<li class="fragment">Collective's <a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> supports persistence for many types of form elements. Set the persisted value as the element's default:
+										<code>Form::select('brand_id', $brands, $brand_id)</code></li>
+									<li class="fragment"><code>GET</code> scenario: append your params to your pagination URLs e.g. <br/><code>$products->appends(['brand_id' => $brand_id ])->links()</code>
+									</li>
 								</ul>
 							</li>
 						</ul>
+						<footer class="fragment" style="font-size: 50%"><em>When the validation fails, old input is flashed into the session and has priority over the element's default</em></footer>
 					</section>
 
 				</section>
