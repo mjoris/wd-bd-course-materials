@@ -268,7 +268,7 @@ Or with appended GET parameters: {{ $users->appends(['sort' => 'votes'])->links(
 								<ul>
 									<li class="fragment">Validate your input data e.g. <code>'brand_id' =&gt; 'exists:brands'</code></li>
 									<li class="fragment"><code>Session</code> scenario: add your inputs to the session</li>
-									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>if (&hellip;) $products = $products-&gt;where('brand_id', $request-&gt;brand_id);</code> (or use
+									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>if (&hellip;) $products-&gt;where('brand_id', $request-&gt;brand_id);</code> (or use
 										<a href="https://laravel.com/docs/5.3/queries#conditional-clauses">when</a>)
 										<ul>
 											<li class="fragment"><strong>Pitfall: in SQL, AND has precedence over OR.</strong> This happens when you chain <code>where()</code> and <code>orWhere()</code> serially. Use
