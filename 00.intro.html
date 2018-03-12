@@ -56,7 +56,7 @@
 				<section>
 					<section>
 						<h3 class="inverted">Serverside Development <small>[JLW506]</small></h3>
-						<h1>00.intro</h1>
+						<h1>00.course intro</h1>
 
 						<footer>
 							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &mdash; Lecturer: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -70,179 +70,15 @@
 				</section>
 
 
-				<!-- 1 : Slidedeck? -->
-				<section>
-
-					<section>
-						<h2>Slidedeck?!</h2>
-						<p><img src="assets/00/futurama_kwanza.png" alt="" title="" height="376" width="500" /></p>
-						<footer><em>(press the down key)</em></footer>
-					</section>
-
-					<section>
-						<h2>Wait? What? This is it?!</h2>
-						<ul class="short">
-							<li class="fragment">
-								Yes, it's called a slide deck.
-								<ul>
-									<li>Built with HTML/CSS/JS</li>
-									<li>Powered by <em>(a customized)</em> <a href="http://hakim.se/projects/reveal-js">Reveal.js</a></li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Navigation
-								<ul>
-									<li>Main navigation: left/right</li>
-									<li>Sub-slides: up/down <em>(try it now!)</em></li>
-									<li>Touch Device users: Swiping supported!</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Lost?</h2>
-						<ul class="short">
-							<li class="fragment">Compass <em>(Bottom-Right)</em></li>
-							<li class="fragment">Slide Number <em>(Bottom-Right)</em></li>
-							<li class="fragment">Progress Bar <em>(Bottom)</em></li>
-							<li class="fragment">Slide Overview <em>(space)</em></li>
-							<li class="fragment">Slides Navigator <em>(Top-Left)</em></li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Code Examples</h2>
-						<ul>
-							<li class="fragment">This slidedeck is filled with interactive examples</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Syntax Highlighted + Editable
-								<ul>
-									<li>Thanks to <a href="http://softwaremaniacs.org/soft/highlight/en/">Highlight.js</a></li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Numeric values can be adjusted with the &uarr; &amp; &darr; keys
-								<ul><li>Thanks to <em>(a customized)</em> <a href="https://github.com/LeaVerou/Incrementable/">Incrementable</a></li></ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Give it a try!
-								<pre class="bigger"><code contenteditable class="language-css">body {
-	font-size: 1em;
-	padding: 20px;
-	color: lime;
-}</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Code Examples: CSS</h2>
-						<ul>
-							<li class="fragment" style="margin-top: 1em;"><span id="css-demo">Some CSS Snippets are linked to elements ...</span>
-								<pre class="bigger"><code contenteditable class="language-css" data-subject="#css-demo">color: red;</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">... or to the current slide
-								<pre class="bigger"><code contenteditable class="language-css" data-subject="slide" data-step="10">font-size: 100%;</code></pre>
-								<ul>
-									<li>Thanks to <em>(a customized)</em> <a href="https://github.com/LeaVerou/CSSS/tree/master/plugins">CSS Snippets</a></li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">And oh, CSS Snippets don't need vendor prefixes
-								<pre class="bigger" id="rounded-demo"><code contenteditable class="language-css" data-subject="#rounded-demo">box-shadow: 0px 0px 10px #888;</code></pre>
-								<ul>
-									<li>Thanks to <a href="https://github.com/LeaVerou/prefixfree">PrefixFree</a></li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Code Examples: JS</h2>
-						<ul class="fragment">
-							<li>JavaScript blocks can even be run!</li>
-							<li>
-								Use &ldquo;Run&rdquo; button, or hit CTRL+ENTER
-								<pre class="bigger"><code contenteditable class="language-javascript">// A comment
-alert('OK GO!');</code></pre>
-							</li>
-						</ul>
-						<ul style="margin-top: 1em;">
-							<li class="fragment">Note
-								<ul>
-									<li>JavaScript will be taught in the course &ldquo;Clientside Webscripting&rdquo;</li>
-									<li>If present, most JavaScript examples will use <code>console.log()</code> &mdash; <a href="http://getfirebug.com/">Firebug</a> <em>(or the like)</em> required!</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Code Examples: HTML</h2>
-						<ul class="fragment">
-							<li>HTML blocks can be rendered into an overlay</li>
-							<li>Use &ldquo;Show in overlay&rdquo; button, or hit CTRL+ENTER</li>
-							<li>Click the dark overlay background to close it</li>
-						</ul>
-						<div class="fragment" style="margin-top: 1em;"><pre class="bigger"><code contenteditable class="language-html">&lt;h2&gt;This is how you mark up an unordered list&lt;/h2&gt;
-&lt;ul&gt;
-	&lt;li&gt;Coffee&lt;/li&gt;
-	&lt;li&gt;Tea&lt;/li&gt;
-	&lt;li&gt;Milk&lt;/li&gt;
-&lt;/ul&gt;</code></pre></div>
-					</section>
-
-					<section>
-						<h2>Code Examples: HTML &amp; PHP</h2>
-						<ul>
-							<li class="fragment">
-								HTML &amp; PHP examples can be linked to a working example.
-								<ul>
-									<li>The example can be rendered into the overlay</li>
-									<li>The example can be linked into a new window/tab</li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">Use &ldquo;Show in script overlay&rdquo; button, or hit CTRL+ENTER</li>
-							<li class="fragment" style="margin-top: 1em;">Click the dark overlay background to close it</li>
-						</ul>
-						<div class="fragment"><pre class="bigger"><code class="language-php" data-overlay-example="assets/00/examples/helloworld.php">&lt;?php
-	echo 'Hello world! The time is now ' . date('Y-m-d H:i:s', time());
-?&gt;
-</code></pre></div>
-						<footer>
-							<span class="fragment" style="display: block;line-height: 1;">Note: PHP code examples aren't editable<br/>Beware: PHP code examples don't run on GitHub!</span>
-						</footer>
-					</section>
-
-					<section>
-						<h2>Printing?</h2>
-						<ul class="short">
-							<li class="fragment">
-								Don't
-								<ul>
-									<li>These are interactive slides</li>
-									<li>They will be updated regularly</li>
-									<li>You can't copy paste from paper</li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">If you really want: you can
-								<ul>
-									<li>Only supported in Firefox and IE though</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-
-				</section>
 
 
-				<!-- 2: Webscripting 2 -->
+				<!-- 1: Web Development -->
 				<section>
 
 					<section>
 						<h2>Web Development</h2>
 						<p><img src="assets/00/futurama_blackboard.jpg" alt="" title="" height="330" width="470" /></p>
-						<q>Back on track ...</q>
+						<!--q>Back on track ...</q-->
 					</section>
 
 					<section>
@@ -253,21 +89,21 @@ alert('OK GO!');</code></pre>
 								Web Development = three sub-courses
 								<ul>
 									<li>OLA Web Development [JLW505] <small>no evaluation</small></li>
-									<li>OLA Frontend Development [JLW507]</li>
-									<li>OLA Backend Development [JLW506]</li>
+									<li>OLA Clientside Development [JLW507]</li>
+									<li>OLA Serverside Development [JLW506]</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Web Development = 8 ECTS Credits
 								<ul>
-									<li>Equal distribution frontend/backend</li>
+									<li>Equal distribution clientside/serverside</li>
 								</ul>
 							</li>
 						</ul>
 					</section>
 
 					<section>
-						<h2>Instructors Backend Development</h2>
+						<h2>Instructors Serverside Development</h2>
 						<ul class="columns">
 							<li class="fragment column column-13" style="text-align: center; line-height: 1.2;width:50%;">
 								<p><img src="assets/00/mjoris_routeyou.jpg" width="300" alt="" title="" style="max-width: 67%;" /></p>
@@ -293,12 +129,12 @@ alert('OK GO!');</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Two blocks
 								<ul>
-									<li>First 6 weeks = Frontend Development (FD)</li>
-									<li>Last <s>6</s>5 weeks = Backend Development (BD)</li>
+									<li>First 6 weeks = Clientside Development (FD)</li>
+									<li>Last <s>6</s>5 weeks = Serverside Development (SD)</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Ergo: we're started for 5 weeks of SWS
+								Ergo: we're started for 5 weeks of SD
 							</li>
 						</ul>
 					</section>
@@ -310,7 +146,7 @@ alert('OK GO!');</code></pre>
 				<section>
 
 					<section>
-						<h2>Backend Web Development</h2>
+						<h2>Serverside Web Development</h2>
 						<p><img src="assets/00/futurama_helmet.jpg" alt="" title="" height="330" width="470" /></p>
 						<q>To the flying machine!</q>
 					</section>
@@ -319,7 +155,7 @@ alert('OK GO!');</code></pre>
 						<h2>Prerequisites (1)</h2>
 						<ul>
 							<li class="fragment">
-								HTML5 &amp; CSS (OPO Webtechnieken)
+								HTML5 &amp; CSS (OPO Web Technology)
 								<ul>
 									<li class="fragment">HTML5
 										<ul>
@@ -333,9 +169,10 @@ alert('OK GO!');</code></pre>
 											<li>Box Model</li>
 											<li>Positioning with float/absolute/relative/fixed</li>
 											<li>&ldquo;New&rdquo; CSS3 features</li>
+											<li>(Mobile-first) responsive design</li>
 										</ul>
 									</li>
-									<li class="fragment">Firebug (<a href="https://vimeo.com/6313836">video</a>)</li>
+									<li class="fragment">Proper use of web development tools !</li>
 								</ul>
 							</li>
 						</ul>
@@ -345,12 +182,13 @@ alert('OK GO!');</code></pre>
 						<h2>Prerequisites (2)</h2>
 						<ul>
 							<li class="fragment">
-								Programming (OPO Programmeren 1)
+								Programming (OPO Java Fundamentals &amp Java OO Programming)
 								<ul>
-									<li>Iterations <em>(<code>for</code>, <code>foreach</code>)</em> &amp; Selections <em>(<code>if-else</code>, <code>switch</code>)</em></li>
+									<li>Iterations <em>(<code>for</code>, <code>foreach</code>, <code>while</code>, &hellip;)</em> &amp; Selections <em>(<code>if-else</code>, <code>switch</code>)</em></li>
 									<li>Arrays</li>
 									<li>Functions</li>
-									<li>Classes, Constructors &amp; Objects</li>
+									<li>Basic OO principles: Classes, Constructors, Objects, Getters/Setters, Inheritance, Interfaces,  &amp;  </li>
+									<li>Basic knowledge of namespaces and libraries (jars)</li>
 								</ul>
 							</li>
 						</ul>
@@ -361,7 +199,7 @@ alert('OK GO!');</code></pre>
 						<h2>Prerequisites (3)</h2>
 						<ul>
 							<li class="fragment">
-								Databases (OPO Gegevensbanken)
+								Databases (OPO Relational Databases)
 								<ul>
 									<li class="fragment">Structured Query Language
 										<ul>
@@ -389,10 +227,10 @@ alert('OK GO!');</code></pre>
 								Web Scripting
 								<div class="columns clearfix">
 									<ul class="fragment column column-12">
-										<li>Backend Scripting
+										<li>Serverside Scripting
 											<ul>
 												<li>PHP Syntax</li>
-												<li>Client-Server</li>
+												<li>PHP on the webserver (client-server model)</li>
 												<li>Forms</li>
 												<li>Data Persistency (Sessions, Cookies)</li>
 												<li>Classes</li>
@@ -402,12 +240,12 @@ alert('OK GO!');</code></pre>
 										</li>
 									</ul>
 									<ul class="fragment column column-12">
-										<li>Frontend Scripting
+										<li>Clientside Scripting
 											<ul>
 												<li>JavaScript Syntax</li>
 												<li>DOM &amp; Events</li>
 												<li>jQuery Basics</li>
-												<li>Ajax</li>
+												<li>Ajax and JSON</li>
 											</ul>
 										</li>
 									</ul>
@@ -424,7 +262,7 @@ alert('OK GO!');</code></pre>
 									<b>Webdev Tools</b>
 									<ul>
 										<li>Dependency Management (Composer)</li>
-										<li>Virtualization (Vagrant)</li>
+										<li>Virtualization (Docker)</li>
 										<li>Version Control (Git)</li>
 									</ul>
 								</li>
@@ -468,20 +306,17 @@ alert('OK GO!');</code></pre>
 							<li class="fragment">
 								Technology
 								<ul>
-									<li>Scripting Language: PHP 5.6+</li>
+									<li>Scripting Language: PHP 5.6+/7.1+</li>
 									<li>Databaseserver: MySQL, SQLite3, &hellip;</li>
-									<li>Framework: Laravel 5.3 (from lab 02 on)</li>
+									<li>Framework: Laravel 5.5+ (from lab 02 on)</li>
 									<li>Dependency Management: Composer</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								<a href="http://www.wampserver.com/en/">Wampserver</a> (Win) or <a href="http://www.mamp.info/en/">MAMP (Pro)</a> (OS X) to start with
+								We will be using <a href="https://www.docker.com/">Docker</a> in stead of WAMP/MAMP/LAMP
 								<ul>
-									<li>Instructions: Web Scripting</li>
+									<li>Only in case of emergency: <code>php -S localhost:8080</code></li>
 								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								From lab 02 on, you are strongly encouraged to run a <a href="https://www.vagrantup.com/">Vagrant</a> VM
 							</li>
 						</ul>
 					</section>
@@ -511,7 +346,7 @@ alert('OK GO!');</code></pre>
 					</section>
 
 					<section>
-						<h2>Course Materials, Assignments &amp; Announcements</h2>
+						<h2>Course Materials &amp; Labs</h2>
 						<ul>
 							<li class="fragment">
 								Everything distributed via Toledo
@@ -522,16 +357,39 @@ alert('OK GO!');</code></pre>
 							<li class="fragment" style="margin-top: 1em;">
 								Course Materials
 								<ul>
-									<li>Available on <a href="https://github.com/mjoris/wd-bd-course-materials">GitHub</a></li>
+									<li>Available on <a href="https://github.com/mjoris/wd-sd-course-materials">GitHub</a></li>
 									<li>Feel free to fork and commit improvements/additions</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Assignments
+								5 labs
 								<ul>
 									<li>Several tasks grouped into one big assignment</li>
 									<li>Commit &amp; push to git.ikdoeict at the end of the lab</li>
-									<li>When asked: to be completed by Wednesday, 8PM next week (new commit &amp; push)</li>
+									<li>When asked: to be completed by next Sunday, 8PM(new commit &amp; push)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Labs &amp; Announcements</h2>
+						<ul style="font-size: 90%">
+							
+							<li class="fragment" style="margin-top: 1em;">
+								Project assignment
+								<ul>
+									<li>Development of a <em>full-blown</em> Laravel web app</li>
+									<li>Deadline: end of May</li>
+								</ul>
+								<img src="assets/00/lab-of-choice.gif" width="800" alt="The project flavour" class="noborder" />
+							</li>
+							<li class="fragment">
+								From lab 3 on: participate to the <em>project track</em>
+								<ul>
+									<li>In stead of a <em>regular lab assignment</em> you will get instructions to apply the same kind of assignment <strong>to your own project</strong></li>
+									<li>Any of your work is pushed to your one and only project repository on git</li>
+									<li>Each <em>project lab assignment</em> is subject to <strong>strict</strong> starting conditions</li>
 								</ul>
 							</li>
 						</ul>
@@ -546,21 +404,22 @@ alert('OK GO!');</code></pre>
 									<li>Choose <em>&ldquo;Run Git from the Windows Command Prompt&rdquo;</em> during install
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+							<li class="fragment" style="margin-top: 0.9em;">
 								Clone the repository
-								<pre class="bigger"><code>cd c:\wamp\www
-git clone https://github.com/mjoris/wd-bd-course-materials.git</code></pre>
+								<pre class="bigger"><code>cd myfolder
+git clone https://github.com/mjoris/wd-sd-course-materials.git
+php -S localhost:8080</code></pre>
 
-								<ul><li>Visit your copy at <a href="http://localhost/wd-bd-course-materials">http://localhost/wd-bd-course-materials</a></li></ul>
+								<ul><li>Visit your copy at <a href="http://localhost:8080/wd-sd-course-materials">http://localhost:8080/wd-sd-course-materials</a></li></ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+							<li class="fragment" style="margin-top: 0.9em;">
 								Update the repository regularly to get the latest version
-								<pre class="bigger"><code>cd c:\wamp\www\wd-bd-course-materials
+								<pre class="bigger"><code>cd myfolder/wd-sd-course-materials
 git reset --hard
 git pull</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><em>Note: This is an example on Windows using Wampserver</em></footer>
+						<footer class="fragment"><em>Note: This is an example with PHP's built-in web server</em></footer>
 					</section>
 
 					<section>
@@ -569,13 +428,13 @@ git pull</code></pre>
 							<li class="fragment">
 								Permanent (40%)
 								<ul>
-									<li>40%: Progress, Accuracy, Attitude, Programming Style, ...</li>
+									<li>40%: Progress, Accuracy, Programming Style, ...</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Project (60%)
 								<ul>
-									<li>Launched by 11 May 2017</li>
+									<li>Launched by the middle of April 2018</li>
 									<li>Oral Defense in EP2</li>
 									<li class="fragment"><strong>!! Minimum score of 10/20 required to possibly pass this OLA !!</strong></li>
 								</ul>
@@ -641,7 +500,7 @@ git pull</code></pre>
 										Check the slides and code examples
 									</li>
 									<li class="fragment">
-										Check official API documentation such as Laravel's <a href="https://laravel.com/docs/5.3/helpers" target="_blank">Helper Functions</a> or <a href="https://laravel.com/api/5.3" target="_blank">API</a>
+										Check official API documentation such as Laravel's <a href="https://laravel.com/docs/5.5/helpers" target="_blank">Helper Functions</a> or <a href="https://laravel.com/api/5.5" target="_blank">API</a>
 									</li>
 									<li class="fragment">
 										Check Google <em>(#lmgtfy)</em>
@@ -694,7 +553,7 @@ git pull</code></pre>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								&hellip; and your project score will be halved.
+								&hellip; and you will not pass the project.
 								<div class="fragment dontunfragment" style="position: absolute; left: 50%; bottom: 20%; transform: rotate(-2deg) translateX(-50%); text-align: center;"><img src="assets/00/you_shall_not_pass.jpg" width="600" alt="You shall not pass!" class="noborder" /></div>
 							</li>
 						</ul>
@@ -707,7 +566,7 @@ git pull</code></pre>
 					<section>
 						<h2>Questions?</h2>
 						<footer>
-							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+							<em><a href="https://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
 						</footer>
 					</section>
 				</section>
