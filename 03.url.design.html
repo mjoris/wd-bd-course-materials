@@ -91,47 +91,68 @@
 					</section>
 
 					<section>
-						<h2>Richardson Maturity Model</h2>
+						<h2>Why URL design?</h2>
 						<ul>
-							<li class="fragment">Model describing the principal elements of a RESTful API
+							<li class="fragment">SEO (Search Engine Optimization)
+							</li>
+							<li class="fragment" style="margin-top: 1em">Usability
 								<ul>
-									<li class="fragment">Level 0: Use HTTP as transport system</li>
-									<li class="fragment">Level 1: Identify and organize resources in a hierarchy</li>
-									<li class="fragment">Level 2: Use HTTP verbs for operations</li>
-									<li class="fragment">Level 3: <acronym title="Hypertext As The Engine Of Application State">HATEOAS</acronym></li>
+									<li class="fragment">Users interact with URLs</li>
+									<li class="fragment">A good URL is clear, concise and understandable</li>
+									<li class="fragment">A good URL is <em>hackable</em></li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em">Level 1 is what we'll be focussing on
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Constistency and Simplicity</h2>
+						<ul>
+							<li class="fragment">
+								Many URL design systems and conventions exists
+								<ul>
+									<li class="fragment">They are optimized for different goals</li>
+									<li class="fragment">There is a lot of debate on them</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								The most important guidelines:
+								<ul>
+									<li class="fragment">Be <strong>consistent</strong>: don't mix up systems</li>
+									<li class="fragment">Keep it <strong>simple</strong>: don't make long and complex URLs</li>
+								</ul>
 							</li>
 						</ul>
 					</section>
 
 					<section>
-						<h2>Identification &amp; Hierarchy</h2>
+						<h2 style="font-size:200%">Rule #1: Identification &amp; Hierarchy (1)</h2>
 						<ul>
 							<li class="fragment">
 								Basic naming conventions
 								<ul>
 									<li class="fragment">Verbs are bad, nouns are good</li>
-									<li class="fragment">Use plurals</li>
+									<li class="fragment">You decide: use plurals <strong>everywhere</strong> or singulars <strong>everywhere</strong></li>
 									<li class="fragment">Respect the Hierarchy</li>
+									<li class="fragment">This does not apply to <em>&ldquo;normal pages&rdquo;</em></li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 1em">
+							<li class="fragment" style="margin-top: 0.7em">
 								Examples
 								<ul>
-									<li class="fragment"><del><code>/product</code></del> &rarr; <ins><code>/products</code></ins></li>
+									<li class="fragment"><ins><code>/products</code></ins></li>
 									<li class="fragment"><del><code>/product/1234</code></del> &rarr; <ins><code>/products/1234</code></ins></li>
 									<li class="fragment"><del><code>/photos/product/1234</code></del> &rarr; <ins><code>/products/1234/photos</code></ins></li>
 									<li class="fragment"><del><code>/photos/product/1234/5678</code></del> &rarr; <ins><code>/products/1234/photos/5678</code></ins></li>
+									<li class="fragment"><del><code>/pages/85/contact</code></del> &rarr; <ins><code>/contact</code></ins></li>
 								</ul>
 							</li>
 						</ul>
-						<footer class="fragment">This doesn't apply for <em>&ldquo;normal pages&rdquo; of your site</em></footer>
+
 					</section>
 
 					<section>
-						<h2>Identification &amp; Hierarchy bis</h2>
+						<h2 style="font-size:200%">Rule #1: Identification &amp; Hierarchy (2)</h2>
 						<ul>
 							<li class="fragment">
 								Use concrete naming, yet don't be too specific
@@ -160,20 +181,174 @@
 							<li><code>/contact</code></li>
 						</ul>
 					</section>
+					
+					<section>
+						<h2>Rule #2: Namespace prefix</h2>
+						<ul style="font-size: 90%;">
+							<li class="fragment">
+								Consider a namespace prefix only
+								<ul>
+									<li class="fragment">in order to indicate a separate section on your website, which is not the <em>main</em> section (in the future)</li>
+									<li class="fragment">or to avoid (future) URL conflicts</li>
+									<li class="fragment">for account settings (don't start with the user)</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.7em">
+								Examples
+								<ul>
+									<li class="fragment"><ins><code>/blog</code></ins></li>
+									<li class="fragment"><ins><code>/blog/posts/25</code></ins></li>
+									<li class="fragment">On a web store: <del><code>/shop/products/1234</code></del> &rarr; <ins><code>/products/1234</code></ins></li>
+									<li class="fragment">On a web store: <del><code>/categories/25/edit</code></del> &rarr; <ins><code>/admin/categories/25/edit</code></ins></li>
+									<li class="fragment"><del><code>/users/66/account/address</code></del> &rarr; <ins><code>/account/address</code></ins></li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment">Note: a username can be a namespace to but you'll need a blacklist</footer>
+					</section>
+					
+					<section>
+						<h2>Rule #3: Forms with verbs (1)</h2>
+						<ul>
+							<li class="fragment">
+								Don't be confused
+								<ul>
+									<li class="fragment">A lot of URL specifications are on <strong>RESTful Web APIs</strong>
+										<ul>
+											<li class="fragment">They avoid verbs in the URL</li>
+											<li class="fragment">They're using <strong>HTTP verbs/methods</strong> (<code>GET</code>, <code>PUT</code>, <code>DELETE</code>, &hellip;) to indicate the type of action</li>
+										</ul>
+									</li>
+									<li class="fragment">The current rule is on <strong>action related to forms</strong>
+										<ul>
+											<li class="fragment">Showing the form (<code>GET</code>)</li>
+											<li class="fragment">Processing the action (<code>POST</code>)</li>
+											<li class="fragment">No other <strong>HTTP methods</strong> allowed </li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Rule #3: Forms with verbs (2)</h2>
+						<ul style="font-size: 85%;">
+							<li class="fragment">
+								Define a set of verbs for Create, Update and Delete actions of forms
+								<ul>
+									<li class="fragment">Attach the verb at the end of the URL
+									</li>
+									<li class="fragment">
+										Respect your HTTP method: <code>GET</code> shows the form; <code>POST</code> processes the action 
+									</li>
+									<li class="fragment">
+										Stick to your choice: use the same verbs and system everywhere!
+									</li>									
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								Examples
+								<ul style="font-size: 75%;">
+									<li><code>GET&nbsp;&nbsp;/admin/products</code></li>
+									<li><code>GET&nbsp;&nbsp;/admin/products/create</code></li>
+									<li><code>POST /admin/products/create</code></li>
+									<li><code>GET&nbsp;&nbsp;/admin/products/<em>{id}</em>/edit</code></li>
+									<li><code>POST /admin/products/<em>{id}</em>/edit</code></li>
+									<li><code>GET&nbsp;&nbsp;/admin/products/<em>{id}</em>/delete</code></li>
+									<li><code>POST /admin/products/<em>{id}</em>/delete</code></li>									
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Note #1: Slug</h2>
+						<ul>
+							<li class="fragment">
+								Sometimes a <a href="https://en.wikipedia.org/wiki/Clean_URL#Slug">slug</a> is attached to the end of the URL
+								<ul>
+									<li class="fragment">
+										Slug = name of the resource in the form of human-readable keywords
+									</li>
+									<li class="fragment">
+										Example: <code>/products/1234/huawei-p10-lite-black</code></strong>
+									</li>
+									<li class="fragment">
+										SEO: keep it short and use hyphens (<code>-</code>), no underscores (<code>_</code>)
+									</li>
+									<li class="fragment">
+										Incorrect slug? Redirect!
+									</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								Do we need IDs in URLs at all then?
+								<ul>
+									<li class="fragment">
+										It depends &#8482;
+									</li>
+									<li class="fragment">
+										No IDs is more SEO-friendly, but you need a performant <em>slug index</em> and URLs become invalid when the resource title changes
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>Note #2: duplicate URLs</h2>
+
+						<ul>
+							<li class="fragment" style="margin-top: 1em">
+								Example
+								<ul style="font-size: 75%;">
+									<li><code>/products/1234</code></li>
+									<li><code>/categories/15/products/1234</code></li>
+									<li><code>/brands/9/products/1234</code></li>						
+								</ul>
+							</li>
+							<li class="fragment">
+								We call these <em>canonical</em> URLs
+								<ul>
+									<li class="fragment">
+										It means that the pages are about the same resource but might not be exact copies (e.g. think of the breadcrumb)
+									</li>
+									<li class="fragment">
+										You need to <a href="https://moz.com/blog/canonical-url-tag-the-most-important-advancement-in-seo-practices-since-sitemaps">hint</a> search engines about canonical URLs
+									</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								Advise (not obligatory)
+								<ul>
+									<li class="fragment">
+										Avoid canonical paths and keep URLs short and simple
+									</li>
+									<li class="fragment">
+										Don't confuse URLs with breadcrumbs
+									</li>
+									<li class="fragment">
+										Strip the URL hierarchy to its essence
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
+					
 				</section>
 
 
-				<!-- Supporting Nice URLs -->
+				<!-- Supporting Clean URLs -->
 				<section>
 					<section>
-						<h2>Supporting Nice URLs</h2>
+						<h2>Supporting Clean URLs</h2>
 
 						<p><img src="assets/03/futurama-buttfailure.png" alt="" title="" width="447" /></p>
 						<q>I installed shock absorbing bumpers on your ass to minimize the chance of catastrofic butt failure.</q>
 					</section>
 
 					<section>
-						<h2>Supporting nice URLs</h2>
+						<h2>Supporting Clean URLs</h2>
 						<ol>
 							<li class="fragment">
 								Let all requests to inexistent files/folders be processed by <code>index.php</code>
@@ -203,10 +378,11 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]
 &lt;/IfModule&gt;</code></pre>
 							</li>
+							<li>Better: include the rewrite rules in your <a href="https://stackoverflow.com/questions/10175513/mod-rewrite-in-vhosts-configuration">virtual hosts</a> config</li>
 						</ul>
 					</section>
 
-					<section>
+					<!--section>
 						<h2>1. Howto: IIS</h2>
 						<ul>
 							<li class="fragment">
@@ -233,7 +409,7 @@ RewriteRule ^ index.php [L]
 &lt;/configuration&gt;</code></pre>
 							</li>
 						</ul>
-					</section>
+					</section-->
 
 					<section>
 						<h2>1. Howto: Built-in PHP server</h2>
@@ -395,9 +571,9 @@ $router->run();</code></pre>
 					<section>
 						<h2>Sources</h2>
 						<ul>
-							<li><a href="http://www.slideshare.net/Wombert/designing-http-interfaces-and-restful-web-services-dpc2012-20120608">http://www.slideshare.net/Wombert/designing-http-interfaces-and-restful-web-services-dpc2012-20120608</a></li>
 							<li><a href="http://martinfowler.com/articles/richardsonMaturityModel.html">http://martinfowler.com/articles/richardsonMaturityModel.html</a></li>
-							<li><a href="https://github.com/restcookbook/restcookbook/blob/master/_posts/2012-12-14-richardsonmaturitymodel.html">https://github.com/restcookbook/restcookbook/blob/master/_posts/2012-12-14-richardsonmaturitymodel.html</a></li>
+							<li><a href="https://www.creativebloq.com/design/design-perfect-url-1126509">https://www.creativebloq.com/design/design-perfect-url-1126509</a></li>
+
 						</ul>
 					</section>
 				</section>
