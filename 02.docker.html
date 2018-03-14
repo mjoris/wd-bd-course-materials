@@ -546,7 +546,7 @@ EXPOSE 3306</code></pre>
 					</section>
 					
 					<section>
-						<h2>Multi-container environment</h2>
+						<h2>Multi-container environment (MCE)</h2>
 						<ul style="font-size: 90%">
 							<li class="fragment">
 								There's a lot to tell about creating containers and making them work together <em>manually</em>
@@ -563,13 +563,74 @@ EXPOSE 3306</code></pre>
 										CLI tool for running multi-container Docker apps in an easy way
 									</li>
 									<li>
-										included in Docker
+										included in Docker for Mac &amp; Windows
 									</li>
 								</ul>
 							</li>							
 						</ul>
 
+					</section>
+
+					<section>
+						<h2>How does it work?</h2>
+						<ol style="font-size: 80%">
+							<li class="fragment">
+								Define your multi-container app in a file called <code>docker-compose.yml</code>
+								<ul>
+									<li>The <code>services:</code> section lists the images from which the containers will be built</li>
+									<li>Services starting with <code>build:</code> will use an image from the <code>Dockerfile</code> in the specified directory</li>
+									<li>Services starting with <code>image:</code> refer to images to be pulled from Docker Hub</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.7em">
+								Build an start your app by running <code>docker-compose up -d</code> (detached mode)
+								<ul>
+									<li>
+										A Docker network is created when missing
+									</li>
+									<li>
+										Images/containers are created when missing or changed
+									</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.7em">
+								Stop your app: <code>docker-compose stop</code>
+							</li>
+							<li class="fragment" style="margin-top: 0.7em">
+								Remove the containers and associated volumes: <code>docker-compose down --volumes</code>
+							</li>						
+						</ol>
+
 					</section>	
+
+					<section>
+						<h2>A simple example</h2>
+						<pre style="margin-bottom: 0;">php/Dockerfile</pre>
+						<pre style="margin-top: 0;"><code class="language-bash dontrun">FROM php:5.6-apache
+
+RUN docker-php-ext-install mysqli</code></pre>
+						<pre style="margin-bottom: 0;">docker-compose.yml</pre>
+						<pre style="margin-top: 0;"><code class="language-bash dontrun">version: '2'
+
+services:
+  php:
+    build: php
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./php/www:/var/www/html
+    links:
+      - db
+
+  db:
+    image: mysql:5.7
+    volumes:
+     - /var/lib/mysql
+    environment:
+     - MYSQL_ROOT_PASSWORD=Azerty123
+     - MYSQL_DATABASE=database</code></pre>
+					</section>
 
 					<section>
 						<h2>Docker vs. Composer</h2>
@@ -591,7 +652,6 @@ EXPOSE 3306</code></pre>
 									<li class="fragment">
 										Add the <code>vendor</code> folder to <code>.gitignore</code>
 									</li>
-
 								</ul>		
 							</li>
 						</ul>
