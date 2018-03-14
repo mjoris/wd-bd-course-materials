@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Web Development &mdash; Serverside Development</title>
+
+		<meta name="description" content="Web Development &mdash; Backend Development &mdash; 02.vagrant">
+		<meta name="author" content="Joris Maervoet - ikdoeict.be">
+
+		<link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Serverside Development <small>[JLW506]</small></h3>
+						<h1>02.Virtualization with Docker</h1>
+
+						<footer>
+							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+
+
+				<!-- Introduction: virtualization -->
+				<section>
+					<section>
+						<h2>Introduction: virtualization</h2>
+					</section>
+
+					<section>
+						<h2>The problem (1)</h2>
+						<q>But it worked on my machine</q>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">When &hellip;
+								<ul>
+									<li class="fragment">developing in a team</li>
+									<li class="fragment">publishing your project on a <em>production</em> server</li>
+									<li class="fragment">handing over your project to &hellip;
+										<ul>
+											<li class="fragment">a customer</li>
+											<li class="fragment">your lecturer ;-)</li>
+											<li class="fragment">&hellip;</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>The problem (2)</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">Where does it go wrong?
+								<ul>
+									<li class="fragment">PHP version &amp; config
+										<ul>
+											<li class="fragment"><a href="http://php.net/manual/en/migration70.incompatible.php">(Backward incompatible) changes</a> including default behaviour of functions</li>
+											<li class="fragment"><code>php.ini</code></li>
+											<li class="fragment">Composer: need to update or requirements infeasible</li>
+										</ul>
+									</li>
+									<li class="fragment">Available PHP extensions, versions &amp; config</li>
+									<li class="fragment">DBMS <em>brand</em>, version &amp; config</li>
+									<li class="fragment">Your database (schema)
+										<ul>
+											<li class="fragment">Unless it is handled by a dev tool (e.g. Laravel Database Migrations)</li>
+										</ul>
+									</li>									
+									<li class="fragment">Webserver <em>brand</em>, version &amp; config (Apache: <code>httpd.conf</code>)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>What if &hellip;</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">We would deliver a virtual machine (VM) with each project?
+								<ul>
+									<li class="fragment">It will overcome these problems, but &hellip;
+										<ul>
+											<li class="fragment">it requires time and expertise</li>
+											<li class="fragment">it requires organization when managing multiple projects</li>
+											<li class="fragment">it can cause problems (size? updates?) when put to version control (Git)</li>
+											<li class="fragment">the relation between the VM and the project files might be unclear: where to copy, where to develop, how to run? </li>											
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+					
+					<section>
+						<h2>The solution (1)</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">Virtual environments (software)
+								<ul style="margin-top: 1em;">
+									<li class="fragment">How does it work?
+										<ul>
+											<li class="fragment">description (typically some text files) of server environment, which is easy to share (<em>portable</em>)</li>	
+											<li class="fragment">description generates everywhere exactly the same environment (<em>reproducable</em>)</li>
+											<li>hopefully, it takes few time and few resources (<em>lightweight</em>)</li>
+							
+										</ul>
+									</li> 
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>The solution (2)</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">Virtual environments (software)
+								<ul style="margin-top: 1em;">
+									<li class="fragment"><a href="https://www.vagrantup.com/">Vagrant</a> = higher-level wrapper around virtualization software such as VirtualBox and VMware
+										<ul>
+											<li class="fragment">Want to learn more? <a href="old.02.vagrant.html">former slides</a></li>
+										</ul>
+									</li> 
+									<li class="fragment" style="margin-top: 1em;"><a href="https://www.docker.com/">Docker</a> = operating-system-level virtualization on Linux
+										<ul>
+											<li class="fragment">works with <em>isolated features</em> of Linux kernel</li>	
+											<li class="fragment">very lightweight and popular</li>				
+											<li class="fragment">&rarr; We will continue with Docker</li>	
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
+
+				</section>	
+
+
+				<!-- Vagrant basics -->
+				<section>
+					<section>
+						<h2>Docker basics</h2>
+					</section>
+					
+					<section>
+						<h2>Architecture</h2>
+						<p><img src="assets/02/docker-architecture.svg" alt="" title="" width="700" style="border: 0px;"/></p>
+						<p style="font-size: 50%; line-height: 100%;">
+							A (public) <strong>registry</strong> like <strong>Docker Hub</strong> stores Docker <strong>images</strong> anyone can use. These images can be copied to your system.
+							<strong>Images</strong> are <em>blueprints (= read-only templates)</em> of Docker <strong>containers</strong>. <strong>Containers</strong> are runnable isolated instances you can create, start, stop, &hellip; on the central Linux kernel.
+							With a <strong>Dockerfile</strong> you can create your own image.<br/>Docker comes with a client-server architecture on you system, where the central server component listening for commands is called the Docker <strong>daemon</strong>.
+							
+						</p>
+					</section>
+					
+					<section>
+						<h2>Installing and running Docker</h2>
+						<ul>
+							<li class="fragment">
+								Docker CE - stable release - instructions:
+								<ul>
+									<li><a href="https://docs.docker.com/docker-for-windows/install/">Docker for Windows</a></li>
+									<li><a href="https://docs.docker.com/docker-for-mac/install/">Docker for Mac</a></li>
+									<li><a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">Docker on Ubuntu</a></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Linux containers</h2>
+						
+						<ul style="font-size: 90%;width: 16em;float: left;">
+							<li class="fragment">
+								Docker for Windows has multiple modes: Windows containers and Linux containers
+								<ul>
+									<li>For the sake of compatibility &rarr; always use Linux containers</li>
+									<li>Yes, Docker's running a VM on Windows (Hyperkit VM on Mac)</li>
+								</ul>
+							</li>
+						</ul>
+						<p><img src="assets/02/linux-containers.png" alt="" title="" height="400" style="border: 0px;margin-top: 10px;"/></p>
+						<footer style="line-height: 100%">
+							Note: a container can have a base OS or can be a binary executed directly on the kernel<br>Source: <a href="http://www.floydhilton.com/docker/2017/03/31/Docker-ContainerHost-vs-ContainerOS-Linux-Windows.html">http://www.floydhilton.com/docker/2017/03/31/Docker-ContainerHost-vs-ContainerOS-Linux-Windows.html</a>
+						</footer>
+					</section>					
+					
+					<section>
+						<h2>Docker Hub (1)</h2>
+						<ul>
+							<li class="fragment">
+								<a href="https://atlas.hashicorp.com/boxes/search">Docker Hub</a> is Docker's browsable registry of images
+							</li>
+							<li class="fragment">
+								Image versions (indicated by <em>tags</em>) are grouped into <em>repositories</em>
+							</li>
+						</ul>
+						<p style="margin-top: -1em;"><img src="assets/02/dockerhub.png" alt="" title="" width="600" /></p>
+					</section>
+
+					<section>
+						<h2>Docker Hub (2)</h2>
+						
+						<ul>
+							<li class="fragment">
+								Let's explore &hellip;
+								<ul>
+									<li><a href="https://hub.docker.com/explore/">Explore</a>: repositories ordered by # pulls</li>
+									<li><a href="https://docs.docker.com/docker-hub/official_repos/">Official repositories</a> are curated by a dedicated team &rarr; use them !
+										<ul>
+											<li>OSs like <a href="https://hub.docker.com/_/alpine/">Alpine Linux</a></li>
+											<li>Dev components like <a href="https://hub.docker.com/_/nginx/">nginx</a>*, <a href="https://hub.docker.com/_/php/">PHP</a>* and <a href="https://hub.docker.com/_/mysql/">MySQL</a>* </li>
+											<li>Some images's configuration can be changed by overruling environment variables</li>
+										</ul>
+									</li>
+									<li>Any user can publish images in <em>public repositories</em> either by <code>docker push</code> or by automated builds (git hook)
+										<ul>
+											<li>Example: <a href="https://hub.docker.com/r/richarvey/nginx-php-fpm/">richarvey/nginx-php-fpm</a></li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer style="line-height: 100%">
+							* containing a base OS<br/>Documentation on <a href="https://docs.docker.com/docker-hub/">Docker Hub</a>
+						</footer>
+					</section>	
+
+					<section>
+						<h2>Let's run a container</h2>
+						<pre class="bigger"><code class="language-bash dontrun">$ docker run -e MYSQL_ROOT_PASSWORD=Azerty123 -d mysql:5.7</code></pre>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								This command actually performs the following steps:
+								<ol>
+									<li class="fragment" style="margin-top: 0.7em;">
+										No mysql:5.7 image present? <code>$ docker pull mysql:5.7</code> 
+									</li>
+									<li class="fragment" style="margin-top: 0.7em;">
+										Create a new container: <code>$ docker create -e MYSQL_ROOT_PASSWORD=Azerty123 mysql:5.7</code> &rarr; the daemon returns a container ID: <code>950968d78d63ae451c178a46799cd85b6aed5d9692d46a6b3acca05da8830990</code>
+										<ul>
+											<li>allocates a read-write filesystem to the container</li>
+											<li>connects the container to the default network (unless specified otherwise)</li>
+										</ul>
+									</li>
+									<li class="fragment" style="margin-top: 0.7em;">
+										Start the container (in background mode): <code>$ docker start 950</code> &rarr; you see? a <em>unique ID prefix</em> is enough
+									</li>							
+								</ol>
+							</li>	
+						</ul>
+						<footer style="line-height: 100%">
+							Documentation on <a href="https://docs.docker.com/engine/reference/run/">run</a>, <a href="https://docs.docker.com/engine/reference/commandline/pull/">pull</a>, <a href="https://docs.docker.com/engine/reference/commandline/create/">create</a> and <a href="https://docs.docker.com/engine/reference/commandline/start/">start</a>
+						</footer>
+					</section>
+
+					<section>
+						<h2>Let's see what happened</h2>
+						<pre style="width: 100%; margin: 0;"><code class="language-bash dontrun">$ docker images
+REPOSITORY              TAG                 IMAGE ID            CREATED             SIZE
+mysql                   5.7                 5d4d51c57ea8        2 weeks ago         374MB
+mysql                   latest              f0f3956a9dd8        3 weeks ago         409MB
+nimmis/apache-php7      latest              93b52d88eb58        6 weeks ago         482MB
+alexcheng/magento2      latest              41b274b16771        7 weeks ago         1.43GB
+phpmyadmin/phpmyadmin   latest              19c3875df23d        2 months ago        104MB
+mysql                   5.6.23              0bd9ef0792fa        2 years ago         283MB
+
+$ docker ps
+CONTAINER ID    IMAGE               COMMAND                  CREATED           STATUS                  PORTS      NAMES
+950968d78d63    mysql:5.7           "docker-entrypoint.s…"   20 minutes ago    Up 8 minutes            3306/tcp   confident_hermann
+
+$ docker ps -a
+CONTAINER ID    IMAGE               COMMAND                  CREATED           STATUS                  PORTS      NAMES
+950968d78d63    mysql:5.7           "docker-entrypoint.s…"   20 minutes ago    Up 8 minutes            3306/tcp   confident_hermann
+4f909c0d46e1    nimmis/apache-php7  "/my_init"               2 weeks ago       Exited (0) 2 weeks ago             youthful_rosalind
+ec1702dd0e85    alexcheng/magento2  "/sbin/my_init"          5 weeks ago       Exited (0) 5 weeks ago             gallant_villani
+c5d0d1270551    alexcheng/magento2  "/sbin/my_init"          5 weeks ago       Exited (0) 5 weeks ago             agitated_kowalevski</code></pre>
+						<ul style="font-size: 75%">
+							<li class="fragment">
+								Actually we have been using a lot of shorthand commands:
+								<ul>
+									<li class="fragment"><code>docker image pull</code> &rarr; <code>docker pull</code></li>
+									<li class="fragment"><code>docker image ls</code> &rarr; <code>docker images</code></li>
+									<li class="fragment"><code>docker container create</code> &rarr; <code>docker create</code></li>
+									<li class="fragment"><code>docker container ls</code> &rarr; <code>docker ps</code></li>
+								</ul>
+							</li>	
+						</ul>
+						<footer style="line-height: 100%">
+							Documentation on <a href="https://docs.docker.com/engine/reference/commandline/image/">image *</a> and <a href="https://docs.docker.com/engine/reference/commandline/container/">container *</a>
+						</footer>
+					</section>
+
+					<section>
+						<h2>Play and rewind</h2>
+						<ul>
+							<li class="fragment">
+								<code>container *</code> shorthands
+									<ul>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker start [C]</code> (re)starts the container
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker pause [C]</code> pauses the container
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker unpause [C]</code> starts a paused container
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker stop [C]</code> stops the container (at first <em>gracefully</em>)
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker kill [C]</code> stops the container immediately
+										</li>
+										<li class="fragment">
+											<code class="language-bash dontrun">$ docker rm [C]</code> removes the container from your system
+										</li>
+										<li class="fragment" style="margin-top: 1em">Replace <code>[C]</code> by the container id (unique prefix) or container name (might be assigned randomly)</li>
+									</ul>								
+							</li>
+							
+						</ul>
+					</section>
+
+					<section>
+						<h2>docker run (1)</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								This command is typically used with 2 kinds of flavour:
+								<ul>
+									<li class="fragment">
+										<strong>Foreground mode</strong> e.g. <code>$ docker run -it mysql:5.7 bash</code>
+										<ul>
+											<li>when <code>-d</code> is not specified, Docker attache STDIN, STDOUT and STDERR to the current console</li>
+											<li>after the image (<code>mysql:5.7</code>) a command (<code>bash</code>) to be executed inside the container can be specified</li>
+											<li>when it concerns an <strong>interactive</strong> command, you must use <code>-i</code> and <code>-t</code> in orde to attach a pseudo-TTY</li>
+											<li>when you exit the tty, the container is stopped</li>
+										</ul>
+									</li>
+									<li class="fragment">
+										<strong>Detached mode</strong> e.g. <code>$ docker run -d mysql:5.7</code>
+										<ul>
+											<li>You can still run a command and attach by <code>docker exec -it 950 bash</code></li>
+										</ul>
+									</li>						
+								</ul>
+							</li>
+						</ul>
+						<footer style="line-height: 100%">
+							Documentation on <a href="https://docs.docker.com/engine/reference/run/">run</a>
+						</footer>
+					</section>
+
+					<section>
+						<h2>docker run (2)</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment" style="margin-top: 0.5em;">
+								Some options
+								<ul>
+									<li class="fragment">
+										<code>--name test</code>: assign a name to the container
+									</li>
+									<li class="fragment">
+										<code>-w /working/directory</code>: specify the path where the command must executed
+									</li>
+									<li class="fragment">
+										<code>-v /Users/franky/Documents/configmap:/etc/mysql/conf.d</code>: mounts a host folder into the container
+									</li>
+									<li class="fragment">
+										<code>--expose 80</code>: you document which ports are intended for public usage
+									</li>
+
+									<li class="fragment">
+										<code>-p 3307:3306</code>: binds port 3307 of the host machine to port 3306 of the container
+									</li>
+									<li class="fragment">
+										<code>-P</code>: binds all exposed ports to random ports of the container (detect with <code>docker port</code>)
+									</li>	
+									<li class="fragment">
+										<code>-e MYSQL_ROOT_PASSWORD=my-secret-pw</code>: set environment variables
+									</li>
+									<li>and many <a href="https://docs.docker.com/engine/reference/run/">others</a></li>
+								</ul>
+							</li>
+						</ul>
+					</section>					
+					
+							
+					<section>
+						<h2>Creating your own images</h2>
+						<ul style="font-size: 75%">
+							<li class="fragment">
+								What you need to know
+								
+								<ul>
+									<li class="fragment">
+										A <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile</a> is a text file containing a list of commands to build an image
+										<pre><code class="language-bash dontrun">FROM mysql:8.0
+
+MAINTAINER Mahmoud Zalt &lt;mahmoud@zalt.me&gt;
+
+# Set timezone
+ARG TZ=UTC
+ENV TZ ${TZ}
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime &amp;&amp; echo $TZ &gt; /etc/timezone
+
+COPY my.cnf /etc/mysql/conf.d/my.cnf
+CMD ["mysqld"]
+EXPOSE 3306</code></pre>
+									</li>
+									<li class="fragment">
+										You see: many Dockerfile instructions are actually <code>docker run</code> options
+									</li>
+									<li>
+										Create the image locally by: <code>docker build -t mjoris/mysql-tz:1.0 .</code>
+										<ul>
+											<li class="fragment">
+												&rarr; the image is built layer by layer
+											</li>
+											<li class="fragment">
+												<a href="https://stackoverflow.com/questions/31222377/what-are-docker-image-layers">Image layers</a> are <em>intermediate images</em> stored as a <em>diff</em> on the previous layer. 
+											</li>
+											<li class="fragment">
+												Almost each command in a Dockerfile generates a new layer. 
+											</li>
+											<li class="fragment">
+												Layers <a href="https://www.ctl.io/developers/blog/post/caching-docker-images">are cached by Docker</a>.
+											</li>	
+										</ul>							
+									</li>
+									<li>Publish your image on Docker Hub with <code>docker push</code> (first <code>docker login</code>) or use <a href="https://docs.docker.com/docker-hub/github/">automated builds with GitHub</a></li>
+
+								</ul>
+							</li>
+						</ul>
+
+					</section>
+					<section>
+						<h2>Dockerfile pitfalls</h2>
+						<ul style="font-size: 75%">
+							<li class="fragment">
+								Before you code your own Dockerfile, read the <a href="https://docs.docker.com/engine/reference/builder/">docs</a>, look at examples and read about the <a href="https://github.com/FuriKuri/docker-best-practices">do's</a> and the don'ts (<a href="https://runnable.com/blog/9-common-dockerfile-mistakes">1</a>, <a href="https://developers.redhat.com/blog/2016/02/24/10-things-to-avoid-in-docker-containers/">2</a>)
+								<ul>
+									<li class="fragment">
+										Most important rule: <strong>keep your container reproducible</strong> (in the future) 
+									</li>
+									<li>
+										So don't deploy your application in a running container (!)
+									</li>
+									<li>
+										So never rely on the latest tag (which is the default): <code>FROM mysql<ins>:8.0</ins></code>
+									</li>
+									<li>
+										<code>RUN</code> is executed when the image is built; <code>CMD</code> each time a container is started
+									</li>
+									<li>
+										With APT in your <code>RUN</code>: always <code>apt-get update</code>; never <code>apt-get upgrade</code>
+									</li>
+									<li>
+										Avoid URLs and IP addresses in your <code>RUN</code> config
+									</li>									
+									<li>
+										Reduce the number of layers: pack multiple <code>RUN</code> commands into 1 command with <code>&amp;&amp; \</code>
+									</li>
+									<li>
+										You can <code>COPY</code>/<code>ADD</code> your configuration files (at build time) into the image; be aware that <code>ADD</code> has side-effects
+									</li>
+									<li>
+										Never <code>COPY</code>/<code>ADD</code> your project code into the image; mount a directory with <code>VOLUME</code> for that
+									</li>
+								</ul>
+							</li>
+						</ul>
+
+					</section>
+
+					<section>
+						<h2>Separation of concerns</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Let's take a look at the following example
+								<ul>
+									<li><a href="https://hub.docker.com/r/nimmis/ubuntu/~/dockerfile/">nimmis/ubuntu</a></li>
+									<li><a href="https://hub.docker.com/r/nimmis/apache/~/dockerfile/">nimmis/apache</a></li>
+									<li><a href="https://hub.docker.com/r/nimmis/apache-php5/~/dockerfile/">nimmis/apache-php5</a></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								This is not how Docker is typically used #vagrantstyle
+								<ul>
+									<li class="fragment">
+										One task per container
+									</li>
+									<li>
+										&rarr; multi-container environments
+									</li>
+								</ul>
+							</li>							
+						</ul>
+
+					</section>					
+					
+				</section>
+				
+				<!-- Machine configuration -->
+				<section>
+					<section>
+						<h2>Docker compose</h2>
+					</section>
+					
+					<section>
+						<h2>Multi-container environment</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								There's a lot to tell about creating containers and making them work together <em>manually</em>
+								<ul>
+									<li>By default, containers share the default <em>bridge</em> network - so we'll need to create a separate <code>docker network</code></li>
+									<li>You'll need to match ports, passwords, env variables and other settings manually</li>
+									<li>Precaution if you have multiple MCEs, if you need to change a container, etc.</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em">
+								Fortunately, <a href="https://docs.docker.com/compose/overview/">Docker Compose</a> exists
+								<ul>
+									<li class="fragment">
+										CLI tool for running multi-container Docker apps in an easy way
+									</li>
+									<li>
+										included in Docker
+									</li>
+								</ul>
+							</li>							
+						</ul>
+
+					</section>	
+
+					<section>
+						<h2>Docker vs. Composer</h2>
+						<ul>
+							<li class="fragment">
+								Where should I run <code>composer install</code>?
+								<ul>
+									<li class="fragment">
+										Best: on the system that will run your PHP code = in the PHP web container
+									</li>
+									<li class="fragment">
+										However: often this is against the filosophy of the MCE (separation of concerns) - anyway make sure you have the same PHP version on both systems
+									</li>
+								</ul>		
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Reminder
+								<ul>
+									<li class="fragment">
+										Add the <code>vendor</code> folder to <code>.gitignore</code>
+									</li>
+
+								</ul>		
+							</li>
+						</ul>
+					</section>
+							
+					
+				</section>	
+		
+				
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						
+						<ul> 
+							<li><a href="http://www.phptherightway.com/#virtualization">PHP: The Right Way on Virtualization</a></li>	
+							<li>TODO</li>
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
