@@ -408,7 +408,7 @@
 								Clone the repository
 								<pre class="bigger"><code>cd myfolder
 git clone https://github.com/mjoris/wd-sd-course-materials.git
-php -S localhost:8080</code></pre>
+docker run -it -p 8080:80 --name wd-sd-app -v /volledig/pad/myfolder:/var/www/html php:7.2-apache</code></pre>
 
 								<ul><li>Visit your copy at <a href="http://localhost:8080/wd-sd-course-materials">http://localhost:8080/wd-sd-course-materials</a></li></ul>
 							</li>
@@ -419,7 +419,7 @@ git reset --hard
 git pull</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><em>Note: This is an example with PHP's built-in web server</em></footer>
+						<footer class="fragment"><em>Note: This is an example with Docker</em></footer>
 					</section>
 
 					<section>

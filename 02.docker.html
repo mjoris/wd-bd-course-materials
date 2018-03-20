@@ -391,7 +391,7 @@ c5d0d1270551    alexcheng/magento2  "/sbin/my_init"          5 weeks ago       E
 					<section>
 						<h2>docker run (2)</h2>
 						<ul style="font-size: 90%">
-							<li class="fragment" style="margin-top: 0.5em;">
+							<li class="fragment">
 								Some options
 								<ul>
 									<li class="fragment">
@@ -420,14 +420,25 @@ c5d0d1270551    alexcheng/magento2  "/sbin/my_init"          5 weeks ago       E
 								</ul>
 							</li>
 						</ul>
+					</section>
+
+					<section>
+						<h2>docker run (3)</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								A better example
+								<pre class="bigger"><code class="language-bash dontrun">$ docker run -it -p 8080:80 --name demo-app -v /volledig/pad/myfolder:/var/www/html 
+  php:7.2-apache</code></pre>
+								
+							</li>
+						</ul>
 					</section>					
-					
 							
 					<section>
 						<h2>Creating your own images</h2>
-						<ul style="font-size: 75%">
+						<ul style="font-size: 90%">
 							<li class="fragment">
-								What you need to know
+								How does it work?
 								
 								<ul>
 									<li class="fragment">
@@ -450,20 +461,7 @@ EXPOSE 3306</code></pre>
 									</li>
 									<li>
 										Create the image locally by: <code>docker build -t mjoris/mysql-tz:1.0 .</code>
-										<ul>
-											<li class="fragment">
-												&rarr; the image is built layer by layer
-											</li>
-											<li class="fragment">
-												<a href="https://stackoverflow.com/questions/31222377/what-are-docker-image-layers">Image layers</a> are <em>intermediate images</em> stored as a <em>diff</em> on the previous layer. 
-											</li>
-											<li class="fragment">
-												Almost each command in a Dockerfile generates a new layer. 
-											</li>
-											<li class="fragment">
-												Layers <a href="https://www.ctl.io/developers/blog/post/caching-docker-images">are cached by Docker</a>.
-											</li>	
-										</ul>							
+										<br> &rarr; the image is built layer by layer					
 									</li>
 									<li>Publish your image on Docker Hub with <code>docker push</code> (first <code>docker login</code>) or use <a href="https://docs.docker.com/docker-hub/github/">automated builds with GitHub</a></li>
 
@@ -472,6 +470,34 @@ EXPOSE 3306</code></pre>
 						</ul>
 
 					</section>
+
+					<section>
+						<h2>Image layers?</h2>
+						<ul style="font-size: 85%">
+							<li class="fragment">
+								 An image is stored in <em>layers</em> on your system
+								 <ul>
+									<li class="fragment">
+										<a href="https://stackoverflow.com/questions/31222377/what-are-docker-image-layers">Image layers</a> are <em>intermediate images</em> stored as a <em>diff</em> on the previous layer 
+									</li>
+									<li class="fragment">
+										Almost each command in a Dockerfile generates a new layer
+									</li>
+									<li class="fragment">
+										Inspect an image's layers with <code>docker history</code>
+									</li>
+									<li class="fragment">
+										Layers <a href="https://www.ctl.io/developers/blog/post/caching-docker-images">are cached by Docker</a>
+									</li>	
+								</ul>
+							</li>
+						</ul>
+						<p style="margin-top: -1.6em;"><img src="assets/02/sample-imagelayers.png" alt="" title="" height="270" /></p>
+						<footer style="line-height: 100%">
+							Image: an <a href="https://imagelayers.io">imagelayers.io</a> screenshot from a <a href="https://www.ctl.io/developers/blog/post/imagelayers-io-docker-visualization-and-badges">blogpost by ctl.io</a>
+						</footer>
+					</section>
+
 					<section>
 						<h2>Dockerfile pitfalls</h2>
 						<ul style="font-size: 75%">
@@ -543,6 +569,7 @@ EXPOSE 3306</code></pre>
 				<section>
 					<section>
 						<h2>Docker compose</h2>
+						<p><img src="assets/02/dcompose.jpg" alt="" title="" height="350" /></p>
 					</section>
 					
 					<section>
@@ -586,7 +613,7 @@ EXPOSE 3306</code></pre>
 								Build an start your app by running <code>docker-compose up -d</code> (detached mode)
 								<ul>
 									<li>
-										A Docker network is created when missing
+										A Docker <a href="https://docs.docker.com/compose/networking/">network</a> is created when missing (network names = service names)
 									</li>
 									<li>
 										Images/containers are created when missing or changed
@@ -597,7 +624,7 @@ EXPOSE 3306</code></pre>
 								Stop your app: <code>docker-compose stop</code>
 							</li>
 							<li class="fragment" style="margin-top: 0.7em">
-								Remove the containers and associated volumes: <code>docker-compose down --volumes</code>
+								Remove the containers and associated volumes: <br/><code>docker-compose down --volumes</code>
 							</li>						
 						</ol>
 
@@ -608,7 +635,7 @@ EXPOSE 3306</code></pre>
 						<pre style="margin-bottom: 0;">php/Dockerfile</pre>
 						<pre style="margin-top: 0;"><code class="language-bash dontrun">FROM php:5.6-apache
 
-RUN docker-php-ext-install mysqli</code></pre>
+RUN docker-php-ext-install pdo_mysql</code></pre>
 						<pre style="margin-bottom: 0;">docker-compose.yml</pre>
 						<pre style="margin-top: 0;"><code class="language-bash dontrun">version: '2'
 
@@ -616,10 +643,10 @@ services:
   php:
     build: php
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "44344:443"
     volumes:
-      - ./php/www:/var/www/html
+      - ./www:/var/www
     links:
       - db
 
@@ -629,33 +656,52 @@ services:
      - /var/lib/mysql
     environment:
      - MYSQL_ROOT_PASSWORD=Azerty123
-     - MYSQL_DATABASE=database</code></pre>
+     - MYSQL_DATABASE=moviedb</code></pre>
+     						<p style="font-size: 50%;">&rarr; files (+ demo php) available in assets/02/examples/2-docker-compose-simple</p>
+     						<footer style="line-height: 100%">
+								Based on <a href="https://www.kinamo.be/nl/support/faq/een-ontwikkel-omgeving-opzetten-met-docker-compose">article from kimano.be</a>
+							</footer>
 					</section>
 
 					<section>
-						<h2>Docker vs. Composer</h2>
-						<ul>
+						<h2>Learn more</h2>
+						<ul style="font-size: 90%">
 							<li class="fragment">
-								Where should I run <code>composer install</code>?
+								Check out the <a href="https://docs.docker.com/compose/compose-file/">Docker Compose file reference</a>
+								<ul>
+									<li>Remember the Dockerfile pitfalls!</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.5em">
+								Learn by example
 								<ul>
 									<li class="fragment">
-										Best: on the system that will run your PHP code = in the PHP web container
+										nanoninja's <a href="https://github.com/nanoninja/docker-nginx-php-mysql">docker-nginx-php-mysql on GitHub</a> (<a href="https://github.com/nanoninja/docker-nginx-php-mysql/blob/master/docker-compose.yml">Dockerfile</a>)
+										<ul>
+											<li>5 different base OS's running on the kernel, incl. phpmyadmin and composer</li>
+											<li>nginx needs server like php-fpm for PHP code processing </li>
+											<li>(-) no fixed mysql version;</li>
+											<li>(-) PHP version of composer may differ from PHP web version (!)</li>
+										</ul>
 									</li>
 									<li class="fragment">
-										However: often this is against the filosophy of the MCE (separation of concerns) - anyway make sure you have the same PHP version on both systems
+										 <a href="https://phpdocker.io/generator">PHPDocker.io</a> generates very similar MCEs
 									</li>
-								</ul>		
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Reminder
-								<ul>
 									<li class="fragment">
-										Add the <code>vendor</code> folder to <code>.gitignore</code>
+										 <a href="http://laradock.io/">Laradock</a>: an extremely flexible PHP development environment for Docker
+										 <ul>
+											<li>choose from almost 40 containers</li>
+											<li>extremely well designed at the inside (<a href="https://github.com/laradock/laradock/blob/master/docker-compose.yml">Dockerfile</a>) </li>
+											<li>the <code>workspace</code> container is where you run any of your CLI commands (e.g. composer)</li>
+										</ul>
 									</li>
-								</ul>		
-							</li>
+								</ul>
+							</li>							
 						</ul>
+
 					</section>
+
+
 							
 					
 				</section>	
@@ -680,7 +726,9 @@ services:
 						
 						<ul> 
 							<li><a href="http://www.phptherightway.com/#virtualization">PHP: The Right Way on Virtualization</a></li>	
-							<li>TODO</li>
+							<li><a href="https://docs.docker.com/engine/docker-overview/">Docker docs: overview</a></li>
+							<li><a href="https://docker-curriculum.com/">A Docker tutorial for beginners</a></li>
+							<li><a href="https://docs.docker.com/compose/overview/#compose-documentation">Docker docs: Docker compose</a></li>
 						</ul>
 					</section>
 				</section>

@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  php:
+    build: php
+    ports:
+      - "8080:80"
+      - "44344:443"
+    volumes:
+      - ./www:/var/www
+    links:
+      - db
+
+  db:
+    image: mysql:5.7
+    volumes:
+     - /var/lib/mysql
+    environment:
+     - MYSQL_ROOT_PASSWORD=Azerty123
+     - MYSQL_DATABASE=moviedb
