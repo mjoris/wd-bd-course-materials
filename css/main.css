@@ -1178,7 +1178,7 @@ li > code, li em > code, li del > code, li ins > code, p > code {
 }
 
 del code, code.nok {
-	color: #C55;
+	color: #f52323;
 }
 
 ins code, code.ok {
