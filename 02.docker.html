@@ -436,7 +436,7 @@ c5d0d1270551    alexcheng/magento2  "/sbin/my_init"          5 weeks ago       E
 							
 					<section>
 						<h2>Creating your own images</h2>
-						<ul style="font-size: 90%">
+						<ul style="font-size: 85%">
 							<li class="fragment">
 								How does it work?
 								
@@ -457,7 +457,10 @@ CMD ["mysqld"]
 EXPOSE 3306</code></pre>
 									</li>
 									<li class="fragment">
-										You see: many Dockerfile instructions are actually <code>docker run</code> options
+										Some instructions add to, others override the instructions of the parent image
+									</li>
+									<li class="fragment">
+										Dockerfile &rarr; installation; <code>docker run</code> options &rarr; running on your system
 									</li>
 									<li>
 										Create the image locally by: <code>docker build -t mjoris/mysql-tz:1.0 .</code>
@@ -609,21 +612,21 @@ EXPOSE 3306</code></pre>
 									<li>Services starting with <code>image:</code> refer to images to be pulled from Docker Hub</li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 0.7em">
-								Build an start your app by running <code>docker-compose up -d</code> (detached mode)
+							<li class="fragment" style="margin-top: 0.5em">
+								Build and start your app by running <code>docker-compose up</code> (add <code>-d</code> for detached mode)
 								<ul>
 									<li>
 										A Docker <a href="https://docs.docker.com/compose/networking/">network</a> is created when missing (network names = service names)
 									</li>
 									<li>
-										Images/containers are created when missing or changed
+										Images/container are created when missing; containers are replaced when changed
 									</li>
 								</ul>
 							</li>
-							<li class="fragment" style="margin-top: 0.7em">
-								Stop your app: <code>docker-compose stop</code>
+							<li class="fragment" style="margin-top: 0.5em">
+								Stop your app: <code>^C</code> (or <code>docker-compose stop</code> in detached mode)
 							</li>
-							<li class="fragment" style="margin-top: 0.7em">
+							<li class="fragment" style="margin-top: 0.5em">
 								Remove the containers and associated volumes: <br/><code>docker-compose down --volumes</code>
 							</li>						
 						</ol>
