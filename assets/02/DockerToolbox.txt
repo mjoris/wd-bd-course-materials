@@ -1,0 +1,55 @@
+Getting Docker to work on Windows 10 Home
+-----------------------------------------
+
+The Docker Community Edition (CE) requires Windows 10 Pro/ Enterprise or Windows Server to
+run. Windows 10 Home users must default to using the legacy version of Docker: Docker Toolbox.
+Because this is a deprecated version it is riddled with bugs and glitches so getting it to
+work is tricky but not impossible.
+
+Installing Docker
+--------------------------------------------------
+#0: If installed on your PC, Uninstall Oracle VirtualBox. (Docker will attempt to install VMB itself and it will conflict if already installed)
+#1: Go to https://docs.docker.com/toolbox/toolbox_install_windows/ and click "Get Docker Toolbox for Windows"
+#2: Run the installer BUT DO NOT CLICK "NEXT >" YET!!!
+#3: Deselect "Help Docker improve Toolbox" and click Next (This service has been deprecated and will result in errors when sending reports)
+#4: Select "Docker Client for Windows", "Docker Machine for Windows", "Docker Compose for Windows" & "VirtualBox". Leave the other two options deselected. Click next.
+#5: Make sure to select "Add docker binaries to PATH", "Upgrade Boot2Docker VM" & "Install VirtualBox with NDIS5 driver [Default NDIS6]". Select Create a desktop shortcut if wanted. Click next. (The NDIS6 driver will not work!!)
+#6: Click install
+#7: Wait for installation to finish
+#8: Run "Docker Quistart Terminal"
+#9: When promted, approve admin credentials and install drivers & network interfaces
+#10: Pray to a God of your choosing the DQT runs succesfully and a promt with the Docker Whale appears.
+	If any errors appear try Googling them and consider giving up on life.
+
+Docker Build
+------------
+Open a cmd prompt in the correct directory and run
+> docker build -t {TAG} .
+#This command should work the same as with Docker CE
+
+Docker Run
+----------
+#1: Open the Docker Toolbox Terminal
+#2: Run "docker-machine stop"
+#3: Opn Oracle VM VirtualBox
+#4: Click the VM ('Default') and select setting
+#5: Under shared folders click the 'Add new shared folder'-button on the right
+#6: Enter the path to your source folder (eg 'C:/Users/JohnDoe/NotPorn/Odisee/Repo/Labo01/app')
+#7: Change the name to 'labo01' and make sure 'Mount automaticly' is selected and 'Read-Only' is not!
+--> In the next labo's, you can add multiple shared folders. Just name them labo02 and so on. Make sure to mount the correct volume in step 10 tho!
+#8: Click OK, Click OK
+#9: Return to the Docker Toolbox Terminal and enter "docker-machine start"
+#10: Run "docker run -t (-d) -p {PORT}:80 -v /labo01://var/www {TAG}"
+#11: Run "docker exec -it {ID} /bin/bash"
+#12: Run "ls -al" and your db, public & templates folder should be there. If not, go to https://dev.foubert.eu/pieterslaatxavier/ to blow off steam.
+
+Connecting in the browser
+-------------------------
+#1: Go to localhost:{PORT}
+#2: Confirm this results in an error ("Connection Refused") (If this works, it's broken)
+#3: Go to 192.168.99.100:{PORT}, press enter and confirm this results in a white page or content if you already changed public/index.php (DO NOT CHANGE THIS IP-ADRES! IT'S THE LINUX DEFAULT!)
+
+Hope it works for you 'cause I spend seven hours trying to figure out what the hell was wrong with this!
+
+Bavo Ceulemans
+29/03/2018
