@@ -338,7 +338,7 @@ $response = $controller-&gt;show($id);</code></pre>
 					</section>
 
 					<section>
-						<h2>The <a href="https://laravel.com/docs/5.3/container">Service Container</a></h2>
+						<h2>The <a href="https://laravel.com/docs/5.5/container">Service Container</a></h2>
 						<ul>
 							<li class="fragment">
 								Central container for managing class dependencies and performing dependency injection
@@ -362,7 +362,7 @@ $this-&gt;app-&gt;singleton('HelpSpot\API', function ($app) { return new HelpSpo
 $api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><a href="https://laravel.com/docs/5.3/container">More features</a> available like contextual bindings</footer>
+						<footer class="fragment"><a href="https://laravel.com/docs/5.5/container">More features</a> available like contextual bindings</footer>
 
 					</section>
 
@@ -384,7 +384,7 @@ $api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
 								</ul>
 							</li>
 						</ul>
-						<footer class="fragment">You can even bind <a href="https://laravel.com/docs/5.3/container#binding-interfaces-to-implementations">interface type hints to specific implementations</a></footer>
+						<footer class="fragment">You can even bind <a href="https://laravel.com/docs/5.5/container#binding-interfaces-to-implementations">interface type hints to specific implementations</a></footer>
 					</section>
 
 
@@ -393,11 +393,11 @@ $api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
 						<ul class="fragment">
 							<li>Webserver hands over the request to <code>public/index.php</code></li>
 							<li>It loads Composer's autoloader</li>
-							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.3/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
+							<li>It retrieves an instance of the application <a href="https://laravel.com/docs/5.5/container">service container</a> from the <code>bootstrap/app.php</code> script</li>
 							<li>Next, the request is handled by the <strong>HTTP Kernel</strong>
 								<ul class="fragment">
 									<li>Bootstrapping includes calling <code>register</code> and <code>boot</code> on the
-										<a href="https://laravel.com/docs/5.3/providers">service providers</a> defined in <code>config/app.php</code></li>
+										<a href="https://laravel.com/docs/5.5/providers">service providers</a> defined in <code>config/app.php</code></li>
 									<li>Request passes the middleware e.g. session handling, CSRF token</li>
 									<li>Next, the request is dispatched to the router</li>
 								</ul>
@@ -408,7 +408,7 @@ $api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
 
 
 					<section>
-						<h2><a href="https://laravel.com/docs/5.3/providers">Service providers</a></h2>
+						<h2><a href="https://laravel.com/docs/5.5/providers">Service providers</a></h2>
 						<ul class="fragment">
 							<li>Loaded during bootstrapping when defined in <code>config/app.php</code> (<code>providers</code> array)</li>
 							<li style="margin-top: 1em">Consists of:
@@ -445,8 +445,8 @@ $api = $this-&gt;app-&gt;make('HelpSpot\API');</code></pre>
 							<li><a href="http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html">http://adamcod.es/2013/11/25/service-locator-vs-dependency-injection-container.html</a></li>
 							<li><a href="http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux">http://ralphschindler.com/2012/10/10/di-dic-service-locator-redux</a></li>
 							<li><a href="http://php-di.org/doc/understanding-di.html">http://php-di.org/doc/understanding-di.html</a></li>
-							<li><a href="https://laravel.com/docs/5.3/container">https://laravel.com/docs/5.3/container</a></li>
-							<li><a href="https://laravel.com/docs/5.3/providers">https://laravel.com/docs/5.3/providers</a></li>
+							<li><a href="https://laravel.com/docs/5.5/container">https://laravel.com/docs/5.5/container</a></li>
+							<li><a href="https://laravel.com/docs/5.5/providers">https://laravel.com/docs/5.5/providers</a></li>
 						</ul>
 					</section>
 				</section>
