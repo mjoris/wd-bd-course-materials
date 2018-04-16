@@ -109,7 +109,7 @@ return redirect()-&gt;route('profile');</code></pre>
 						<ul>
 							<li class="fragment">
 								Specify a route (URI) prefix
-								<pre class="bigger"><code class="language-php dontrun">Route::group(['prefix' =&gt; 'admin'], function () {
+								<pre class="bigger"><code class="language-php dontrun">Route::prefix('admin')-&gt;group(function () {
     Route::get('users', function () {
         // Matches the "/admin/users" URL
     });
@@ -120,7 +120,7 @@ return redirect()-&gt;route('profile');</code></pre>
 							</li>
 							<li class="fragment">
 								Specify wildcard sub-domain for a route group
-								<pre class="bigger"><code class="language-php dontrun">Route::group(['domain' =&gt; '{account}.myapp.com'], function () {
+								<pre class="bigger"><code class="language-php dontrun">Route::domain('{account}.myapp.com')-&gt;group(function () {
     Route::get('user/{id}', function ($account, $id) {
         // 
     });
@@ -143,7 +143,7 @@ return redirect()-&gt;route('profile');</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Middleware<small><a href="https://laravel.com/docs/5.3/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+								Middleware<small><a href="https://laravel.com/docs/5.5/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Middlewares can be global, or only for a specific route or controller
@@ -226,6 +226,10 @@ class CheckAge
 								What's already in there?
 								<pre class="bigger"><code class="language-php dontrun">    protected $middleware = [
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\TrustProxies::class,
     ];</code></pre>
 							</li>
 						</ul>
@@ -297,7 +301,7 @@ class CheckAge
 						<ul>
 							<li class="fragment">
 								<strong>Step 2 option 3:</strong> plug the middleware to a route group
-								<pre class="bigger"><code class="language-php dontrun">Route::group(['middleware' =&gt; 'auth'], function () {
+								<pre class="bigger"><code class="language-php dontrun">Route::middleware(['first', 'second'])-&gt;group(function () {
     Route::get('/', function ()    {
         // Uses Auth Middleware
     });
@@ -350,7 +354,7 @@ class CheckAge
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.3/authentication">Authentication</a> is configured 100% out of the box
+								<a href="https://laravel.com/docs/5.5/authentication">Authentication</a> is configured 100% out of the box
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Facilities
@@ -520,7 +524,7 @@ Auth::logout();</code></pre>
 						<ul>
 							<li class="fragment">
 								In <code>routes/web.php</code> the line <code>Auth::routes();</code> was added. In fact it is a shorthand for:
-								<pre class="bigger"><code class="language-php dontrun">// Authentication Routes...
+								<pre style="font-size: 15px;"><code class="language-php dontrun">// Authentication Routes...
 $this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
 $this-&gt;post('login', 'Auth\LoginController@login');
 $this-&gt;post('logout', 'Auth\LoginController@logout')-&gt;name('logout');
@@ -530,9 +534,9 @@ $this-&gt;get('register', 'Auth\RegisterController@showRegistrationForm')-&gt;na
 $this-&gt;post('register', 'Auth\RegisterController@register');
 
 // Password Reset Routes...
-$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
-$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
+$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
+$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></pre>
 							</li>
 						</ul>
@@ -562,7 +566,7 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
 								<code>app/Http/Controllers/Auth/LoginController</code>
 
 								<ul>
-									<li>Here, you can change the field for authentication
+									<li>Here, you can override the field for authentication
 										<pre class="bigger"><code class="language-php dontrun">public function username()
 {
     return 'username'; // default: 'email'
@@ -586,9 +590,9 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' =&gt; 'required|max:255',
-            'email' =&gt; 'required|email|max:255|unique:users',
-            'password' =&gt; 'required|min:6|confirmed']);
+            'name' =&gt; 'required|string|max:255',
+            'email' =&gt; 'required|string|email|max:255|unique:users',
+            'password' =&gt; 'required|string|min:6|confirmed']);
     }
 	
     protected function create(array $data)
@@ -633,7 +637,7 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.3/authentication">Laravel docs on Authentication</a> on
+								Read the <a href="https://laravel.com/docs/5.5/authentication">Laravel docs on Authentication</a> on
 								<ul>
 									<li class="fragment">
 										Authentication Throttling
