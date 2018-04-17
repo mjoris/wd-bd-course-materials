@@ -676,10 +676,10 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
 							<li class="fragment">
 								Blog post routes example
 								<pre class="bigger"><code class="language-php dontrun">// Display a form to create a blog post...
-Route::get('post/create', 'PostController@create');
+Route::get('blogposts/create', 'PostController@create');
 
 // Store a new blog post...
-Route::post('post', 'PostController@store');</code></pre>
+Route::post('blogposts/create', 'PostController@store');</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								The first route shows a Blade template containing a form	
@@ -709,10 +709,10 @@ Route::post('post', 'PostController@store');</code></pre>
 							<li class="fragment">
 								Blog post routes example
 								<pre class="bigger"><code class="language-php dontrun">// Display a form to create a blog post...
-Route::get('post/create', 'PostController@create');
+Route::get('blogposts/create', 'PostController@create');
 
 // Store a new blog post...
-Route::post('post', 'PostController@store');</code></pre>
+Route::post('blogposts/create', 'PostController@store');</code></pre>
 							</li>
 
 									<li class="fragment">
@@ -722,7 +722,7 @@ Route::post('post', 'PostController@store');</code></pre>
 											not (enough) compatible with HTML forms
 										</li>
 										<li class="fragment">
-											&hellip; unless you're faking the verbs with <a href="https://laravel.com/docs/master/routing#form-method-spoofing">form method spoofing</a>
+											&hellip; unless you're faking the verbs with <a href="https://laravel.com/docs/5.5/routing#form-method-spoofing">form method spoofing</a>
 										</li>
 										<li class="fragment">
 											&hellip; unless you're building a RESTful web API
@@ -763,7 +763,7 @@ Route::post('post', 'PostController@store');</code></pre>
 								The <code>VerifyCsrfToken</code> middleware (part of the <code>web</code> group) is already activated and does the checking
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Read the <a href="https://laravel.com/docs/5.3/csrf">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
+								Read the <a href="https://laravel.com/docs/5.5/csrf">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
 							</li>
 						</ul>
 					</section>
@@ -776,7 +776,7 @@ Route::post('post', 'PostController@store');</code></pre>
 								By default the middleware <code>\Illuminate\Session\Middleware\StartSession</code> <br/>backs a permanent PHP session
 							</li>
 							<li class="fragment">
-								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.3/session">docs</a>)
+								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.5/session">docs</a>)
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Flash a variable = store variable in the session only for the next HTTP request
@@ -798,7 +798,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 								The Blade template
 							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors array --}}
 		
-&lt;form method="POST" action="<span style="background-color: #500;">{{ url('post') }}</span>" accept-charset="UTF-8"&gt;
+&lt;form method="POST" action="<span style="background-color: #500;">{{ url('blogposts/create') }}</span>" accept-charset="UTF-8"&gt;
 	<span style="background-color: #500;">{!! csrf_field() !!}</span>
 	&lt;div class="form-group"&gt;
 		&lt;label for="title"&gt;Title:&lt;/label&gt;
@@ -818,7 +818,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 </code></pre>
 							</li>
 							<li class="fragment">
-										The helper method <a href="https://laravel.com/docs/5.3/helpers#method-old">old</a> retrieves an old input value flashed into the session
+										The helper method <a href="https://laravel.com/docs/5.5/helpers#method-old">old</a> retrieves an <a href="https://laravel.com/docs/5.5/requests#old-input">old input value</a> flashed into the session
 							</li>	
 						</ul>
 					</section>
@@ -829,7 +829,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 						<ul style="font-size: 85%">
 							<li class="fragment">
 								The controller
-							<pre class="bigger"><code class="language-php dontrun">public function add()
+							<pre class="bigger"><code class="language-php dontrun">public function create()
 {
 	return view('blogpost.add');
 }
@@ -880,7 +880,7 @@ public function store(Request $request)
 		
 	} else {		
 		Blogpost::create($request-&gt;all()); // mass assignment
-		return redirect('/post/success');
+		return redirect('blogposts/success');
 	}
 }
 </code></pre>
@@ -905,7 +905,7 @@ public function store(Request $request)
 								</ul>
 								<pre class="bigger"><code class="language-php dontrun">public function store(Request $request)
 {
-    $this-&gt;validate($request, [
+    $request-&gt;validate([
         'title' =&gt; 'required|unique:blogposts|max:125',
         'content' =&gt; 'required',
     ]);
@@ -927,7 +927,7 @@ public function store(Request $request)
 										The <code>ShareErrorsFromSession</code> middleware (part of the <code>web</code> group) assures an <code>$errors</code> variable is available in your views
 									</li>
 									<li class="fragment">
-										Enjoy the richness of <a href="https://laravel.com/docs/5.3/validation#available-validation-rules">the rules available</a>
+										Enjoy the richness of <a href="https://laravel.com/docs/5.5/validation#available-validation-rules">the rules available</a>
 									</li>									
 								</ul>
 								<pre class="bigger"><code class="language-php dontrun">'start_date' =&gt; 'required|date|after:tomorrow',
@@ -938,7 +938,10 @@ public function store(Request $request)
 						
 'state' =&gt; 'exists:states,abbreviation', // exists in column abbreviation of table states
 'email' =&gt; 'exists:staff,email,user_id,23' // exists in column email where user_id=23
-// actually we have Authorization for the last rule example</code></pre>
+// actually we have Authorization for the last rule example
+
+// since we have TrimStrings and ConvertEmptyStringsToNull middleware running
+'publish_at' =&gt; 'nullable|date'</code></pre>
 							</li>
 						</ul>
 					</section>
@@ -948,7 +951,7 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.3/validation">Laravel docs on Validation</a> on
+								Read the <a href="https://laravel.com/docs/5.5/validation">Laravel docs on Validation</a> on
 								<ul>
 									<li class="fragment">
 										Stopping On First Validation Failure (bail)
@@ -957,7 +960,7 @@ public function store(Request $request)
 										Validating arrays
 									</li>
 									<li class="fragment">
-										Form Request = classes containing the validation logic
+										<strong>Form Request = classes containing the validation logic</strong>
 									</li>
 									<li class="fragment">
 										Working With (field related) Error Messages
@@ -980,21 +983,21 @@ public function store(Request $request)
 						<ul style="font-size: 85%">
 							<li class="fragment">
 								The new version of the controller
-							<pre class="bigger"><code class="language-php dontrun">public function add()
+							<pre class="bigger"><code class="language-php dontrun">public function create()
 {
 	return view('blogpost.add');
 }
 
 public function store(Request $request)
 {
-	$this-&gt;validate($request, [
+	$request-&gt;validate([
 		'title' =&gt; 'required|unique:blogposts|max:125',
 		'content' =&gt; 'required'
 	]);
 
 	Blogpost::create($request-&gt;all());
 
-	return redirect('/post/success');
+	return redirect('blogposts/success');
 }</code></pre>
 							</li>
 						</ul>
@@ -1006,12 +1009,10 @@ public function store(Request $request)
 						<ul style="font-size: 85%">
 							<li class="fragment">
 								Change <code>common/errors.blade.php</code> such that it visualizes an <em>$errors</em> <strong>collection</strong>
-								<pre class="bigger"><code class="language-php dontrun">@if (count($errors) &gt; 0)
+								<pre class="bigger"><code class="language-php dontrun">@if ($errors-&gt;any())
     &lt;!-- Form Error List --&gt;
     &lt;div class="alert alert-danger"&gt;
         &lt;strong&gt;Whoops! Something went wrong!&lt;/strong&gt;
-
-        &lt;br&gt;&lt;br&gt;
 
         &lt;ul&gt;
             @foreach ($errors-&gt;all() as $error)
@@ -1032,11 +1033,14 @@ public function store(Request $request)
 								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
 								<ul>
 									<li class="fragment">
-										<a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
+										<a href="https://laravelcollective.com/docs/5.5/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
 									</li>
 									<li class="fragment">
 										You need to install it through Composer
-									</li>									
+									</li>
+									<li class="fragment">
+										Docs slower than <a href="https://github.com/LaravelCollective/html/releases">actual releases</a>
+									</li>
 								</ul>
 							</li>
 						</ul>
@@ -1049,9 +1053,9 @@ public function store(Request $request)
 						<ul style="font-size: 85%">
 							<li class="fragment">
 								The new version of the Blade template
-							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors object --}}
+							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors collection --}}
 
-{!! Form::open(['url' =&gt; 'post', 'method' =&gt; 'POST']) !!}
+{!! Form::open(['url' =&gt; 'blogposts/create', 'method' =&gt; 'post']) !!}
 
 &lt;div class="form-group"&gt;
 	{!! Form::label('title', 'Title:') !!}
@@ -1088,14 +1092,14 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.3/structure#the-public-directory">public folder</a> contains the assets (img, css, js, &hellip;)
+								The <a href="https://laravel.com/docs/5.5/structure#the-public-directory">public folder</a> contains the assets (img, css, js, &hellip;)
 								<ul>
 									<li class="fragment">Assets directly accessible from the web server (link it with <code>asset()</code>)</li>
 									<li class="fragment"><em>By default,</em> you cannot handle (= store, edit, list, &hellip;) files there</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 0.5em;">
-								<a href="https://laravel.com/docs/5.3/filesystem">Filesystem</a> is an abstraction layer which allows you to handle files on local and remote (cloud) systems in a uniform way
+								<a href="https://laravel.com/docs/5.5/filesystem">Filesystem</a> is an abstraction layer which allows you to handle files on local and remote (cloud) systems in a uniform way
 								<ul>
 									<li class="fragment">
 										To be configured in <code>config/filesystems.php</code>
@@ -1123,7 +1127,7 @@ The [public/storage] directory has been linked.</code></pre>
 								<ol>
 									<li class="fragment" style="margin-top: 0.3em;">Create a symbolic link to <code>storage/app/public</code> or configure Filesystem</li>
 									<li class="fragment" style="margin-top: 0.3em;">In your form (Views): check your <code>enctype</code> attribute (see
-										<a href="https://ikdoeict.be/apps/leercentrum/courses/ws-bs-course-materials/03.forms.html#/">this course</a>)  </li>
+										<a href="https://ikdoeict.be/apps/leercentrum/courses/ws-ss-course-materials/03.forms.html#/">this course</a>)  </li>
 									<li class="fragment" style="margin-top: 0.3em;">Access the uploaded file through the HTTP request object (<a href="04.laravel.basics.html#/3/7">code example</a>)</li>
 									<li class="fragment" style="margin-top: 0.3em;">Validation: check on file (MIME) type and eventually file size, dimension, &hellip;
 										<ul>
@@ -1136,7 +1140,7 @@ The [public/storage] directory has been linked.</code></pre>
 											</li>
 										</ul>
 									</li>
-									<li class="fragment" style="margin-top: 0.3em;">Of course you need to <a href="https://laravel.com/docs/5.3/filesystem#file-uploads">store the file upload</a>
+									<li class="fragment" style="margin-top: 0.3em;">Of course you need to <a href="https://laravel.com/docs/5.5/filesystem#file-uploads">store the file upload</a>
 										<ul>
 											<li class="fragment">
 												Most of the time, it's a good practice to rename the original file (think of duplicates and of a clean directory structure)
