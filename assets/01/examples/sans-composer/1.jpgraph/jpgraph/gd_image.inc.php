@@ -11,6 +11,7 @@
 require_once 'jpgraph_rgb.inc.php';
 require_once 'jpgraph_ttf.inc.php';
 require_once 'imageSmoothArc.php';
+require_once 'jpgraph_errhandler.inc.php';
 
 // Line styles
 define('LINESTYLE_SOLID',1);
@@ -1951,8 +1952,8 @@ class RotImage extends Image {
 
     function __construct($aWidth,$aHeight,$a=0,$aFormat=DEFAULT_GFORMAT,$aSetAutoMargin=true) {
         parent::__construct($aWidth,$aHeight,$aFormat,$aSetAutoMargin);
-        $this->dx=$this->left_margin+$this->plotwidth/2;
-        $this->dy=$this->top_margin+$this->plotheight/2;
+        $this->dx=$this->width/2;
+        $this->dy=$this->height/2;
         $this->SetAngle($a);
     }
 
@@ -2019,8 +2020,6 @@ class RotImage extends Image {
 
     function SetMargin($lm,$rm,$tm,$bm) {
         parent::SetMargin($lm,$rm,$tm,$bm);
-        $this->dx=$this->left_margin+$this->plotwidth/2;
-        $this->dy=$this->top_margin+$this->plotheight/2;
         $this->UpdateRotMatrice();
     }
 
