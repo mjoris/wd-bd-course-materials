@@ -808,7 +808,7 @@ foreach ($user-&gt;tasks as $task) {
     public function up()
     {
         Schema::create('events', function (Blueprint $table) {
-            $table-&gt;increments('id'); // your table has a PK auto-inc id column
+            $table-&gt;bigIncrements('id'); // your table has a PK auto-inc id column
             $table-&gt;timestamps(); // your table has created_at and updated_at columns
         });
     }
@@ -837,13 +837,13 @@ foreach ($user-&gt;tasks as $task) {
 <pre class="bigger"><code class="language-php">public function up()
 {
 	Schema::create('events', function (Blueprint $table) {
-		$table-&gt;increments('id'); // LEAVE IT HERE
+		$table-&gt;bigIncrements('id'); // LEAVE IT HERE
 		$table-&gt;string('title');
 		$table-&gt;text('description');
 		$table-&gt;date('event_date');
 		
 		// foreign key: column types need to be EXACTLY the same
-		$table-&gt;integer('location_id')-&gt;unsigned(); // 
+		$table-&gt;bigInteger('location_id')-&gt;unsigned(); //
 		$table-&gt;foreign('location_id')-&gt;references('location_id')-&gt;on('locations');
 		
 		$table-&gt;timestamps(); // LEAVE IT HERE
@@ -904,7 +904,7 @@ $table-&gt;string('email', 191)-&gt;unique();
 # creates both a model and a create_products_table migration:
 $ php artisan make:model Product -m
 
-# migration contains: $table-&gt;increments('id');
+# migration contains: $table-&gt;bigIncrements('id');
 # migration contains: $table-&gt;timestamps();
 # add to your migration: other columns
 
