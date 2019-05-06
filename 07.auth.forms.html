@@ -143,7 +143,7 @@ return redirect()-&gt;route('profile');</code></pre>
 
 						<ul>
 							<li class="fragment">
-								Middleware<small><a href="https://laravel.com/docs/5.5/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+								Middleware<small><a href="https://laravel.com/docs/5.8/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Middlewares can be global, or only for a specific route or controller
@@ -248,9 +248,12 @@ class CheckAge
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'can' => \Illuminate\Foundation\Http\Middleware\Authorize::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];</code></pre>
 							</li>
 						</ul>
@@ -303,11 +306,11 @@ class CheckAge
 								<strong>Step 2 option 3:</strong> plug the middleware to a route group
 								<pre class="bigger"><code class="language-php dontrun">Route::middleware(['first', 'second'])-&gt;group(function () {
     Route::get('/', function ()    {
-        // Uses Auth Middleware
+        // Uses first and second Middleware
     });
 
     Route::get('user/profile', function () {
-        // Uses Auth Middleware
+        // Uses first and second Middleware
     });
 });</code></pre>
 							</li>
@@ -354,7 +357,7 @@ class CheckAge
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.5/authentication">Authentication</a> is configured 100% out of the box
+								<a href="https://laravel.com/docs/5.8/authentication">Authentication</a> is configured 100% out of the box
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Facilities
@@ -379,12 +382,13 @@ class CheckAge
 							<li class="fragment">
 								<strong>Step 1:</strong> make sure you have the <code>users</code> table in your database
 							</li>
-							<li class="fragment" style="margin-top: 1em;">
+							<li class="fragment" style="margin-top: 0.5em;">
 								Use the preconfigured migration (or extend it)
 								<pre class="bigger"><code class="language-php dontrun">        Schema::create('users', function (Blueprint $table) {
-            $table-&gt;increments('id');
+            $table-&gt;bigIncrements('id');
             $table-&gt;string('name');
             $table-&gt;string('email')->unique();
+            $table-&gt;timestamp('email_verified_at')->nullable();
             $table-&gt;string('password');
             $table-&gt;rememberToken(); // can store the hash of a login cookie
             $table-&gt;timestamps();
@@ -417,6 +421,7 @@ class CheckAge
     protected $hidden = [
         'password', 'remember_token',
     ];
+	&hellip;
 }</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
@@ -449,7 +454,7 @@ Authentication scaffolding generated successfully.
 								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
 								<ul>
 									<li class="fragment" style="margin-top: 1em;">
-										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code> and <code>ResetPasswordController.php</code>
+										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code>, <code>ResetPasswordController.php</code> and <code>VerificationController.php</code>
 										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks'; // '/home' by default
 
 // alternatively, if you need to generate the path from code, define:
@@ -534,13 +539,18 @@ $this-&gt;get('register', 'Auth\RegisterController@showRegistrationForm')-&gt;na
 $this-&gt;post('register', 'Auth\RegisterController@register');
 
 // Password Reset Routes...
-$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
-$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-$this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></pre>
+$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')-&gt;name('password.request');
+$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')-&gt;name('password.email');
+$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')-&gt;name('password.reset');
+$this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset')-&gt;name('password.update');
+
+// Email verification routes
+$this->get('email/verify', 'Auth\VerificationController@show')->name('verification.notice');
+$this->get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
+$this->get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');</code></pre>
 							</li>
 						</ul>
-						<footer class="fragment"><em>Replace the shorthand by the full code to change or cut down the routes (e.g. no registration allowed)</em></footer>
+						<footer class="fragment"><em>Cut down by parameters register, reset, verify e.g. <code>Auth::routes(['register' => false]);</code></em></footer>
 					</section>
 					
 					<section>
@@ -590,9 +600,9 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' =&gt; 'required|string|max:255',
-            'email' =&gt; 'required|string|email|max:255|unique:users',
-            'password' =&gt; 'required|string|min:6|confirmed']);
+            'name' =&gt; ['required', 'string', 'max:255'],
+            'email' =&gt; ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' =&gt; ['required', 'string', 'min:8', 'confirmed'],]);
     }
 	
     protected function create(array $data)
@@ -600,7 +610,7 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
         return User::create([
             'name' =&gt; $data['name'],
             'email' =&gt; $data['email'],
-            'password' =&gt; bcrypt($data['password'])]);
+            'password' =&gt; Hash::make($data['password'])]);
     }
 }</code></pre>
 							</li>
@@ -637,7 +647,7 @@ $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset');</code></
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.5/authentication">Laravel docs on Authentication</a> on
+								Read the <a href="https://laravel.com/docs/5.8/authentication">Laravel docs on Authentication</a> on
 								<ul>
 									<li class="fragment">
 										Authentication Throttling
@@ -722,7 +732,7 @@ Route::post('blogposts/create', 'PostController@store');</code></pre>
 											not (enough) compatible with HTML forms
 										</li>
 										<li class="fragment">
-											&hellip; unless you're faking the verbs with <a href="https://laravel.com/docs/5.5/routing#form-method-spoofing">form method spoofing</a>
+											&hellip; unless you're faking the verbs with <a href="https://laravel.com/docs/5.8/routing#form-method-spoofing">form method spoofing</a>
 										</li>
 										<li class="fragment">
 											&hellip; unless you're building a RESTful web API
@@ -753,7 +763,7 @@ Route::post('blogposts/create', 'PostController@store');</code></pre>
 &lt;?php echo csrf_field(); ?&gt;
 
 // Blade Template Syntax &hellip;
-{{ csrf_field() }}
+@csrf
 
 // &hellip; is the equivalent of:
 &lt;input type="hidden" name="_token" value="{{ csrf_token() }}"&gt;
@@ -763,7 +773,7 @@ Route::post('blogposts/create', 'PostController@store');</code></pre>
 								The <code>VerifyCsrfToken</code> middleware (part of the <code>web</code> group) is already activated and does the checking
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
-								Read the <a href="https://laravel.com/docs/5.5/csrf">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
+								Read the <a href="https://laravel.com/docs/5.8/csrf">Laravel docs on CSRF Protection</a> on excluding CSRF protection and CSRF support for JS frameworks
 							</li>
 						</ul>
 					</section>
@@ -776,7 +786,7 @@ Route::post('blogposts/create', 'PostController@store');</code></pre>
 								By default the middleware <code>\Illuminate\Session\Middleware\StartSession</code> <br/>backs a permanent PHP session
 							</li>
 							<li class="fragment">
-								Store and retrieve session variables with <em>put</em> and <em>get</em> (<a href="https://laravel.com/docs/5.5/session">docs</a>)
+								Store and retrieve session variables with <em>put</em>, <em>get</em>, <em>has</em>, &hellip; (<a href="https://laravel.com/docs/5.8/session">docs</a>)
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Flash a variable = store variable in the session only for the next HTTP request
@@ -799,7 +809,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 							<pre class="bigger"><code class="language-php dontrun">@include('common.errors') {{-- visualizes the $errors array --}}
 		
 &lt;form method="POST" action="<span style="background-color: #500;">{{ url('blogposts/create') }}</span>" accept-charset="UTF-8"&gt;
-	<span style="background-color: #500;">{!! csrf_field() !!}</span>
+	<span style="background-color: #500;">@csrf</span>
 	&lt;div class="form-group"&gt;
 		&lt;label for="title"&gt;Title:&lt;/label&gt;
 		&lt;input class="form-control" name="title" type="text" 
@@ -818,7 +828,7 @@ $request-&gt;session()-&gt;keep(['username', 'email']); // the same for a select
 </code></pre>
 							</li>
 							<li class="fragment">
-										The helper method <a href="https://laravel.com/docs/5.5/helpers#method-old">old</a> retrieves an <a href="https://laravel.com/docs/5.5/requests#old-input">old input value</a> flashed into the session
+										The helper method <a href="https://laravel.com/docs/5.8/helpers#method-old">old</a> retrieves an <a href="https://laravel.com/docs/5.8/requests#old-input">old input value</a> flashed into the session
 							</li>	
 						</ul>
 					</section>
@@ -927,19 +937,20 @@ public function store(Request $request)
 										The <code>ShareErrorsFromSession</code> middleware (part of the <code>web</code> group) assures an <code>$errors</code> variable is available in your views
 									</li>
 									<li class="fragment">
-										Enjoy the richness of <a href="https://laravel.com/docs/5.5/validation#available-validation-rules">the rules available</a>
+										Enjoy the richness of <a href="https://laravel.com/docs/5.8/validation#available-validation-rules">the rules available</a>
 									</li>									
 								</ul>
 								<pre class="bigger"><code class="language-php dontrun">'start_date' =&gt; 'required|date|after:tomorrow',
 'finish_date' =&gt; 'required|date|after:start_date',
 
-'photo' =&gt; 'image', // is an image of any type
+'photo' =&gt; 'image|mimes:jpeg,png', // is an image of any type and its <u>content</u> is jpeg or png
 'avatar' =&gt; 'dimensions:min_width=100,min_height=200', // image with specified dimensions
 						
 'state' =&gt; 'exists:states,abbreviation', // exists in column abbreviation of table states
 'email' =&gt; 'exists:staff,email,user_id,23' // exists in column email where user_id=23
 // actually we have Authorization for the last rule example
 
+// for optional fields
 // since we have TrimStrings and ConvertEmptyStringsToNull middleware running
 'publish_at' =&gt; 'nullable|date'</code></pre>
 							</li>
@@ -951,7 +962,7 @@ public function store(Request $request)
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.5/validation">Laravel docs on Validation</a> on
+								Read the <a href="https://laravel.com/docs/5.8/validation">Laravel docs on Validation</a> on
 								<ul>
 									<li class="fragment">
 										Stopping On First Validation Failure (bail)
@@ -1033,13 +1044,13 @@ public function store(Request $request)
 								In Laravel 4, it was possible to generate HTML form code using Laravel shorthands
 								<ul>
 									<li class="fragment">
-										<a href="https://laravelcollective.com/docs/5.5/html">Forms &amp HTML</a> has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
+										<strong>Forms &amp HTML</strong> (<a href="https://github.com/LaravelCollective/docs/blob/5.6/html.md">docs</a>) has been removed from the core framework and is currently maintained by <a href="https://laravelcollective.com/">Laravel Collective</a>
 									</li>
 									<li class="fragment">
 										You need to install it through Composer
 									</li>
 									<li class="fragment">
-										Docs slower than <a href="https://github.com/LaravelCollective/html/releases">actual releases</a>
+										<a href="https://github.com/LaravelCollective/html/releases">Releases ordered by Laravel version</a> will be replaced by Laravel version agnostic releases
 									</li>
 								</ul>
 							</li>
@@ -1088,18 +1099,18 @@ public function store(Request $request)
 					
 					
 					<section style="font-size: 85%">
-						<h2>Filesystem &ne; public folder</h2>
+						<h2>File Storage &ne; public folder</h2>
 
 						<ul>
 							<li class="fragment">
-								The <a href="https://laravel.com/docs/5.5/structure#the-public-directory">public folder</a> contains the assets (img, css, js, &hellip;)
+								The <a href="https://laravel.com/docs/5.8/structure#the-public-directory">public folder</a> contains the assets (img, css, js, &hellip;)
 								<ul>
 									<li class="fragment">Assets directly accessible from the web server (link it with <code>asset()</code>)</li>
 									<li class="fragment"><em>By default,</em> you cannot handle (= store, edit, list, &hellip;) files there</li>
 								</ul>
 							</li>
 							<li class="fragment" style="margin-top: 0.5em;">
-								<a href="https://laravel.com/docs/5.5/filesystem">Filesystem</a> is an abstraction layer which allows you to handle files on local and remote (cloud) systems in a uniform way
+								<a href="https://laravel.com/docs/5.8/filesystem">File Storage</a> is an abstraction layer which allows you to handle files on local and remote (cloud) systems in a uniform way
 								<ul>
 									<li class="fragment">
 										To be configured in <code>config/filesystems.php</code>
@@ -1127,7 +1138,7 @@ The [public/storage] directory has been linked.</code></pre>
 								<ol>
 									<li class="fragment" style="margin-top: 0.3em;">Create a symbolic link to <code>storage/app/public</code> or configure Filesystem</li>
 									<li class="fragment" style="margin-top: 0.3em;">In your form (Views): check your <code>enctype</code> attribute (see
-										<a href="https://ikdoeict.be/apps/leercentrum/courses/ws-ss-course-materials/03.forms.html#/">this course</a>)  </li>
+										<a href="https://intern.ikdoeict.be/apps/leercentrum/courses/ws-ss-course-materials/03.forms.html#/">this course</a>)  </li>
 									<li class="fragment" style="margin-top: 0.3em;">Access the uploaded file through the HTTP request object (<a href="04.laravel.basics.html#/3/7">code example</a>)</li>
 									<li class="fragment" style="margin-top: 0.3em;">Validation: check on file (MIME) type and eventually file size, dimension, &hellip;
 										<ul>
@@ -1140,7 +1151,7 @@ The [public/storage] directory has been linked.</code></pre>
 											</li>
 										</ul>
 									</li>
-									<li class="fragment" style="margin-top: 0.3em;">Of course you need to <a href="https://laravel.com/docs/5.5/filesystem#file-uploads">store the file upload</a>
+									<li class="fragment" style="margin-top: 0.3em;">Of course you need to <a href="https://laravel.com/docs/5.8/filesystem#file-uploads">store the file upload</a>
 										<ul>
 											<li class="fragment">
 												Most of the time, it's a good practice to rename the original file (think of duplicates and of a clean directory structure)
