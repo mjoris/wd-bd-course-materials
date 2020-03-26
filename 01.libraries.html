@@ -369,7 +369,7 @@ spl_autoload_register('simple_autoloader');</code></pre>
 							<li class="fragment">
 								Example: Twig 1.x's autoloader (stripped down)
 								<pre class="bigger"><code class="language-php">function autoload($class) {
-	if (0 !== strpos($class, 'Swift_')) { //Don't interfere w other autoloaders
+	if (0 !== strpos($class, 'Twig_')) { //Don't interfere w other autoloaders
 		return;
 	}
 
