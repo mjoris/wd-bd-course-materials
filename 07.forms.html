@@ -50,8 +50,8 @@
 				<section>
 					<section>
 						<h3 class="inverted">Server-side Development <small>[JLW506]</small></h3>
-						<h1>07.authentication and forms</h1>
-
+						<h1>07.forms</h1>
+						<h3>with Laravel</h3>
 						<footer>
 							<em>Course materials: <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
 						</footer>
@@ -67,7 +67,7 @@
 				<section>
 					<section>
 						<h2>Named and grouped routes</h2>
-
+						<h5>- intermezzo -</h5>
 					</section>
 					
 					
@@ -131,543 +131,6 @@ return redirect()-&gt;route('profile');</code></pre>
 					</section>					
 				</section>					
 
-				<!-- Middleware -->
-				<section>
-					<section>
-						<h2>Middleware</h2>
-
-					</section>
-
-					<section>
-						<h2>Middleware introduction</h2>
-
-						<ul>
-							<li class="fragment">
-								Middleware<small><a href="https://laravel.com/docs/5.8/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Middlewares can be global, or only for a specific route or controller
-								<ul>
-									<li>Application middleware</li>
-									<li>Route/controller specific middleware</li>
-								</ul>
-							</li>
-							<li class="fragment">
-								Laravel offers pre-built middlewares located in the <code>app/Http/Middleware</code> directory e.g.
-								<ul>
-									<li>authentication</li>
-									<li>CSRF protection</li>
-									<li>&hellip;</li>									
-								</ul>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Defining your own middleware</h2>
-
-						<ul>
-							<li class="fragment">
-								First step: generate the middelware with Artisan (location: <code>app/Http/Middleware</code>)
-								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:middleware CheckAge</code></pre>
-							</li>
-							<li class="fragment">
-								Example of <em>Before Middleware</em>
-								<pre class="bigger"><code class="language-php dontrun">namespace App\Http\Middleware;
-use Closure;
-
-class CheckAge
-{
-    public function handle($request, Closure $next)
-    {
-        if ($request-&gt;age &lt;= 200) {
-            return redirect('home');
-        }
-        return $next($request);
-    }
-}</code></pre>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Before vs. After Middleware</h2>
-								<pre class="bigger"><code class="language-php dontrun">class BeforeMiddleware
-{
-    public function handle($request, Closure $next)
-    {
-        // Perform action
-
-        return $next($request);
-    }
-}</code></pre>
-<pre class="bigger"><code class="language-php dontrun">class AfterMiddleware
-{
-    public function handle($request, Closure $next)
-    {
-        $response = $next($request);
-
-        // Perform action
-
-        return $response;
-    }
-}</code></pre>
-					</section>
-
-
-					<section>
-						<h2>Registering global middleware</h2>
-
-						<ul>
-							<li class="fragment">
-								Add it to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								What's already in there?
-								<pre class="bigger"><code class="language-php dontrun">    protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
-        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
-        \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
-    ];</code></pre>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Registering specific middleware (1)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 1:</strong> assign a short-hand key to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								What's already in there?
-								<pre class="bigger"><code class="language-php dontrun">    protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
-        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
-        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
-        'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
-        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-    ];</code></pre>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Registering specific middleware (2)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 2 option 1:</strong> plug the middleware to a specific route
-								<pre class="bigger"><code class="language-php dontrun">Route::get('admin/profile', 'UserController@showProfile')-&gt;middleware('auth');</code></pre>
-								<pre class="bigger"><code class="language-php dontrun">Route::get('/', function () {
-    //
-})-&gt;middleware('first', 'second');</code></pre>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Registering specific middleware (3)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 2 option 2:</strong> plug the middleware to a specific controller
-								<ul>
-									<li>Call the middleware from the controller's constructor</li>
-									<li>It is assigned to all actions in the controller</li>
-								</ul>
-								<pre class="bigger"><code class="language-php dontrun">class TaskController extends Controller
-{
-    public function __construct()
-    {
-        $this-&gt;middleware('auth');
-
-        $this-&gt;middleware('log')-&gt;only('index');
-
-        $this-&gt;middleware('subscribed')-&gt;except('store');
-    }
-}</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Registering specific middleware (4)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 2 option 3:</strong> plug the middleware to a route group
-								<pre class="bigger"><code class="language-php dontrun">Route::middleware(['first', 'second'])-&gt;group(function () {
-    Route::get('/', function ()    {
-        // Uses first and second Middleware
-    });
-
-    Route::get('user/profile', function () {
-        // Uses first and second Middleware
-    });
-});</code></pre>
-							</li>
-						</ul>
-					</section>
-
-					<section>
-						<h2>Middleware Groups</h2>
-
-						<ul>
-							<li class="fragment">
-								Build groups of middleware in the <code>$middlewareGroups</code> property of your <code>app/Http/Kernel.php</code> class
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								What's already in there?
-								<pre class="bigger"><code class="language-php dontrun">protected $middlewareGroups = [
-    'web' =&gt; [ // can be assigned to a route, a route group or a controller
-        \App\Http\Middleware\EncryptCookies::class,
-        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
-        \Illuminate\Session\Middleware\StartSession::class,
-        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-        \App\Http\Middleware\VerifyCsrfToken::class,
-        \Illuminate\Routing\Middleware\SubstituteBindings::class,
-    ],</code></pre>
-							</li>
-							<li>The web middleware group is automatically applied to your <code>routes/web.php</code> file by the <code>RouteServiceProvider</code> !</li>
-						</ul>
-					</section>					
-
-
-				</section>
-
-
-				<!-- Authentication -->
-				<section>
-					<section>
-						<h2>Authentication</h2>
-
-					</section>
-					
-					
-					<section>
-						<h2>Authentication introduction</h2>
-
-						<ul>
-							<li class="fragment">
-								<a href="https://laravel.com/docs/5.8/authentication">Authentication</a> is configured 100% out of the box
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Facilities
-								<ul>
-									<li><strong>Guards:</strong> how are users authenticated technically? e.g. session, token
-									</li>
-									<li><strong>Providers:</strong> where is the user information stored and how can it be retrieved? e.g. in the <code>users</code> table with Eloquent</li>
-									<li>Resetting passwords</li>
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								These components can be configured in <code>config/auth.php</code>
-							</li>
-						</ul>
-					</section>
-					
-					
-					<section>
-						<h2>A default scenario (1)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 1:</strong> make sure you have the <code>users</code> table in your database
-							</li>
-							<li class="fragment" style="margin-top: 0.5em;">
-								Use the preconfigured migration (or extend it)
-								<pre class="bigger"><code class="language-php dontrun">        Schema::create('users', function (Blueprint $table) {
-            $table-&gt;bigIncrements('id');
-            $table-&gt;string('name');
-            $table-&gt;string('email')->unique();
-            $table-&gt;timestamp('email_verified_at')->nullable();
-            $table-&gt;string('password');
-            $table-&gt;rememberToken(); // can store the hash of a login cookie
-            $table-&gt;timestamps();
-        });</code></pre>
-							</li>
-							<li class="fragment">
-								Use this table in your DB design (foreign keys)
-							</li>
-							<li class="fragment">
-								There is a migration for the table <code>password_resets</code> too
-							</li>
-						</ul>
-						<footer class="fragment"><em>Want to change the table names? Start with <code>config/auth.php</code></em></footer>
-					</section>
-					
-					<section>
-						<h2>A default scenario (2)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 2:</strong> you will use Eloquent's preconfigured <code>User</code> model (<code>app/User.php</code>)
-								<pre class="bigger"><code class="language-php dontrun">class User extends Authenticatable
-{
-    // The attributes that are mass assignable.
-    protected $fillable = [
-        'name', 'email', 'password',
-    ];
-
-    // The attributes that should be hidden for arrays. (think of JSON serialization)
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
-	&hellip;
-}</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								Extend this class if necessary (for example: Eloquent relationships)
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>A default scenario (3)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 3:</strong> make Artisan set up a complete configuration for you (a.k.a. the <em>auth scaffold</em>)
-								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
-Authentication scaffolding generated successfully.
-								</code></pre>
-							</li>
-							<li class="fragment" style="margin-top: 1em;">
-								What happened exactly? We'll cover this after the last step &hellip;
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>A default scenario (4)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
-								<ul>
-									<li class="fragment" style="margin-top: 1em;">
-										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code>, <code>ResetPasswordController.php</code> and <code>VerificationController.php</code>
-										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks'; // '/home' by default
-
-// alternatively, if you need to generate the path from code, define:
-// protected function redirectTo()	</code></pre>
-									</li>
-									<li class="fragment"  style="margin-top: 1em;">
-										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code> if you use the <code>guest</code> middleware
-										<pre class="bigger"><code class="language-php dontrun">return redirect('/tasks');</code></pre>
-									</li>									
-								</ul>
-							</li>
-							
-						</ul>
-					</section>
-					
-					<section>
-						<h2>A default scenario (5)</h2>
-
-						<ul>
-							<li class="fragment">
-								<strong>Step 5:</strong> plug the <code>auth</code> middleware to each action requiring authentication
-								<ul>
-									<li class="fragment">
-										How? See the slides about middleware
-									</li>
-									<li class="fragment">
-										Preferred way: in the controller(s) or in a route group
-									</li>									
-								</ul>
-							</li>
-							<li class="fragment" style="margin-top: 0.3em;">
-								Use the <code>Auth</code> facade in your code 
-								<pre class="bigger"><code class="language-php dontrun">use Illuminate\Support\Facades\Auth;
-
-$user = Auth::user(); // retrieves the authenticated user
-$tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
-$id = Auth::id(); // retrieves the currently authenticated user's ID
-
-if (Auth::check()) {
-    // the user is logged in...
-	// you don't need to check this when the route is behind the auth middleware
-}
-
-Auth::logout();</code></pre>
-							</li>
-							
-						</ul>
-					</section>
-					
-					<section>
-						<h2>What the hell happened? (1)</h2>
-
-						<ul>
-							<li class="fragment">
-								The auth scaffold generated a core layout (<code>resources/views/layouts/app.blade.php</code>) extended by:
-								<ul>
-									<li><strong>welcome.blade.php</strong> - the public welcome page</li>
-									<li><strong>home.blade.php</strong> - the dashboard for logged-in users</li>
-									<li><strong>auth/login.blade.php</strong> - the login page</li>
-									<li><strong>auth/register.blade.php</strong> - the register/signup page</li>
-									<li><strong>auth/passwords/email.blade.php</strong> - the password reset confirmation page</li>
-									<li><strong>auth/passwords/reset.blade.php</strong> - the password reset prompt page</li>
-								</ul>
-							</li>
-						</ul>
-						<footer class="fragment"><em>Change these templates in order to integrate them in your site layout</em></footer>
-					</section>
-					
-					<section>
-						<h2>What the hell happened? (2)</h2>
-
-						<ul>
-							<li class="fragment">
-								In <code>routes/web.php</code> the line <code>Auth::routes();</code> was added. In fact it is a shorthand for:
-								<pre style="font-size: 15px;"><code class="language-php dontrun">// Authentication Routes...
-$this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
-$this-&gt;post('login', 'Auth\LoginController@login');
-$this-&gt;post('logout', 'Auth\LoginController@logout')-&gt;name('logout');
-
-// Registration Routes...
-$this-&gt;get('register', 'Auth\RegisterController@showRegistrationForm')-&gt;name('register');
-$this-&gt;post('register', 'Auth\RegisterController@register');
-
-// Password Reset Routes...
-$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')-&gt;name('password.request');
-$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')-&gt;name('password.email');
-$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')-&gt;name('password.reset');
-$this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset')-&gt;name('password.update');
-
-// Email verification routes
-$this->get('email/verify', 'Auth\VerificationController@show')->name('verification.notice');
-$this->get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
-$this->get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');</code></pre>
-							</li>
-						</ul>
-						<footer class="fragment"><em>Cut down by parameters register, reset, verify e.g. <code>Auth::routes(['register' => false]);</code></em></footer>
-					</section>
-					
-					<section>
-						<h2>What the hell happened? (3)</h2>
-
-						<ul>
-							<li class="fragment">
-								The HomeController
-								<ul>
-									<li>The generated <code>HomeController</code> illustrates how a homepage is shown after a successful login</li>
-									<li>There is even a route generated to the <code>HomeController</code> (behind auth middleware)</li>
-								</ul>
-							</li>
-						</ul>
-						<footer class="fragment"><em>Remove it! It is just a demo</em></footer>
-					</section>
-
-					<section>
-						<h2>Further customization (1)</h2>
-
-						<ul>
-							<li class="fragment">
-								<code>app/Http/Controllers/Auth/LoginController</code>
-
-								<ul>
-									<li>Here, you can override the field for authentication
-										<pre class="bigger"><code class="language-php dontrun">public function username()
-{
-    return 'username'; // default: 'email'
-}</code></pre>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-					
-					<section>
-						<h2>Further customization (2)</h2>
-
-						<ul>
-							<li class="fragment">
-								<code>app/Http/Controllers/Auth/RegisterController</code>
-																
-
-								<pre class="bigger"><code class="language-php dontrun">class RegisterController extends Controller
-{   &hellip; 
-    protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' =&gt; ['required', 'string', 'max:255'],
-            'email' =&gt; ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' =&gt; ['required', 'string', 'min:8', 'confirmed'],]);
-    }
-	
-    protected function create(array $data)
-    {
-        return User::create([
-            'name' =&gt; $data['name'],
-            'email' =&gt; $data['email'],
-            'password' =&gt; Hash::make($data['password'])]);
-    }
-}</code></pre>
-							</li>
-						</ul>
-						<footer class="fragment"><em>Change your registration process here (e.g. extra registration fields)</em></footer>
-					</section>
-					
-					<section>
-						<h2>Further customization (3)</h2>
-
-						<ul style="font-size: 80%">
-							<li class="fragment">
-								Digging deeper &hellip;
-								<ul>
-									<li><code>LoginController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php</code></li>
-									<li><code>RegisterController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/RegistersUsers.php</code></li>
-								</ul>
-							</li>
-							<li>Here you will find many interesting methods such as
-								<ul>
-									<li>showRegistrationForm() – responsible for showing the registration form,</li>
-									<li>register() – responsible for processing the registration request,</li>
-									<li>showLoginForm() – responsible for showing the login form,</li>
-									<li>login() – responsible forhandling the login request</li>
-									<li>validateLogin() – responsible for login form validation</li></ul></li>
-							<li class="fragment">
-								Override them in <code>app/Http/Controllers/Auth/*</code> (! not in your vendor folder)
-							</li>
-						</ul>
-					</section>					
-					
-					<section>
-						<h2>Further reading</h2>
-
-						<ul>
-							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.8/authentication">Laravel docs on Authentication</a> on
-								<ul>
-									<li class="fragment">
-										Authentication Throttling
-									</li>
-									<li class="fragment">
-										Manually Authenticating Users
-									</li>
-									<li class="fragment">
-										Resetting Passwords
-									</li>
-									<li class="fragment">
-										Customizing guards and providers
-									</li>											
-								</ul>
-							</li>
-							
-						</ul>
-					</section>
-					
-				</section>
 				
 				
 				
@@ -1093,7 +556,7 @@ public function store(Request $request)
 				<!-- Working with files -->
 				<section>
 					<section>
-						<h2>Working with files</h2>
+						<h2>File uploads</h2>
 
 					</section>
 					
@@ -1167,7 +630,342 @@ The [public/storage] directory has been linked.</code></pre>
 					</section>					
 				</section>
 
-			
+				<!-- Filtering -->
+				<section>
+					<section>
+						<h2>Filtering</h2>
+						<p><img src="assets/08/filter.png" alt="" title="" width="600" class="noborder" /></p>
+					</section>
+
+					<section>
+						<h2>Filtering?</h2>
+						<ul>
+							<li class="fragment">
+								Allow a visitor to refine a set of results
+								<ul>
+									<li class="fragment">A form with checkboxes, dropdowns, etc. per defining property of the result set</li>
+									<li class="fragment">Typically placed on the left hand side, next to the results</li>
+									<li class="fragment">It is necessary to persist the form values (!)</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.5em;">
+								Typically in combination with
+								<ul>
+									<li class="fragment">Pagination</li>
+									<li class="fragment">Sorting on specific properties of the result set (asc/desc)</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Filtering scenarios</h2>
+						<ul>
+							<li class="fragment">
+								Filter via <code>GET</code> params
+								<ul>
+									<li class="fragment">Pro: links can be shared/bookmarked</li>
+									<li class="fragment">Con: links become cluttered</li>
+									<li class="fragment">Con: filter not preserved after having navigated away</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Filter via <code>Session</code> params
+								<ul>
+									<li class="fragment">Pro: links don't become cluttered</li>
+									<li class="fragment">Pro: filter preserved after having navigated away</li>
+									<li class="fragment">Con: links can't be shared/bookmarked</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Some Laravel filtering hints</h2>
+						<ul style="font-size: 75%">
+
+							<li class="fragment">
+								In the controller
+								<ul>
+									<li class="fragment">Validate your input data e.g. <code>'brand_id' =&gt; 'exists:brands'</code></li>
+									<li class="fragment"><code>Session</code> scenario: add your inputs to the session</li>
+									<li class="fragment">For each activated filter field, apply a <em>chainable</em> method e.g. <br/><code>if (&hellip;) $products-&gt;where('brand_id', $request-&gt;brand_id);</code> (or use
+										<a href="https://laravel.com/docs/5.3/queries#conditional-clauses">when</a>)
+										<ul>
+											<li class="fragment"><strong>Pitfall: in SQL, AND has precedence over OR.</strong> This happens when you chain <code>where()</code> and <code>orWhere()</code> serially. Use
+												<a href="https://laravel.com/docs/5.3/queries#parameter-grouping">(or)where grouping</a> instead.</li>
+										</ul>
+									</li>
+									<li class="fragment">Pass your search results, existing categories and persisted values to the View e.g. <code>return view('webshop.search', ['products' =&gt; $products, 'brands' =&gt; $brands, 'brand_id' =&gt; $brand_id]);</code></li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.3em;">
+								In the Views
+								<ul>
+									<li class="fragment">Collective's <a href="https://laravelcollective.com/docs/5.3/html">Forms &amp HTML</a> supports persistence for many types of form elements. Set the persisted value as the element's default:
+										<code>Form::select('brand_id', $brands, $brand_id)</code></li>
+									<li class="fragment"><code>GET</code> scenario: append your params to your pagination URLs e.g. <br/><code>$products->appends(['brand_id' => $brand_id ])->links()</code>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment" style="font-size: 50%"><em>When the validation fails, old input is flashed into the session and has priority over the element's default</em></footer>
+					</section>
+				</section>
+
+				<!-- Pagination -->
+				<section>
+					<section>
+						<h2>Pagination</h2>
+						<p style="margin-top: 2.5em;"><img src="assets/08/pagination.jpg" alt="" title="" width="600" /></p>
+					</section>
+
+					<section>
+						<h2>Pagination?</h2>
+						<ul>
+							<li class="fragment">
+								When having too many items to show, split them into several pages
+								<ul>
+									<li class="fragment">e.g. search results, filter results</li>
+									<li class="fragment">Paginator typically placed beneath the results</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Examples</h2>
+						<ul>
+							<li class="fragment" style="margin-top: 1em">
+								Bad examples:
+								<p style="text-align: center"><img src="assets/08/pagination-bad-2.jpg" alt="" title="" width="447" /><br /><img src="assets/08/pagination-bad-1.png" alt="" title="" width="447" /></p>
+							</li>
+							<li class="fragment">
+								Good example:
+								<div class="hastooltip" style="width: 550px; margin: 0 auto;">
+									<p style="text-align: center"><img src="assets/08/pagination-good-flickr.png" alt="" title="" width="447" /></p>
+									<div class="tooltip">
+										<div>
+											<ul>
+												<li>Always indicate how many results there are</li>
+												<li>Always indicate how many pages there are</li>
+												<li>
+													Show a reasonable number of pages
+													<ul>
+														<li>The number row automgically adjusts itself based on the current page</li>
+														<li>First two and last two pages always shown</li>
+														<li>All, except the current page, clickable</li>
+													</ul>
+												</li>
+												<li>
+													Always indicate current active page
+													<ul>
+														<li>Don't link it though!</li>
+													</ul>
+												</li>
+												<li>
+													Always show next/previous buttons
+													<ul>
+														<li>Only clickable when necessary</li>
+													</ul>
+												</li>
+												<li>Don't show First/Last links (no direct value)</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Manual approach: what we would need</h2>
+						<ul>
+							<li class="fragment">
+								From <u>database</u>: Total number of items
+							</li>
+							<li class="fragment">
+								Number of items to show per page
+							</li>
+							<li class="fragment">
+								Parameter in <u>url</u>: current page <em>(default = 1)</em>
+							</li>
+							<li class="fragment">
+								To <u>calculate</u>: number of pages
+								<pre class="bigger"><code class="language-php">$numPages = ceil($numItems / $numItemsPerPage);</code></pre>
+							</li>
+							<li class="fragment">
+								From <u>database</u>: a subset of items (ORDER BY, LIMIT)
+							</li>
+							<li class="fragment">
+								A pagination rendering strategy
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Pagination in Laravel (1)</h2>
+						<ul>
+							<li class="fragment">
+								Use the <code>paginate</code> method with Query Builder or Eloquent
+								<ul>
+									<li class="fragment">
+										detects <code>?page</code> query string argument on the HTTP request
+									</li>
+									<li class="fragment">
+										gets the items from the DB through proper limit and offset
+									</li>
+									<li class="fragment">
+										returns a paginator object which is loopable like a result set
+									</li>
+								</ul>
+								<pre class="bigger"><code class="language-php">    public function index() // controller method
+{
+	$users = User::where('votes', '&gt;', 100)-&gt;paginate(15);
+	// uncomment next line to change the paginator's target URL
+	// $users-&gt;setPath('custom/url');
+	return view('user.index', ['users' =&gt; $users]);
+}</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em">Don't use <code>simplePaginate</code>: it will only generate prev/next buttons</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Pagination in Laravel (2)</h2>
+						<ul>
+							<li class="fragment">
+								Simple (bootstrap compatible) display in Blade
+								<pre class="bigger"><code class="language-php">&lt;div class="container"&gt;
+@foreach ($users as $user)
+	{{ $user->name }}
+@endforeach
+&lt;/div&gt;
+
+{{ $users->links() }}
+Or with appended GET parameters: {{ $users->appends(['sort' => 'votes'])->links() }}</code></pre>
+							</li>
+							<li class="fragment">
+								It's up to you to find a better strategy than rendering all the page links
+								<ul>
+									<li class="fragment">
+										Use the pagination methods in separate pagination templates: <a href="https://laravel.com/docs/5.3/pagination#customizing-the-pagination-view">howto</a>
+									</li>
+									<li class="fragment">
+										Watch this <a href="https://gist.github.com/bramus/5d8f2e0269e57dff5136">clever algorithm</a>
+									</li>
+								</ul>
+							</li>
+
+						</ul>
+					</section>
+
+
+
+
+
+
+
+				</section>
+
+				<!-- Advanced code generation hints -->
+				<section>
+					<section>
+						<h2>Advanced code generation hints</h2>
+					</section>
+
+					<section>
+						<h2>Resource controllers</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Assign all your <em>CRUD</em> routes to a controller in a single line of code
+								<ul>
+									<li class="fragment">Generate the controller:
+										<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:controller PhotoController --resource</code></pre>
+									</li>
+									<li class="fragment">Register the routes:
+										<pre class="bigger"><code class="language-php dontrun">Route::resource('photos', 'PhotoController'); // available options: 'only', 'except'</code></pre>
+									</li>
+									<li>Result:
+										<table style="font-size: 50%; line-height: 1; margin-left: 4.3em; background-color: #2aabd2;">
+											<thead>
+											<tr style="font-weight: bold;background-color: #1b6d85;">
+												<th style="padding: 1px;">Verb</th>
+												<th style="padding: 1px;">URI</th>
+												<th style="padding: 1px;">Action</th>
+												<th style="padding: 1px;">Route Name</th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos</code></td>
+												<td>index</td>
+												<td>photos.index</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span>create</code></td>
+												<td>create</td>
+												<td>photos.create</td>
+											</tr>
+											<tr>
+												<td>POST</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos</code></td>
+												<td>store</td>
+												<td>photos.store</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>show</td>
+												<td>photos.show</td>
+											</tr>
+											<tr>
+												<td>GET</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span><span class="token operator">/</span>edit</code></td>
+												<td>edit</td>
+												<td>photos.edit</td>
+											</tr>
+											<tr>
+												<td>PUT/PATCH</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>update</td>
+												<td>photos.update</td>
+											</tr>
+											<tr>
+												<td>DELETE</td>
+												<td><code class=" language-php"><span class="token operator">/</span>photos<span class="token operator">/</span><span class="token punctuation">{</span>photo<span class="token punctuation">}</span></code></td>
+												<td>destroy</td>
+												<td>photos.destroy</td>
+											</tr>
+											</tbody>
+										</table>
+									</li>
+									<li class="fragment">In a web app, you will need to spoof the methods DELETE, PUT and PATCH</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Collective's Form Model Binding</h2>
+						<ul style="font-size: 90%">
+							<li class="fragment">
+								Populate an HTML form based on the contents of a model
+								<ul>
+									<li class="fragment">Start the form by
+										<pre class="bigger"><code class="language-php dontrun">{!! Form::model($user, ['route' => ['user.update', $user->id]]) !!}</code></pre>
+									</li>
+									<li>Flash data has precedence over the contents !
+
+									</li>
+									<li class="fragment">Don't forget to <code>Form::close</code></li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+				</section>
 
 				<!-- The END -->
 				<section>
@@ -1186,12 +984,11 @@ The [public/storage] directory has been linked.</code></pre>
 					<section>
 						<h2>Sources</h2>
 						<ul>
-							<li><a href="https://laravel.com/docs/5.8/middleware">Laravel docs: Middleware</a></li>
-							<li><a href="https://laravel.com/docs/5.8/authentication">Laravel docs: Authentication</a></li>
-							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
 							<li><a href="https://laravel.com/docs/5.8/routing#route-groups">Laravel docs: Route Groups</a></li>
 							<li><a href="https://github.com/LaravelCollective/docs/blob/5.6/html.md">Laravel Collective docs: Forms &amp; HTML</a></li>
 							<li><a href="https://laravel.com/docs/5.8/filesystem">Laravel docs: File Storage</a> </li>
+							<li><a href="https://laravel.com/docs/5.3/pagination">Laravel docs: Pagination</a></li>
+							<li><a href="https://laravel.com/docs/5.3/session">Laravel docs: Session</a></li>
 						</ul>
 					</section>
 				</section>

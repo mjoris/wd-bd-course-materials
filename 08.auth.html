@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Web Development &mdash; Server-side Development</title>
+
+		<link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/main.css" media="screen">
+		<link rel="stylesheet" href="css/print.css" media="print">
+
+		<link rel="stylesheet" href="lib/zenburn.css">
+		<style>
+			html, body {
+				background: #34afbd;
+				background: -moz-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#34afbd), color-stop(100%,#1c1e20));
+				background: -webkit-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -o-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: -ms-radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				background: radial-gradient(center, ellipse cover, #34afbd 0%,#1c1e20 100%);
+				letter-spacing: 0em;
+			}
+
+			#reveal nav {
+				opacity: 0.3;
+				letter-spacing: -0.02em;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div id="reveal">
+
+			<div class="slides">
+
+				<!-- Title -->
+				<section>
+					<section>
+						<h3 class="inverted">Server-side Development <small>[JLW506]</small></h3>
+						<h1>08.authentication</h1>
+						<h3>on pagination and filtering</h3>
+
+						<footer>
+							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &amp; <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
+						</footer>
+						<script>
+							// Delicously hacky. Look away.
+							if( navigator.userAgent.match( /(iPhone|iPad|iPod|Android)/i ) )
+							document.write( '<p style="color: rgba(0,0,0,0.3); text-shadow: none;">('+'Tap to navigate'+')</p>' );
+						</script>
+					</section>
+				</section>
+
+
+				<!-- Middleware -->
+				<section>
+					<section>
+						<h2>Middleware</h2>
+
+					</section>
+
+					<section>
+						<h2>Middleware introduction</h2>
+
+						<ul>
+							<li class="fragment">
+								Middleware<small><a href="https://laravel.com/docs/5.8/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Middlewares can be global, or only for a specific route or controller
+								<ul>
+									<li>Application middleware</li>
+									<li>Route/controller specific middleware</li>
+								</ul>
+							</li>
+							<li class="fragment">
+								Laravel offers pre-built middlewares located in the <code>app/Http/Middleware</code> directory e.g.
+								<ul>
+									<li>authentication</li>
+									<li>CSRF protection</li>
+									<li>&hellip;</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Defining your own middleware</h2>
+
+						<ul>
+							<li class="fragment">
+								First step: generate the middelware with Artisan (location: <code>app/Http/Middleware</code>)
+								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:middleware CheckAge</code></pre>
+							</li>
+							<li class="fragment">
+								Example of <em>Before Middleware</em>
+								<pre class="bigger"><code class="language-php dontrun">namespace App\Http\Middleware;
+use Closure;
+
+class CheckAge
+{
+    public function handle($request, Closure $next)
+    {
+        if ($request-&gt;age &lt;= 200) {
+            return redirect('home');
+        }
+        return $next($request);
+    }
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Before vs. After Middleware</h2>
+						<pre class="bigger"><code class="language-php dontrun">class BeforeMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        // Perform action
+
+        return $next($request);
+    }
+}</code></pre>
+						<pre class="bigger"><code class="language-php dontrun">class AfterMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        $response = $next($request);
+
+        // Perform action
+
+        return $response;
+    }
+}</code></pre>
+					</section>
+
+
+					<section>
+						<h2>Registering global middleware</h2>
+
+						<ul>
+							<li class="fragment">
+								Add it to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">    protected $middleware = [
+        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \App\Http\Middleware\TrustProxies::class,
+    ];</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Registering specific middleware (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 1:</strong> assign a short-hand key to the <code>$middleware</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+    ];</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Registering specific middleware (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 1:</strong> plug the middleware to a specific route
+								<pre class="bigger"><code class="language-php dontrun">Route::get('admin/profile', 'UserController@showProfile')-&gt;middleware('auth');</code></pre>
+								<pre class="bigger"><code class="language-php dontrun">Route::get('/', function () {
+    //
+})-&gt;middleware('first', 'second');</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Registering specific middleware (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 2:</strong> plug the middleware to a specific controller
+								<ul>
+									<li>Call the middleware from the controller's constructor</li>
+									<li>It is assigned to all actions in the controller</li>
+								</ul>
+								<pre class="bigger"><code class="language-php dontrun">class TaskController extends Controller
+{
+    public function __construct()
+    {
+        $this-&gt;middleware('auth');
+
+        $this-&gt;middleware('log')-&gt;only('index');
+
+        $this-&gt;middleware('subscribed')-&gt;except('store');
+    }
+}</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Registering specific middleware (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2 option 3:</strong> plug the middleware to a route group
+								<pre class="bigger"><code class="language-php dontrun">Route::middleware(['first', 'second'])-&gt;group(function () {
+    Route::get('/', function ()    {
+        // Uses first and second Middleware
+    });
+
+    Route::get('user/profile', function () {
+        // Uses first and second Middleware
+    });
+});</code></pre>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Middleware Groups</h2>
+
+						<ul>
+							<li class="fragment">
+								Build groups of middleware in the <code>$middlewareGroups</code> property of your <code>app/Http/Kernel.php</code> class
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What's already in there?
+								<pre class="bigger"><code class="language-php dontrun">protected $middlewareGroups = [
+    'web' =&gt; [ // can be assigned to a route, a route group or a controller
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+    ],</code></pre>
+							</li>
+							<li>The web middleware group is automatically applied to your <code>routes/web.php</code> file by the <code>RouteServiceProvider</code> !</li>
+						</ul>
+					</section>
+
+
+				</section>
+
+
+				<!-- Authentication -->
+				<section>
+					<section>
+						<h2>Authentication</h2>
+
+					</section>
+
+
+					<section>
+						<h2>Authentication introduction</h2>
+
+						<ul>
+							<li class="fragment">
+								<a href="https://laravel.com/docs/5.8/authentication">Authentication</a> is configured 100% out of the box
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Facilities
+								<ul>
+									<li><strong>Guards:</strong> how are users authenticated technically? e.g. session, token
+									</li>
+									<li><strong>Providers:</strong> where is the user information stored and how can it be retrieved? e.g. in the <code>users</code> table with Eloquent</li>
+									<li>Resetting passwords</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								These components can be configured in <code>config/auth.php</code>
+							</li>
+						</ul>
+					</section>
+
+
+					<section>
+						<h2>A default scenario (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 1:</strong> make sure you have the <code>users</code> table in your database
+							</li>
+							<li class="fragment" style="margin-top: 0.5em;">
+								Use the preconfigured migration (or extend it)
+								<pre class="bigger"><code class="language-php dontrun">        Schema::create('users', function (Blueprint $table) {
+            $table-&gt;bigIncrements('id');
+            $table-&gt;string('name');
+            $table-&gt;string('email')->unique();
+            $table-&gt;timestamp('email_verified_at')->nullable();
+            $table-&gt;string('password');
+            $table-&gt;rememberToken(); // can store the hash of a login cookie
+            $table-&gt;timestamps();
+        });</code></pre>
+							</li>
+							<li class="fragment">
+								Use this table in your DB design (foreign keys)
+							</li>
+							<li class="fragment">
+								There is a migration for the table <code>password_resets</code> too
+							</li>
+						</ul>
+						<footer class="fragment"><em>Want to change the table names? Start with <code>config/auth.php</code></em></footer>
+					</section>
+
+					<section>
+						<h2>A default scenario (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 2:</strong> you will use Eloquent's preconfigured <code>User</code> model (<code>app/User.php</code>)
+								<pre class="bigger"><code class="language-php dontrun">class User extends Authenticatable
+{
+    // The attributes that are mass assignable.
+    protected $fillable = [
+        'name', 'email', 'password',
+    ];
+
+    // The attributes that should be hidden for arrays. (think of JSON serialization)
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+	&hellip;
+}</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								Extend this class if necessary (for example: Eloquent relationships)
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>A default scenario (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 3:</strong> make Artisan set up a complete configuration for you (a.k.a. the <em>auth scaffold</em>)
+								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
+Authentication scaffolding generated successfully.
+								</code></pre>
+							</li>
+							<li class="fragment" style="margin-top: 1em;">
+								What happened exactly? We'll cover this after the last step &hellip;
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>A default scenario (4)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
+								<ul>
+									<li class="fragment" style="margin-top: 1em;">
+										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code>, <code>ResetPasswordController.php</code> and <code>VerificationController.php</code>
+										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks'; // '/home' by default
+
+// alternatively, if you need to generate the path from code, define:
+// protected function redirectTo()	</code></pre>
+									</li>
+									<li class="fragment"  style="margin-top: 1em;">
+										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code> if you use the <code>guest</code> middleware
+										<pre class="bigger"><code class="language-php dontrun">return redirect('/tasks');</code></pre>
+									</li>
+								</ul>
+							</li>
+
+						</ul>
+					</section>
+
+					<section>
+						<h2>A default scenario (5)</h2>
+
+						<ul>
+							<li class="fragment">
+								<strong>Step 5:</strong> plug the <code>auth</code> middleware to each action requiring authentication
+								<ul>
+									<li class="fragment">
+										How? See the slides about middleware
+									</li>
+									<li class="fragment">
+										Preferred way: in the controller(s) or in a route group
+									</li>
+								</ul>
+							</li>
+							<li class="fragment" style="margin-top: 0.3em;">
+								Use the <code>Auth</code> facade in your code
+								<pre class="bigger"><code class="language-php dontrun">use Illuminate\Support\Facades\Auth;
+
+$user = Auth::user(); // retrieves the authenticated user
+$tasks = Auth::user()->tasks; // oh yes! it's an Eloquent object!
+$id = Auth::id(); // retrieves the currently authenticated user's ID
+
+if (Auth::check()) {
+    // the user is logged in...
+	// you don't need to check this when the route is behind the auth middleware
+}
+
+Auth::logout();</code></pre>
+							</li>
+
+						</ul>
+					</section>
+
+					<section>
+						<h2>What the hell happened? (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								The auth scaffold generated a core layout (<code>resources/views/layouts/app.blade.php</code>) extended by:
+								<ul>
+									<li><strong>welcome.blade.php</strong> - the public welcome page</li>
+									<li><strong>home.blade.php</strong> - the dashboard for logged-in users</li>
+									<li><strong>auth/login.blade.php</strong> - the login page</li>
+									<li><strong>auth/register.blade.php</strong> - the register/signup page</li>
+									<li><strong>auth/passwords/email.blade.php</strong> - the password reset confirmation page</li>
+									<li><strong>auth/passwords/reset.blade.php</strong> - the password reset prompt page</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Change these templates in order to integrate them in your site layout</em></footer>
+					</section>
+
+					<section>
+						<h2>What the hell happened? (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								In <code>routes/web.php</code> the line <code>Auth::routes();</code> was added. In fact it is a shorthand for:
+								<pre style="font-size: 15px;"><code class="language-php dontrun">// Authentication Routes...
+$this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
+$this-&gt;post('login', 'Auth\LoginController@login');
+$this-&gt;post('logout', 'Auth\LoginController@logout')-&gt;name('logout');
+
+// Registration Routes...
+$this-&gt;get('register', 'Auth\RegisterController@showRegistrationForm')-&gt;name('register');
+$this-&gt;post('register', 'Auth\RegisterController@register');
+
+// Password Reset Routes...
+$this-&gt;get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')-&gt;name('password.request');
+$this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')-&gt;name('password.email');
+$this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')-&gt;name('password.reset');
+$this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset')-&gt;name('password.update');
+
+// Email verification routes
+$this->get('email/verify', 'Auth\VerificationController@show')->name('verification.notice');
+$this->get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
+$this->get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Cut down by parameters register, reset, verify e.g. <code>Auth::routes(['register' => false]);</code></em></footer>
+					</section>
+
+					<section>
+						<h2>What the hell happened? (3)</h2>
+
+						<ul>
+							<li class="fragment">
+								The HomeController
+								<ul>
+									<li>The generated <code>HomeController</code> illustrates how a homepage is shown after a successful login</li>
+									<li>There is even a route generated to the <code>HomeController</code> (behind auth middleware)</li>
+								</ul>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Remove it! It is just a demo</em></footer>
+					</section>
+
+					<section>
+						<h2>Further customization (1)</h2>
+
+						<ul>
+							<li class="fragment">
+								<code>app/Http/Controllers/Auth/LoginController</code>
+
+								<ul>
+									<li>Here, you can override the field for authentication
+										<pre class="bigger"><code class="language-php dontrun">public function username()
+{
+    return 'username'; // default: 'email'
+}</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Further customization (2)</h2>
+
+						<ul>
+							<li class="fragment">
+								<code>app/Http/Controllers/Auth/RegisterController</code>
+
+
+								<pre class="bigger"><code class="language-php dontrun">class RegisterController extends Controller
+{   &hellip;
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'name' =&gt; ['required', 'string', 'max:255'],
+            'email' =&gt; ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' =&gt; ['required', 'string', 'min:8', 'confirmed'],]);
+    }
+
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' =&gt; $data['name'],
+            'email' =&gt; $data['email'],
+            'password' =&gt; Hash::make($data['password'])]);
+    }
+}</code></pre>
+							</li>
+						</ul>
+						<footer class="fragment"><em>Change your registration process here (e.g. extra registration fields)</em></footer>
+					</section>
+
+					<section>
+						<h2>Further customization (3)</h2>
+
+						<ul style="font-size: 80%">
+							<li class="fragment">
+								Digging deeper &hellip;
+								<ul>
+									<li><code>LoginController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/AuthenticatesUsers.php</code></li>
+									<li><code>RegisterController</code> uses the trait <code>/vendor/laravel/framework/src/Illuminate/Foundation/Auth/RegistersUsers.php</code></li>
+								</ul>
+							</li>
+							<li>Here you will find many interesting methods such as
+								<ul>
+									<li>showRegistrationForm() – responsible for showing the registration form,</li>
+									<li>register() – responsible for processing the registration request,</li>
+									<li>showLoginForm() – responsible for showing the login form,</li>
+									<li>login() – responsible forhandling the login request</li>
+									<li>validateLogin() – responsible for login form validation</li></ul></li>
+							<li class="fragment">
+								Override them in <code>app/Http/Controllers/Auth/*</code> (! not in your vendor folder)
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>Further reading</h2>
+
+						<ul>
+							<li class="fragment">
+								Read the <a href="https://laravel.com/docs/5.8/authentication">Laravel docs on Authentication</a> on
+								<ul>
+									<li class="fragment">
+										Authentication Throttling
+									</li>
+									<li class="fragment">
+										Manually Authenticating Users
+									</li>
+									<li class="fragment">
+										Resetting Passwords
+									</li>
+									<li class="fragment">
+										Customizing guards and providers
+									</li>
+								</ul>
+							</li>
+
+						</ul>
+					</section>
+
+				</section>
+
+
+
+
+
+
+
+				<!-- The END -->
+				<section>
+					<section>
+						<h2>Questions?</h2>
+						<footer>
+							<em><a href="http://www.ikdoeict.be/">ikdoeict.be</a> &mdash; <a href="mailto:joris.maervoet@odisee.be">joris.maervoet@odisee.be</a></em>
+						</footer>
+					</section>
+				</section>
+
+
+
+				<!-- Sources -->
+				<section id="sources">
+					<section>
+						<h2>Sources</h2>
+						<ul>
+							<li><a href="https://laravel.com/docs/5.8/middleware">Laravel docs: Middleware</a></li>
+							<li><a href="https://laravel.com/docs/5.8/authentication">Laravel docs: Authentication</a></li>
+							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
+
+
+						</ul>
+					</section>
+				</section>
+
+			</div>
+
+			<!-- The navigational controls UI -->
+			<aside class="controls">
+				<a class="left" href="#">&#x25C4;</a>
+				<a class="right" href="#">&#x25BA;</a>
+				<a class="up" href="#">&#x25B2;</a>
+				<a class="down" href="#">&#x25BC;</a>
+				<span id="revealIndex">/</span>
+			</aside>
+
+			<!-- Index Link -->
+			<aside class="back">
+				<a href="index.html">&larr; Back to index</a>
+			</aside>
+
+			<!-- ikdoeict.be Link -->
+			<a href="http://www.ikdoeict.be/" title="ikdoeict.be" id="ikdoeict">ikdoeict.be</a>
+
+			<!-- Displays presentation progress, max value changes via JS to reflect # of slides -->
+			<div class="progress"><span></span></div>
+
+		</div>
+
+		<script src="js/reveal.js"></script>
+		<script src="lib/highlight.js"></script>
+		<script src="lib/prefixfree.js"></script>
+		<script src="lib/css-snippets.js"></script>
+		<script src="lib/css-edit.js"></script>
+		<script src="lib/incrementable.js"></script>
+		<script src="js/main.js"></script>
+
+	</body>
+</html>
