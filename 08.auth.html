@@ -42,8 +42,9 @@
 				<section>
 					<section>
 						<h3 class="inverted">Server-side Development <small>[JLW506]</small></h3>
+						<h3>Middleware and</h3>
 						<h1>08.authentication</h1>
-						<h3>on pagination and filtering</h3>
+
 
 						<footer>
 							<em>Course materials: <a href="http://www.bram.us/">Bram(us) Van Damme</a> &amp; <a href="mailto:joris.maervoet@odisee.be">Joris Maervoet</a></em>
@@ -69,7 +70,7 @@
 
 						<ul>
 							<li class="fragment">
-								Middleware<small><a href="https://laravel.com/docs/5.8/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
+								Middleware<small><a href="https://laravel.com/docs/7.x/middleware">&#9873;</a></small> = code executed before or after a request is handled by the application
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Middlewares can be global, or only for a specific route or controller
@@ -151,11 +152,12 @@ class CheckAge
 							<li class="fragment" style="margin-top: 1em;">
 								What's already in there?
 								<pre class="bigger"><code class="language-php dontrun">    protected $middleware = [
-        \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
+        \App\Http\Middleware\TrustProxies::class,
+        \Fruitcake\Cors\HandleCors::class,
+        \App\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\TrustProxies::class,
     ];</code></pre>
 							</li>
 						</ul>
@@ -266,6 +268,34 @@ class CheckAge
 						</ul>
 					</section>
 
+					<section>
+						<h2>Middleware parameters</h2>
+
+						<ul>
+
+							<li class="fragment">
+								Check this interesting example (simple authorization)
+								<pre class="bigger"><code class="language-php dontrun">namespace App\Http\Middleware;
+use Closure;
+
+class CheckRole
+{
+    public function handle($request, Closure $next, <u>$role</u>)
+    {
+        if (! $request->user()-&gt;hasRole($role)) {
+            // Redirect...
+        }
+        return $next($request);
+    }
+}</code></pre>
+							</li>
+							<li class="fragment">
+								Pass your parameters (separated by <code>,</code>) by adding a <code>:</code> after the middleware name
+								<pre class="bigger"><code class="language-php dontrun">Route::post('blogposts/create', 'PostController@store')->middleware('role:editor');</code></pre>
+							</li>
+						</ul>
+					</section>
+
 
 				</section>
 
@@ -283,7 +313,7 @@ class CheckAge
 
 						<ul>
 							<li class="fragment">
-								<a href="https://laravel.com/docs/5.8/authentication">Authentication</a> is configured 100% out of the box
+								<a href="https://laravel.com/docs/7.x/authentication">Authentication</a> is configured 100% out of the box
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
 								Facilities
@@ -311,7 +341,7 @@ class CheckAge
 							<li class="fragment" style="margin-top: 0.5em;">
 								Use the preconfigured migration (or extend it)
 								<pre class="bigger"><code class="language-php dontrun">        Schema::create('users', function (Blueprint $table) {
-            $table-&gt;bigIncrements('id');
+            $table-&gt;id();
             $table-&gt;string('name');
             $table-&gt;string('email')->unique();
             $table-&gt;timestamp('email_verified_at')->nullable();
@@ -321,10 +351,7 @@ class CheckAge
         });</code></pre>
 							</li>
 							<li class="fragment">
-								Use this table in your DB design (foreign keys)
-							</li>
-							<li class="fragment">
-								There is a migration for the table <code>password_resets</code> too
+								Use this table in your DB design (add columns, foreign keys)
 							</li>
 						</ul>
 						<footer class="fragment"><em>Want to change the table names? Start with <code>config/auth.php</code></em></footer>
@@ -362,8 +389,12 @@ class CheckAge
 						<ul>
 							<li class="fragment">
 								<strong>Step 3:</strong> make Artisan set up a complete configuration for you (a.k.a. the <em>auth scaffold</em>)
-								<pre class="bigger"><code class="language-bash dontrun">$ php artisan make:auth
-Authentication scaffolding generated successfully.
+								<pre class="bigger"><code class="language-bash dontrun">$ composer require laravel/ui
+&hellip;
+$ php artisan ui vue --auth
+<span style="color:lightgreen">Vue scaffolding installed successfully.</span>
+<span style="color:goldenrod">Please run "npm install &amp;&amp; npm run dev" to compile your fresh scaffolding.</span>
+<span style="color:lightgreen">Authentication scaffolding generated successfully.</span>
 								</code></pre>
 							</li>
 							<li class="fragment" style="margin-top: 1em;">
@@ -380,15 +411,15 @@ Authentication scaffolding generated successfully.
 								<strong>Step 4:</strong> set your redirect path (= destination after successful authentication)
 								<ul>
 									<li class="fragment" style="margin-top: 1em;">
-										In <code>app/Http/Controllers/Auth/LoginController.php</code>, <code>RegisterController.php</code>, <code>ResetPasswordController.php</code> and <code>VerificationController.php</code>
-										<pre class="bigger"><code class="language-php dontrun">protected $redirectTo = '/tasks'; // '/home' by default
-
-// alternatively, if you need to generate the path from code, define:
-// protected function redirectTo()	</code></pre>
+										In <code>app/Http/Providers/RouteServiceProvider.php</code>:
+										<pre class="bigger"><code class="language-php dontrun">public const HOME = '/tasks'; // '/home' by default</code></pre>
 									</li>
 									<li class="fragment"  style="margin-top: 1em;">
-										and in <code>app/Http/Middleware/RedirectIfAuthenticated.php</code> if you use the <code>guest</code> middleware
-										<pre class="bigger"><code class="language-php dontrun">return redirect('/tasks');</code></pre>
+										and set your redirect path if unauthenticated in <code>app/Http/Middleware/Authenticate.php</code>
+										<pre class="bigger"><code class="language-php dontrun">protected function redirectTo($request)
+{
+    return route('login');
+}</code></pre>
 									</li>
 								</ul>
 							</li>
@@ -441,7 +472,8 @@ Auth::logout();</code></pre>
 									<li><strong>home.blade.php</strong> - the dashboard for logged-in users</li>
 									<li><strong>auth/login.blade.php</strong> - the login page</li>
 									<li><strong>auth/register.blade.php</strong> - the register/signup page</li>
-									<li><strong>auth/passwords/email.blade.php</strong> - the password reset confirmation page</li>
+									<li><strong>auth/passwords/email.blade.php</strong> - the password reset page</li>
+									<li><strong>auth/passwords/confirm.blade.php</strong> - the password reset confirmation page</li>
 									<li><strong>auth/passwords/reset.blade.php</strong> - the password reset prompt page</li>
 								</ul>
 							</li>
@@ -453,9 +485,9 @@ Auth::logout();</code></pre>
 						<h2>What the hell happened? (2)</h2>
 
 						<ul>
-							<li class="fragment">
+							<li class="fragment" style="font-size: 90%">
 								In <code>routes/web.php</code> the line <code>Auth::routes();</code> was added. In fact it is a shorthand for:
-								<pre style="font-size: 15px;"><code class="language-php dontrun">// Authentication Routes...
+								<pre style="font-size: 13px;"><code class="language-php dontrun">// Authentication Routes...
 $this-&gt;get('login', 'Auth\LoginController@showLoginForm')-&gt;name('login');
 $this-&gt;post('login', 'Auth\LoginController@login');
 $this-&gt;post('logout', 'Auth\LoginController@logout')-&gt;name('logout');
@@ -470,7 +502,11 @@ $this-&gt;post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEma
 $this-&gt;get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')-&gt;name('password.reset');
 $this-&gt;post('password/reset', 'Auth\ResetPasswordController@reset')-&gt;name('password.update');
 
-// Email verification routes
+// Password Confirm Routes...
+$this-&gt;get('password/confirm', 'Auth\ConfirmPasswordController@showConfirmForm')-&gt;name('password.confirm');
+$this-&gt;post('password/confirm', 'Auth\ConfirmPasswordController@confirm');
+
+// Email Verification routes
 $this->get('email/verify', 'Auth\VerificationController@show')->name('verification.notice');
 $this->get('email/verify/{id}', 'Auth\VerificationController@verify')->name('verification.verify');
 $this->get('email/resend', 'Auth\VerificationController@resend')->name('verification.resend');</code></pre>
@@ -573,7 +609,7 @@ $this->get('email/resend', 'Auth\VerificationController@resend')->name('verifica
 
 						<ul>
 							<li class="fragment">
-								Read the <a href="https://laravel.com/docs/5.8/authentication">Laravel docs on Authentication</a> on
+								Read the <a href="https://laravel.com/docs/7.x/authentication">Laravel docs on Authentication</a> on
 								<ul>
 									<li class="fragment">
 										Authentication Throttling
@@ -618,8 +654,8 @@ $this->get('email/resend', 'Auth\VerificationController@resend')->name('verifica
 					<section>
 						<h2>Sources</h2>
 						<ul>
-							<li><a href="https://laravel.com/docs/5.8/middleware">Laravel docs: Middleware</a></li>
-							<li><a href="https://laravel.com/docs/5.8/authentication">Laravel docs: Authentication</a></li>
+							<li><a href="https://laravel.com/docs/7.x/middleware">Laravel docs: Middleware</a></li>
+							<li><a href="https://laravel.com/docs/7.x/authentication">Laravel docs: Authentication</a></li>
 							<li><a href="https://mattstauffer.co/blog/the-auth-scaffold-in-laravel-5-2">Matt Stauffer: The auth scaffold in Laravel 5.2</a></li>
 
 
